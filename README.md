@@ -54,7 +54,7 @@ Gallery
 ![screenshot 1](https://raw.githubusercontent.com/ocornut/imgui/master/web/test_window_01.png?raw=true)
 ![screenshot 2](https://raw.githubusercontent.com/ocornut/imgui/master/web/test_window_02.png?raw=true)
 ![screenshot 3](https://raw.githubusercontent.com/ocornut/imgui/master/web/test_window_03.png?raw=true)
-![screenshot 4](https://raw.githubusercontent.com/ocornut/imgui/master/test_window_04.png?raw=true)
+![screenshot 4](https://raw.githubusercontent.com/ocornut/imgui/master/web/test_window_04.png?raw=true)
 
 Credits
 -------
