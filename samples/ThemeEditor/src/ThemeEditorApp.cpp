@@ -31,16 +31,14 @@ void ThemeEditorApp::shutdown()
 void ThemeEditorApp::draw()
 {
 	// clear out the window with black
-	gl::clear( Color( 0, 0, 0 ) );
+    static float f = 0.0f;
+	gl::clear( Color( f, f, f ) );
     
     ImGui::NewFrame();
     
-    static float f;
-    ImGui::Text("Hello, world!");
-    ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-    
-    ImGui::Begin("Another Window", NULL, ImVec2(200,100));
+    ImGui::Begin("Theme Editor", NULL, ImVec2(200,100));
     {
+        // add radios on one line to switch between color modes
         static ImGuiColorEditMode colorMode = ImGuiColorEditMode_RGB;
         ImGui::RadioButton("RGB", &colorMode, ImGuiColorEditMode_RGB);
         ImGui::SameLine();
@@ -48,32 +46,42 @@ void ThemeEditorApp::draw()
         ImGui::SameLine();
         ImGui::RadioButton("HEX", &colorMode, ImGuiColorEditMode_HEX);
         
+        // add a slider to control the background brightness
+        ImGui::SliderFloat( "Background", &f, 0, 1 );
+        
+        // change color mode
         ImGui::ColorEditMode(colorMode);
         
-        static ImVec4 color0 = ImVec4( 0.11f,0.11f, 0.11f, 1.0f );
+        // add color controls
+        static ImVec4 color0 = ImVec4( 0.16f,0.16f, 0.16f, 1.0f );
         static ImVec4 color1 = ImVec4( 0.04f, 0.04f, 0.04f, 1.0f );
-        static ImVec4 color2 = ImVec4( 0.08f, 0.08f, 0.08f, 1.0f );
+        static ImVec4 color2 = ImVec4( 0.20f, 0.20f, 0.20f, 1.0f );
         static ImVec4 color3 = ImVec4( 0.96f, 0.92f, 0.63f, 1.0f );
-        static ImVec4 color4 = ImVec4( 0.16f, 0.16f, 0.16f, 1.0f );
-        ImGui::ColorEdit4( "Color0", (float*)&color0, false );
-        ImGui::ColorEdit4( "Color1", (float*)&color1, false );
-        ImGui::ColorEdit4( "Color2", (float*)&color2, false );
-        ImGui::ColorEdit4( "Color3", (float*)&color3, false );
-        ImGui::ColorEdit4( "Color4", (float*)&color4, false );
+        static ImVec4 color4 = ImVec4( 0.27f, 0.27f, 0.27f, 1.0f );
+        ImGui::ColorEdit4( "Color0", (float*) &color0, false );
+        ImGui::ColorEdit4( "Color1", (float*) &color1, false );
+        ImGui::ColorEdit4( "Color2", (float*) &color2, false );
+        ImGui::ColorEdit4( "Color3", (float*) &color3, false );
+        ImGui::ColorEdit4( "Color4", (float*) &color4, false );
         
-        static bool apply = true;
+        // add a checkbox
+        static bool apply = false;
         ImGui::Checkbox( "Apply", &apply );
-        if( apply ){
-            ImGui::setThemeColor( color0, color1, color2, color3, color4 );
-        }
+        
+        // show tooltip over checkbox
         if( ImGui::IsHovered() ){
             ImGui::SetTooltip( "Apply the theme colors" );
+        }
+        
+        // if apply is checked make modifications
+        if( apply ){
+            ImGui::setThemeColor( color0, color1, color2, color3, color4 );
         }
     }
     ImGui::End();
     
     
-    // More example code in ShowTestWindow()
+    // test Window
     ImGui::SetNewWindowDefaultPos(ImVec2(350, 20));
     ImGui::ShowTestWindow(NULL);
     

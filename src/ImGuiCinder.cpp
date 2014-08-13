@@ -58,23 +58,20 @@ namespace ImGui {
         } );
         window->getSignalKeyDown().connect( [](KeyEvent event){
             ImGuiIO& io = ImGui::GetIO();
-            io.KeyCtrl = event.isAccelDown();
-            io.KeyShift = event.isShiftDown();
+            //io.KeyCtrl = event.isAccelDown();
+            //io.KeyShift = event.isShiftDown();
             io.KeysDown[ event.getCode() ] = true;
             
             uint32_t character = event.getCharUtf32();
             if( character > 0 && character <= 255 ){
                 io.AddInputCharacter( (char) character );
             }
-            
-            cout << "keydown" << endl;
         } );
         window->getSignalKeyUp().connect( [](KeyEvent event){
             ImGuiIO& io = ImGui::GetIO();
-            io.KeyCtrl = event.isAccelDown();
-            io.KeyShift = event.isShiftDown();
+            //io.KeyCtrl = event.isAccelDown();
+            //io.KeyShift = event.isShiftDown();
             io.KeysDown[ event.getCode() ] = false;
-            cout << "keyup" << endl;
         } );
         
         ImGuiIO& io = ImGui::GetIO();
@@ -99,10 +96,7 @@ namespace ImGui {
         io.KeyMap[ImGuiKey_Z] = KeyEvent::KEY_Z;*/
         
         io.SetClipboardTextFn = [](const char* text, const char* text_end){
-            if (!text_end)
-                text_end = text + strlen(text);
-            
-            // Add a zero-terminator
+            if (!text_end) text_end = text + strlen(text);
             char* buf = (char*)malloc(text_end - text + 1);
             memcpy(buf, text, text_end-text);
             buf[text_end-text] = '\0';
@@ -123,14 +117,14 @@ namespace ImGui {
         
         style.Colors[ImGuiCol_Text]					= color3;
         style.Colors[ImGuiCol_WindowBg]				= color0;
-        style.Colors[ImGuiCol_Border]				= color4;
+        style.Colors[ImGuiCol_Border]				= color0;
         style.Colors[ImGuiCol_BorderShadow]			= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
         style.Colors[ImGuiCol_FrameBg]				= color2;	// Background of checkbox, radio button, plot, slider, text input
         style.Colors[ImGuiCol_TitleBg]				= color2;
-        style.Colors[ImGuiCol_TitleBgCollapsed]		= color1;
+        style.Colors[ImGuiCol_TitleBgCollapsed]		= color4;
         style.Colors[ImGuiCol_ScrollbarBg]			= color2;
         style.Colors[ImGuiCol_ScrollbarGrab]		= color1;
-        style.Colors[ImGuiCol_ScrollbarGrabHovered]	= color2;
+        style.Colors[ImGuiCol_ScrollbarGrabHovered]	= color0;
         style.Colors[ImGuiCol_ScrollbarGrabActive]	= color3;
         style.Colors[ImGuiCol_ComboBg]				= color2;
         style.Colors[ImGuiCol_CheckActive]			= color3;
@@ -175,12 +169,11 @@ namespace ImGui {
     void setDarkTheme()
     {
         ImGui::GetStyle().WindowRounding = 4.0f;
-        ImGui::GetStyle().WindowFillAlphaDefault = 0.9f;
-        setThemeColor( ImVec4( 0.11f,0.11f, 0.11f, 1.0f ),
+        setThemeColor( ImVec4( 0.16f,0.16f, 0.16f, 1.0f ),
                       ImVec4( 0.04f, 0.04f, 0.04f, 1.0f ),
-                      ImVec4( 0.08f, 0.08f, 0.08f, 1.0f ),
+                      ImVec4( 0.20f, 0.20f, 0.20f, 1.0f ),
                       ImVec4( 0.96f, 0.92f, 0.63f, 1.0f ),
-                      ImVec4( 0.16f, 0.16f, 0.16f, 1.0f ) );
+                      ImVec4( 0.27f, 0.27f, 0.27f, 1.0f ) );
     }
     
     
@@ -249,7 +242,6 @@ namespace ImGui {
             return;
         
         if( getVboMeshRef()->getNumVertices() < total_vtx_count ){
-            cout << total_vtx_count << endl;
             gl::VboMesh::Layout layout;
             layout.setDynamicColorsRGBA();
             layout.setDynamicPositions();
