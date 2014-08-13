@@ -1,12 +1,10 @@
 Cinder-ImGui
 ===================
 
-Immediate mode GUI Library from Omar Cornut.
-
-https://github.com/ocornut/imgui/
-
+Immediate mode GUI Library from Omar Cornut. https://github.com/ocornut/imgui/
 Non-kosher wrapper for use with the last Cinder version.
-  
+
+####Basic Use
 Call this in your setup:
 ```c++
 void CinderApp::setup()
