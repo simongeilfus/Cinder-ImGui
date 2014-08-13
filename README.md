@@ -14,7 +14,7 @@ void CinderApp::setup()
 }
 ```
 
-And then create your UI like this:
+And then create your UI between ImGui::NewFrame and ImGui::Render:
 ```c++
 void CinderApp::draw()
 {
