@@ -1,7 +1,7 @@
 Cinder-ImGui
 ===================
-
-Immediate mode GUI Library from Omar Cornut. https://github.com/ocornut/imgui/
+https://github.com/ocornut/imgui/   
+Immediate mode GUI Library from Omar Cornut.   
 Non-kosher wrapper for use with the last Cinder version.
 
 ####Basic Use
