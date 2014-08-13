@@ -1,13 +1,10 @@
 #include "imGuiCinder.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
-
 #include "cinder/gl/Vbo.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/DataSource.h"
+#include "cinder/Clipboard.h"
 
 using namespace std;
 using namespace ci;
@@ -59,31 +56,65 @@ namespace ImGui {
             ImGuiIO& io = ImGui::GetIO();
             io.DisplaySize = ImVec2( getWindowSize() );
         } );
+        window->getSignalKeyDown().connect( [](KeyEvent event){
+            ImGuiIO& io = ImGui::GetIO();
+            io.KeyCtrl = event.isAccelDown();
+            io.KeyShift = event.isShiftDown();
+            io.KeysDown[ event.getCode() ] = true;
+            
+            uint32_t character = event.getCharUtf32();
+            if( character > 0 && character <= 255 ){
+                io.AddInputCharacter( (char) character );
+            }
+            
+            cout << "keydown" << endl;
+        } );
+        window->getSignalKeyUp().connect( [](KeyEvent event){
+            ImGuiIO& io = ImGui::GetIO();
+            io.KeyCtrl = event.isAccelDown();
+            io.KeyShift = event.isShiftDown();
+            io.KeysDown[ event.getCode() ] = false;
+            cout << "keyup" << endl;
+        } );
         
         ImGuiIO& io = ImGui::GetIO();
         io.DisplaySize = ImVec2( window->getSize() );
         io.DeltaTime = 1.0f / 60.0f;
-        /*io.KeyMap[ImGuiKey_Tab] = GLFW_KEY_TAB;
-         io.KeyMap[ImGuiKey_LeftArrow] = GLFW_KEY_LEFT;
-         io.KeyMap[ImGuiKey_RightArrow] = GLFW_KEY_RIGHT;
-         io.KeyMap[ImGuiKey_UpArrow] = GLFW_KEY_UP;
-         io.KeyMap[ImGuiKey_DownArrow] = GLFW_KEY_DOWN;
-         io.KeyMap[ImGuiKey_Home] = GLFW_KEY_HOME;
-         io.KeyMap[ImGuiKey_End] = GLFW_KEY_END;
-         io.KeyMap[ImGuiKey_Delete] = GLFW_KEY_DELETE;
-         io.KeyMap[ImGuiKey_Backspace] = GLFW_KEY_BACKSPACE;
-         io.KeyMap[ImGuiKey_Enter] = GLFW_KEY_ENTER;
-         io.KeyMap[ImGuiKey_Escape] = GLFW_KEY_ESCAPE;
-         io.KeyMap[ImGuiKey_A] = GLFW_KEY_A;
-         io.KeyMap[ImGuiKey_C] = GLFW_KEY_C;
-         io.KeyMap[ImGuiKey_V] = GLFW_KEY_V;
-         io.KeyMap[ImGuiKey_X] = GLFW_KEY_X;
-         io.KeyMap[ImGuiKey_Y] = GLFW_KEY_Y;
-         io.KeyMap[ImGuiKey_Z] = GLFW_KEY_Z;*/
+        io.KeyMap[ImGuiKey_Tab] = KeyEvent::KEY_TAB;
+        io.KeyMap[ImGuiKey_LeftArrow] = KeyEvent::KEY_LEFT;
+        io.KeyMap[ImGuiKey_RightArrow] = KeyEvent::KEY_RIGHT;
+        io.KeyMap[ImGuiKey_UpArrow] = KeyEvent::KEY_UP;
+        io.KeyMap[ImGuiKey_DownArrow] = KeyEvent::KEY_DOWN;
+        io.KeyMap[ImGuiKey_Home] = KeyEvent::KEY_HOME;
+        io.KeyMap[ImGuiKey_End] = KeyEvent::KEY_END;
+        io.KeyMap[ImGuiKey_Delete] = KeyEvent::KEY_DELETE;
+        io.KeyMap[ImGuiKey_Backspace] = KeyEvent::KEY_BACKSPACE;
+        io.KeyMap[ImGuiKey_Enter] = KeyEvent::KEY_RETURN;
+        io.KeyMap[ImGuiKey_Escape] = KeyEvent::KEY_ESCAPE;
+        /*io.KeyMap[ImGuiKey_A] = KeyEvent::KEY_A;
+        io.KeyMap[ImGuiKey_C] = KeyEvent::KEY_C;
+        io.KeyMap[ImGuiKey_V] = KeyEvent::KEY_V;
+        io.KeyMap[ImGuiKey_X] = KeyEvent::KEY_X;
+        io.KeyMap[ImGuiKey_Y] = KeyEvent::KEY_Y;
+        io.KeyMap[ImGuiKey_Z] = KeyEvent::KEY_Z;*/
         
+        io.SetClipboardTextFn = [](const char* text, const char* text_end){
+            if (!text_end)
+                text_end = text + strlen(text);
+            
+            // Add a zero-terminator
+            char* buf = (char*)malloc(text_end - text + 1);
+            memcpy(buf, text, text_end-text);
+            buf[text_end-text] = '\0';
+            Clipboard::setString( buf );
+            free(buf);
+        };
+        io.GetClipboardTextFn = [](){
+            return Clipboard::getString().c_str();
+        };
         io.RenderDrawListsFn = Renderer::renderDrawList;
         
-       // setDarkTheme();
+        setDarkTheme();
     }
     
     void setThemeColor( ImVec4 color0, ImVec4 color1, ImVec4 color2, ImVec4 color3, ImVec4 color4 ){
@@ -144,7 +175,7 @@ namespace ImGui {
     void setDarkTheme()
     {
         ImGui::GetStyle().WindowRounding = 4.0f;
-        ImGui::GetStyle().WindowFillAlphaDefault = 0.85f;
+        ImGui::GetStyle().WindowFillAlphaDefault = 0.9f;
         setThemeColor( ImVec4( 0.11f,0.11f, 0.11f, 1.0f ),
                       ImVec4( 0.04f, 0.04f, 0.04f, 1.0f ),
                       ImVec4( 0.08f, 0.08f, 0.08f, 1.0f ),
