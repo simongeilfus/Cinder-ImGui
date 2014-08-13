@@ -4,7 +4,7 @@ https://github.com/ocornut/imgui/
 Immediate mode GUI Library from Omar Cornut.   
 Non-kosher wrapper for use with the last Cinder version.
 
-####Basic Use
+#####Basic Use
 Call this in your setup:
 ```c++
 void CinderApp::setup()
@@ -27,3 +27,7 @@ void CinderApp::draw()
     ImGui::Render();
 }
 ```
+
+#####Todo
+* fix keyboard events handling (modifiers not working for the moment)
+* issue with combobox( seems to come from one of the last commit from the main repo.)
