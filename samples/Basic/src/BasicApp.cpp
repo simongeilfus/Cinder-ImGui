@@ -19,7 +19,6 @@ void BasicApp::setup()
 {
     // set ui window and io events callbacks
     ImGui::setWindow( getWindow() );
-    
     // change the font. needs to be in BMFont file format (http://www.angelcode.com/products/bmfont/ )
     ImGui::setFont( loadAsset( "SourceCodePro.fnt" ), loadAsset( "SourceCodePro_0.png" ) );
 }
@@ -34,7 +33,7 @@ void BasicApp::draw()
     // start gui. all code lives between ImGui::NewFrame and ImGui::Render
     ImGui::NewFrame();
     
-    static float f = 0.3f;
+    static float f = 0.1f;
     static bool displayTestWindow = false;
     
     // add some text. the %.xf allows to specify float precision

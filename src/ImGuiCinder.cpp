@@ -123,7 +123,7 @@ namespace ImGui {
         style.Colors[ImGuiCol_TitleBg]				= color2;
         style.Colors[ImGuiCol_TitleBgCollapsed]		= color4;
         style.Colors[ImGuiCol_ScrollbarBg]			= color2;
-        style.Colors[ImGuiCol_ScrollbarGrab]		= color1;
+        style.Colors[ImGuiCol_ScrollbarGrab]		= color4;
         style.Colors[ImGuiCol_ScrollbarGrabHovered]	= color0;
         style.Colors[ImGuiCol_ScrollbarGrabActive]	= color3;
         style.Colors[ImGuiCol_ComboBg]				= color2;
