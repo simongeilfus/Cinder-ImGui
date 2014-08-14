@@ -19,8 +19,6 @@ void BasicApp::setup()
 {
     // set ui window and io events callbacks
     ImGui::setWindow( getWindow() );
-    // change the font. needs to be in BMFont file format (http://www.angelcode.com/products/bmfont/ )
-    ImGui::setFont( loadAsset( "SourceCodePro.fnt" ), loadAsset( "SourceCodePro_0.png" ) );
 }
 
 void BasicApp::shutdown()

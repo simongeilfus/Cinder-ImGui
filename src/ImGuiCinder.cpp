@@ -1,5 +1,7 @@
 #include "imGuiCinder.h"
 
+#include "cinder/app/App.h"
+#include "cinder/app/Window.h"
 #include "cinder/gl/Vbo.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/GlslProg.h"
@@ -128,6 +130,7 @@ namespace ImGui {
         style.Colors[ImGuiCol_ScrollbarGrabActive]	= color3;
         style.Colors[ImGuiCol_ComboBg]				= color2;
         style.Colors[ImGuiCol_CheckActive]			= color3;
+        style.Colors[ImGuiCol_CheckHovered]			= color4;
         style.Colors[ImGuiCol_SliderGrab]			= color4;
         style.Colors[ImGuiCol_SliderGrabActive]		= color3;
         style.Colors[ImGuiCol_Button]				= color2;
@@ -163,6 +166,18 @@ namespace ImGui {
                       ImVec4( 0.71f, 0.71f, 0.71f, 1.0f ),
                       ImVec4( 0.25f, 0.25f, 0.25f, 1.0f ),
                       ImVec4( 0.57f, 0.57f, 0.57f, 1.0f ) );
+        
+        ImGuiStyle& style            = ImGui::GetStyle();
+        style.WindowPadding          = ImVec2( 25,10 );
+        style.WindowMinSize          = ImVec2( 160,80 );
+        style.FramePadding           = ImVec2( 4,4 );
+        style.ItemSpacing            = ImVec2( 10,5 );
+        style.ItemInnerSpacing       = ImVec2( 5,5 );
+        style.WindowFillAlphaDefault = 0.7;
+        style.WindowRounding         = 4;
+        style.TreeNodeSpacing		 = 22;
+        style.ColumnsMinSpacing		 = 50;
+        style.ScrollBarWidth         = 12;
     }
     
     //! sets dark theme style
@@ -172,8 +187,20 @@ namespace ImGui {
         setThemeColor( ImVec4( 0.16f,0.16f, 0.16f, 1.0f ),
                       ImVec4( 0.04f, 0.04f, 0.04f, 1.0f ),
                       ImVec4( 0.20f, 0.20f, 0.20f, 1.0f ),
-                      ImVec4( 0.96f, 0.92f, 0.63f, 1.0f ),
+                      ImVec4( 0.69f, 0.69f, 0.69f, 1.0f ),
                       ImVec4( 0.27f, 0.27f, 0.27f, 1.0f ) );
+        
+        ImGuiStyle& style            = ImGui::GetStyle();
+        style.WindowPadding          = ImVec2( 25, 10 );
+        style.WindowMinSize          = ImVec2( 160, 80 );
+        style.FramePadding           = ImVec2( 4, 4 );
+        style.ItemSpacing            = ImVec2( 10, 5 );
+        style.ItemInnerSpacing       = ImVec2( 5, 5 );
+        style.WindowFillAlphaDefault = 0.7;
+        style.WindowRounding         = 4;
+        style.TreeNodeSpacing		 = 22;
+        style.ColumnsMinSpacing		 = 50;
+        style.ScrollBarWidth         = 12;
     }
     
     

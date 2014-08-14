@@ -33,7 +33,6 @@ void ProfilerGraphApp::setup()
 {
     // set ui window and io events callbacks
     ImGui::setWindow( getWindow() );
-    ImGui::setFont( loadAsset( "SourceCodePro.fnt" ), loadAsset( "SourceCodePro_0.png" ) );
     
     mCpuTimer.setMode( muon::Timer::CPU );
     

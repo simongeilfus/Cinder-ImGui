@@ -232,6 +232,8 @@ namespace ImGui
 	void		SetTooltip(const char* fmt, ...);									// set tooltip under mouse-cursor, typically use with ImGui::IsHovered(). (currently no contention handling, last call win)
 	void		SetNewWindowDefaultPos(ImVec2 pos);									// set position of window that do
 	bool		IsHovered();														// was the last item active area hovered by mouse?
+	ImVec2		GetItemBoxMin();													// get bounding box of last item
+	ImVec2		GetItemBoxMax();													// get bounding box of last item
 	bool		IsClipped(ImVec2 item_size);										// to perform coarse clipping on user's side (as an optimisation)
 	bool		IsKeyPressed(int key_index, bool repeat = true);					// key_index into the keys_down[512] array, imgui doesn't know the semantic of each entry
 	bool		IsMouseClicked(int button, bool repeat = false);
@@ -382,10 +384,16 @@ struct ImGuiIO
 	bool		FontAllowScaling;			// = false					// Set to allow scaling text with CTRL+Wheel.
 	float		PixelCenterOffset;			// = 0.5f					// Set to 0.0f for DirectX <= 9, 0.5f for Direct3D >= 10 and OpenGL.
 
-	// Settings - Functions (fill once)
-	void		(*RenderDrawListsFn)(ImDrawList** const draw_lists, int count);	// Required
-	const char*	(*GetClipboardTextFn)();										// Required for clipboard support
-	void		(*SetClipboardTextFn)(const char* text, const char* text_end);	// Required for clipboard support (nb- the string is *NOT* zero-terminated at 'text_end')
+	// Settings - Rendering function (REQUIRED)
+	// See example code if you are unsure of how to implement this.
+	void		(*RenderDrawListsFn)(ImDrawList** const draw_lists, int count);
+
+	// Settings - Clipboard Support
+	// Override to provide your clipboard handlers.
+	// On Windows architecture, defaults to use the native Win32 clipboard, otherwise default to use a ImGui private clipboard. 
+	// NB- for SetClipboardTextFn, the string is *NOT* zero-terminated at 'text_end'
+	const char*	(*GetClipboardTextFn)();										
+	void		(*SetClipboardTextFn)(const char* text, const char* text_end);
 
 	// Input - Fill before calling NewFrame()
 	ImVec2		MousePos;					// Mouse position, in pixels (set to -1,-1 if no mouse / on another screen, etc.)
@@ -507,8 +515,8 @@ struct ImDrawCmd
 	ImVec4			clip_rect;
 };
 
-#ifndef IMDRAW_TEX_UV_FOR_WHITE
-#define IMDRAW_TEX_UV_FOR_WHITE	ImVec2(0,0)
+#ifndef IMGUI_FONT_TEX_UV_FOR_WHITE
+#define IMGUI_FONT_TEX_UV_FOR_WHITE	ImVec2(0.f,0.f)
 #endif
 
 // sizeof() == 20
@@ -523,8 +531,11 @@ struct ImDrawVert
 // User is responsible for providing a renderer for this in ImGuiIO::RenderDrawListFn
 struct ImDrawList
 {
-	ImVector<ImDrawCmd>		commands;
+	// This is what you have to render
+	ImVector<ImDrawCmd>		commands;			// commands
 	ImVector<ImDrawVert>	vtx_buffer;			// each command consume ImDrawCmd::vtx_count of those
+
+	// [Internal to ImGui]
 	ImVector<ImVec4>		clip_rect_stack;	// [internal] clip rect stack while building the command-list (so text command can perform clipping early on)
 	ImDrawVert*				vtx_write;			// [internal] point within vtx_buffer after each add command (to avoid using the ImVector<> operators too much)
 

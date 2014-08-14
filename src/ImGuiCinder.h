@@ -12,8 +12,10 @@ namespace cinder {
         typedef std::shared_ptr<class GlslProg> GlslProgRef;
     }
     namespace app { typedef std::shared_ptr<class Window> WindowRef; }
+    template<typename T> class ColorAT;
     typedef class ColorAT<float> ColorA;
-    //typedef std::shared_ptr<class DataSource> DataSourceRef;
+    typedef std::shared_ptr<class DataSource> DataSourceRef;
+    class Buffer;
 }
 
 //! cinder imgui namespace

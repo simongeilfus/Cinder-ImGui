@@ -101,7 +101,7 @@
 
  - if you want to use a different font than the default
    - create bitmap font data using BMFont. allocate ImGui::GetIO().Font and use ->LoadFromFile()/LoadFromMemory(), set ImGui::GetIO().FontHeight
-   - load your texture yourself. texture *MUST* have white pixel at UV coordinate 'IMDRAW_TEX_UV_FOR_WHITE' (you can #define it in imconfig.h), this is used by solid objects.
+   - load your texture yourself. texture *MUST* have white pixel at UV coordinate 'IMGUI_FONT_TEX_UV_FOR_WHITE' (you can #define it in imconfig.h), this is used by solid objects.
 
  - tip: the construct 'if (IMGUI_ONCE_UPON_A_FRAME)' will evaluate to true only once a frame, you can use it to add custom UI in the middle of a deep nested inner loop in your code.
  - tip: you can call Render() multiple times (e.g for VR renders), up to you to communicate the extra state to your RenderDrawListFn function.
@@ -113,6 +113,7 @@
  - window: autofit is losing its purpose when user relies on any dynamic layout (window width multiplier, column). maybe just discard autofit?
  - window: support horizontal scroll
  - window: fix resize grip scaling along with Rounding style setting
+ - window/style: add global alpha modifier (not just "fill_alpha")
  - widgets: switching from "widget-label" to "label-widget" would make it more convenient to integrate widgets in trees
  - widgets: clip text? hover clipped text shows it in a tooltip or in-place overlay
  - main: make IsHovered() more consistent for various type of widgets, widgets with multiple components, etc. also effectively IsHovered() region sometimes differs from hot region, e.g tree nodes
@@ -145,7 +146,6 @@
  - filters: handle wildcards (with implicit leading/trailing *), regexps
  - shortcuts: add a shortcut api, e.g. parse "&Save" and/or "Save (CTRL+S)", pass in to widgets or provide simple ways to use (button=activate, input=focus)
  - keyboard: full keyboard navigation and focus
- - clipboard: add a default "local" implementation of clipboard functions (user will only need to override them to connect to OS clipboard)
  - misc: not thread-safe
  - optimisation/render: use indexed rendering
  - optimisation/render: move clip-rect to vertex data? would allow merging all commands
@@ -153,8 +153,6 @@
  - optimisation: turn some the various stack vectors into statically-sized arrays
  - optimisation: better clipping for multi-component widgets
  - optimisation: specialize for height based clipping first (assume widgets never go up + height tests before width tests?)
- - optimisation/portability: provide ImVector style implementation
- - optimisation/portability: remove dependency on <algorithm>
 */
 
 #include "imgui.h"
@@ -197,15 +195,11 @@ static ImGuiWindow* FindHoveredWindow(ImVec2 pos, bool excluding_childs);
 }; // namespace ImGui
 
 //-----------------------------------------------------------------------------
-// Platform dependant helpers
+// Platform dependant default implementations
 //-----------------------------------------------------------------------------
 
-#ifdef _MSC_VER
-#ifndef IMGUI_DONT_IMPLEMENT_WINDOWS_CLIPBOARD_FUNCTIONS
-static const char*	GetClipboardTextFn_DefaultImplWindows();
-static void			SetClipboardTextFn_DefaultImplWindows(const char* text, const char* text_end);
-#endif
-#endif
+static const char*	GetClipboardTextFn_DefaultImpl();
+static void			SetClipboardTextFn_DefaultImpl(const char* text, const char* text_end);
 
 //-----------------------------------------------------------------------------
 // User facing structures
@@ -281,12 +275,8 @@ ImGuiIO::ImGuiIO()
 	MouseDoubleClickMaxDist = 6.0f;
 
 	// Platform dependant default implementations
-#ifdef _MSC_VER
-#ifndef IMGUI_DONT_IMPLEMENT_WINDOWS_CLIPBOARD_FUNCTIONS
-	GetClipboardTextFn = GetClipboardTextFn_DefaultImplWindows;
-	SetClipboardTextFn = SetClipboardTextFn_DefaultImplWindows;
-#endif
-#endif
+	GetClipboardTextFn = GetClipboardTextFn_DefaultImpl;
+	SetClipboardTextFn = SetClipboardTextFn_DefaultImpl;
 }
 
 // Pass in translated ASCII characters for text input.
@@ -439,7 +429,7 @@ static void ImConvertColorRGBtoHSV(float r, float g, float b, float& out_h, floa
 	}
 
 	const float chroma = r - (g < b ? g : b);
-	out_h = abs(K + (g - b) / (6.f * chroma + 1e-20f));
+	out_h = fabsf(K + (g - b) / (6.f * chroma + 1e-20f));
 	out_s = chroma / (r + 1e-20f);
 	out_v = r;
 }
@@ -516,6 +506,7 @@ struct ImGuiDrawContext
 	float					PrevLineHeight;
 	float					LogLineHeight;
 	int						TreeDepth;
+	ImGuiAabb				LastItemAabb;
 	bool					LastItemHovered;
 	ImVector<ImGuiWindow*>	ChildWindows;
 	ImVector<bool>			AllowKeyboardFocus;
@@ -538,6 +529,7 @@ struct ImGuiDrawContext
 		CurrentLineHeight = PrevLineHeight = 0.0f;
 		LogLineHeight = -1.0f;
 		TreeDepth = 0;
+		LastItemAabb = ImGuiAabb(0.0f,0.0f,0.0f,0.0f);
 		LastItemHovered = false;
 		StateStorage = NULL;
 		OpenNextNode = -1;
@@ -627,6 +619,7 @@ struct ImGuiState
 	ImGuiStorage			ColorEditModeStorage;				// for user selection
 	ImGuiID					ActiveComboID;
 	char					Tooltip[1024];
+	char*					PrivateClipboard;					// if no custom clipboard handler is defined
 
 	// Logging
 	bool					LogEnabled;
@@ -650,6 +643,7 @@ struct ImGuiState
 		SliderAsInputTextId = 0;
 		ActiveComboID = 0;
 		memset(Tooltip, 0, sizeof(Tooltip));
+		PrivateClipboard = NULL;
 		LogEnabled = false;
 		LogFile = NULL;
 		LogAutoExpandMaxDepth = 2;
@@ -1122,11 +1116,13 @@ static void SaveSettings()
 		return;
 	for (size_t i = 0; i != g.Settings.size(); i++)
 	{
-		const ImGuiIniData* ini = g.Settings[i];
-		fprintf(f, "[%s]\n", ini->Name);
-		fprintf(f, "Pos=%d,%d\n", (int)ini->Pos.x, (int)ini->Pos.y);
-		fprintf(f, "Size=%d,%d\n", (int)ini->Size.x, (int)ini->Size.y);
-		fprintf(f, "Collapsed=%d\n", ini->Collapsed);
+		const ImGuiIniData* settings = g.Settings[i];
+		if (settings->Pos.x == FLT_MAX)
+			continue;
+		fprintf(f, "[%s]\n", settings->Name);
+		fprintf(f, "Pos=%d,%d\n", (int)settings->Pos.x, (int)settings->Pos.y);
+		fprintf(f, "Size=%d,%d\n", (int)settings->Size.x, (int)settings->Size.y);
+		fprintf(f, "Collapsed=%d\n", settings->Collapsed);
 		fprintf(f, "\n");
 	}
 
@@ -1308,6 +1304,12 @@ void Shutdown()
 	{
 		delete g.IO.Font;
 		g.IO.Font = NULL;
+	}
+
+	if (g.PrivateClipboard)
+	{
+		free(g.PrivateClipboard);
+		g.PrivateClipboard = NULL;
 	}
 
 	g.Initialized = false;
@@ -1674,6 +1676,18 @@ bool IsHovered()
 	return window->DC.LastItemHovered;
 }
 
+ImVec2 GetItemBoxMin()
+{
+	ImGuiWindow* window = GetCurrentWindow();
+	return window->DC.LastItemAabb.Min;
+}
+
+ImVec2 GetItemBoxMax()
+{
+	ImGuiWindow* window = GetCurrentWindow();
+	return window->DC.LastItemAabb.Max;
+}
+
 void SetTooltip(const char* fmt, ...)
 {
 	ImGuiState& g = GImGui;
@@ -1771,7 +1785,7 @@ bool Begin(const char* name, bool* open, ImVec2 size, float fill_alpha, ImGuiWin
 	ImGuiWindow* window = FindWindow(name);
 	if (!window)
 	{
-		if (flags & ImGuiWindowFlags_ChildWindow)
+		if (flags & (ImGuiWindowFlags_ChildWindow | ImGuiWindowFlags_Tooltip))
 		{
 			window = new ImGuiWindow(name, ImVec2(0,0), size);
 		}
@@ -1821,15 +1835,13 @@ bool Begin(const char* name, bool* open, ImVec2 size, float fill_alpha, ImGuiWin
 			parent_window->DC.ChildWindows.push_back(window);
 			window->Pos = window->PosFloat = parent_window->DC.CursorPos;
 			window->SizeFull = size;
-			if (!(flags & ImGuiWindowFlags_ComboBox))
-				ImGui::PushClipRect(parent_window->ClipRectStack.back());
-			else
-				ImGui::PushClipRect(ImVec4(0.0f, 0.0f, g.IO.DisplaySize.x, g.IO.DisplaySize.y));
 		}
+
+		// Outer clipping rectangle
+		if ((flags & ImGuiWindowFlags_ChildWindow) && !(flags & ImGuiWindowFlags_ComboBox))
+			ImGui::PushClipRect(g.CurrentWindowStack[g.CurrentWindowStack.size()-2]->ClipRectStack.back());
 		else
-		{
 			ImGui::PushClipRect(ImVec4(0.0f, 0.0f, g.IO.DisplaySize.x, g.IO.DisplaySize.y));
-		}
 
 		// ID stack
 		window->IDStack.resize(0);
@@ -2070,8 +2082,16 @@ bool Begin(const char* name, bool* open, ImVec2 size, float fill_alpha, ImGuiWin
 				ImGui::CloseWindowButton(open);
 		}
 	}
+	else
+	{
+		// Outer clipping rectangle
+		if ((flags & ImGuiWindowFlags_ChildWindow) && !(flags & ImGuiWindowFlags_ComboBox))
+			ImGui::PushClipRect(g.CurrentWindowStack[g.CurrentWindowStack.size()-2]->ClipRectStack.back());
+		else
+			ImGui::PushClipRect(ImVec4(0.0f, 0.0f, g.IO.DisplaySize.x, g.IO.DisplaySize.y));
+	}
 
-	// Clip rectangle
+	// Inner clipping rectangle
 	// We set this up after processing the resize grip so that our clip rectangle doesn't lag by a frame
 	const ImGuiAabb title_bar_aabb = window->TitleBarAabb();
 	ImVec4 clip_rect(title_bar_aabb.Min.x+0.5f, title_bar_aabb.Max.y+0.5f, window->Aabb().Max.x-1.5f, window->Aabb().Max.y-1.5f);
@@ -2999,8 +3019,8 @@ bool SliderFloat(const char* label, float* v, float v_min, float v_max, const ch
 		if (v_min * v_max < 0.0f)
 		{
 			// Different sign
-			const float linear_dist_min_to_0 = powf(abs(0.0f - v_min), 1.0f/power);
-			const float linear_dist_max_to_0 = powf(abs(v_max - 0.0f), 1.0f/power);
+			const float linear_dist_min_to_0 = powf(fabsf(0.0f - v_min), 1.0f/power);
+			const float linear_dist_max_to_0 = powf(fabsf(v_max - 0.0f), 1.0f/power);
 			linear_zero_pos = linear_dist_min_to_0 / (linear_dist_min_to_0+linear_dist_max_to_0);
 		}
 		else
@@ -3070,7 +3090,7 @@ bool SliderFloat(const char* label, float* v, float v_min, float v_max, const ch
 			if (!is_unbound)
 			{
 				const float normalized_pos = ImClamp((g.IO.MousePos.x - slider_effective_x1) / slider_effective_w, 0.0f, 1.0f);
-
+				
 				// Linear slider
 				//float new_value = ImLerp(v_min, v_max, normalized_pos);
 
@@ -3086,9 +3106,11 @@ bool SliderFloat(const char* label, float* v, float v_min, float v_max, const ch
 				else
 				{
 					// Positive: rescale to the positive range before powering
-					float a = normalized_pos;
-					if (abs(linear_zero_pos - 1.0f) > 1.e-6)
-						a = (a - linear_zero_pos) / (1.0f - linear_zero_pos);
+					float a;
+					if (fabsf(linear_zero_pos - 1.0f) > 1.e-6)
+						a = (normalized_pos - linear_zero_pos) / (1.0f - linear_zero_pos);
+					else
+						a = normalized_pos;
 					a = powf(a, power);
 					new_value = ImLerp(ImMax(v_min,0.0f), v_max, a);
 				}
@@ -4396,6 +4418,7 @@ bool IsClipped(ImVec2 item_size)
 static bool ClipAdvance(const ImGuiAabb& bb)
 {
 	ImGuiWindow* window = GetCurrentWindow();
+	window->DC.LastItemAabb = bb;
 	if (ImGui::IsClipped(bb))
 	{
 		window->DC.LastItemHovered = false;
@@ -4685,7 +4708,7 @@ void ImDrawList::AddVtx(const ImVec2& pos, ImU32 col)
 {
 	vtx_write->pos = pos;
 	vtx_write->col = col;
-	vtx_write->uv = IMDRAW_TEX_UV_FOR_WHITE;
+	vtx_write->uv = IMGUI_FONT_TEX_UV_FOR_WHITE;
 	vtx_write++;
 }
 
@@ -4750,10 +4773,10 @@ void ImDrawList::AddRect(const ImVec2& a, const ImVec2& b, ImU32 col, float roun
 	if ((col >> 24) == 0)
 		return;
 
-	//const float r = ImMin(rounding, ImMin(abs(b.x-a.x), abs(b.y-a.y))*0.5f);
+	//const float r = ImMin(rounding, ImMin(fabsf(b.x-a.x), fabsf(b.y-a.y))*0.5f);
 	float r = rounding;
-	r = ImMin(r, abs(b.x-a.x) * ( ((rounding_corners&(1|2))==(1|2)) || ((rounding_corners&(4|8))==(4|8)) ? 0.5f : 1.0f ));
-	r = ImMin(r, abs(b.y-a.y) * ( ((rounding_corners&(1|8))==(1|8)) || ((rounding_corners&(2|4))==(2|4)) ? 0.5f : 1.0f ));
+	r = ImMin(r, fabsf(b.x-a.x) * ( ((rounding_corners&(1|2))==(1|2)) || ((rounding_corners&(4|8))==(4|8)) ? 0.5f : 1.0f ));
+	r = ImMin(r, fabsf(b.y-a.y) * ( ((rounding_corners&(1|8))==(1|8)) || ((rounding_corners&(2|4))==(2|4)) ? 0.5f : 1.0f ));
 
 	if (r == 0.0f || rounding_corners == 0)
 	{
@@ -4783,10 +4806,10 @@ void ImDrawList::AddRectFilled(const ImVec2& a, const ImVec2& b, ImU32 col, floa
 	if ((col >> 24) == 0)
 		return;
 
-	//const float r = ImMin(rounding, ImMin(abs(b.x-a.x), abs(b.y-a.y))*0.5f);
+	//const float r = ImMin(rounding, ImMin(fabsf(b.x-a.x), fabsf(b.y-a.y))*0.5f);
 	float r = rounding;
-	r = ImMin(r, abs(b.x-a.x) * ( ((rounding_corners&(1|2))==(1|2)) || ((rounding_corners&(4|8))==(4|8)) ? 0.5f : 1.0f ));
-	r = ImMin(r, abs(b.y-a.y) * ( ((rounding_corners&(1|8))==(1|8)) || ((rounding_corners&(2|4))==(2|4)) ? 0.5f : 1.0f ));
+	r = ImMin(r, fabsf(b.x-a.x) * ( ((rounding_corners&(1|2))==(1|2)) || ((rounding_corners&(4|8))==(4|8)) ? 0.5f : 1.0f ));
+	r = ImMin(r, fabsf(b.y-a.y) * ( ((rounding_corners&(1|8))==(1|8)) || ((rounding_corners&(2|4))==(2|4)) ? 0.5f : 1.0f ));
 
 	if (r == 0.0f || rounding_corners == 0)
 	{
@@ -5056,7 +5079,7 @@ ImVec2 ImBitmapFont::CalcTextSize(float size, float max_width, const char* text_
 			text_size.y += line_height;
 			line_width = 0;
 		}
-		if (const FntGlyph* glyph = FindGlyph((unsigned short)c))
+		else if (const FntGlyph* glyph = FindGlyph((unsigned short)c))
 		{
 			const float char_width = (glyph->XAdvance + Info->SpacingHoriz) * scale;
 			//const float char_extend = (glyph->XOffset + glyph->Width * scale);
@@ -5183,13 +5206,13 @@ void ImBitmapFont::RenderText(float size, ImVec2 pos, ImU32 col, const ImVec4& c
 // PLATFORM DEPENDANT HELPERS
 //-----------------------------------------------------------------------------
 
-#ifdef _MSC_VER
-#ifndef IMGUI_DONT_IMPLEMENT_WINDOWS_CLIPBOARD_FUNCTIONS
+#if defined(_MSC_VER) && !defined(IMGUI_DISABLE_WIN32_DEFAULT_CLIPBOARD_FUNCS)
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-static const char*	GetClipboardTextFn_DefaultImplWindows()
+// Win32 API clipboard implementation
+static const char*	GetClipboardTextFn_DefaultImpl()
 {
 	static char* buf_local = NULL;
 	if (buf_local)
@@ -5197,47 +5220,62 @@ static const char*	GetClipboardTextFn_DefaultImplWindows()
 		free(buf_local);
 		buf_local = NULL;
 	}
-
 	if (!OpenClipboard(NULL)) 
 		return NULL;
-
 	HANDLE buf_handle = GetClipboardData(CF_TEXT); 
 	if (buf_handle == NULL)
 		return NULL;
-
 	if (char* buf_global = (char*)GlobalLock(buf_handle))
 		buf_local = strdup(buf_global);
 	GlobalUnlock(buf_handle); 
 	CloseClipboard(); 
-
 	return buf_local;
 }
 
-static void			SetClipboardTextFn_DefaultImplWindows(const char* text, const char* text_end)
+// Win32 API clipboard implementation
+static void SetClipboardTextFn_DefaultImpl(const char* text, const char* text_end)
 {
 	if (!OpenClipboard(NULL))
 		return;
-
 	if (!text_end)
 		text_end = text + strlen(text);
-
-	const int buf_length = (text_end - text) + 1;
+	const int buf_length = (int)(text_end - text) + 1;
 	HGLOBAL buf_handle = GlobalAlloc(GMEM_MOVEABLE, buf_length * sizeof(char)); 
 	if (buf_handle == NULL)
 		return;
-
 	char* buf_global = (char *)GlobalLock(buf_handle); 
 	memcpy(buf_global, text, text_end - text);
 	buf_global[text_end - text] = 0;
 	GlobalUnlock(buf_handle); 
-
 	EmptyClipboard();
 	SetClipboardData(CF_TEXT, buf_handle);
 	CloseClipboard();
 }
 
-#endif // #ifndef IMGUI_DONT_IMPLEMENT_WINDOWS_CLIPBOARD_FUNCTIONS
-#endif // #ifdef _MSC_VER
+#else
+
+// Local ImGui-only clipboard implementation, if user hasn't defined better clipboard handlers
+static const char*	GetClipboardTextFn_DefaultImpl()
+{
+	return GImGui.PrivateClipboard;
+}
+
+// Local ImGui-only clipboard implementation, if user hasn't defined better clipboard handlers
+static void SetClipboardTextFn_DefaultImpl(const char* text, const char* text_end)
+{
+	if (GImGui.PrivateClipboard)
+	{
+		free(GImGui.PrivateClipboard);
+		GImGui.PrivateClipboard = NULL;
+	}
+	if (!text_end)
+		text_end = text + strlen(text);
+	GImGui.PrivateClipboard = (char*)malloc(text_end - text + 1);
+	memcpy(GImGui.PrivateClipboard, text, text_end - text);
+	GImGui.PrivateClipboard[text_end - text] = 0;
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // HELP
