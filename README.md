@@ -30,7 +30,6 @@ void CinderApp::draw()
 
 #####Todo
 * fix keyboard events handling (modifiers not working for the moment)
-* issue with combobox( seems to come from one of the last commit from the main repo.)
 
 
 
