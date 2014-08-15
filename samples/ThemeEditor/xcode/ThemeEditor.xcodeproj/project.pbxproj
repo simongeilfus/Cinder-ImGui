@@ -15,13 +15,14 @@
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		B2617B5A85E04B64BB3015E2 /* ImGuiCinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C87306B3F46429D85373373 /* ImGuiCinder.cpp */; };
-		BB88C2C583A54A0FB455B574 /* imgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A9B0DF7E8194BC48E8B79BE /* imgui.cpp */; };
-		ADA3E40364854F148790A0C3 /* ImGuiCinder.h in Headers */ = {isa = PBXBuildFile; fileRef = 3C9BD2B2DB044E54A89903F4 /* ImGuiCinder.h */; };
-		3857D25F9ADD45E1B807BC62 /* ThemeEditor_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 27FE1D9123B84D9190E3CBE3 /* ThemeEditor_Prefix.pch */; };
-		466D378D5A6549DDA2CD67E0 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 1F7071C7408C493894DD34B0 /* CinderApp.icns */; };
-		3912ABB3DEA04AA5AAA8D168 /* Resources.h in Headers */ = {isa = PBXBuildFile; fileRef = BFFC41DFAFFA450BB0BC4A83 /* Resources.h */; };
-		D1417EA50A9947DB8033697A /* ThemeEditorApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B21DEF602422439CA5424B8C /* ThemeEditorApp.cpp */; };
+		7BD49ECF3EC54BEDBBC7BF25 /* ImGuiCinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF8BA8C807144254944B37B9 /* ImGuiCinder.cpp */; };
+		D1A4B489F1D149B3859F93AE /* ImGuiCinder.h in Headers */ = {isa = PBXBuildFile; fileRef = 384E8CD0385E4655BF81C099 /* ImGuiCinder.h */; };
+		49C3FFD9ABE44C0AA249675C /* imgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2C976F62910A4D32AD38F152 /* imgui.cpp */; };
+		F2319ACBB3B44D8CA3255FFB /* imgui.h in Headers */ = {isa = PBXBuildFile; fileRef = 032747CA22AC47A783AF5BA7 /* imgui.h */; };
+		9D01952358FC4198AE6ABE51 /* ThemeEditor_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 3E331833216A4BC6901D6144 /* ThemeEditor_Prefix.pch */; };
+		60ED9235B64649B2802C6721 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = AB161FC2FBCA4AEEB788FEE1 /* CinderApp.icns */; };
+		822E1CF498F84192A24E3EBC /* Resources.h in Headers */ = {isa = PBXBuildFile; fileRef = 81BF4AAC60CE43338A20EE07 /* Resources.h */; };
+		B9BAD963AA954A5F98142410 /* ThemeEditorApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D5DFBE1C2DA247AF9A9247DD /* ThemeEditorApp.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,14 +37,15 @@
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* ThemeEditor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ThemeEditor.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B21DEF602422439CA5424B8C /* ThemeEditorApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../src/ThemeEditorApp.cpp; sourceTree = "<group>"; name = ThemeEditorApp.cpp; };
-		BFFC41DFAFFA450BB0BC4A83 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../include/Resources.h; sourceTree = "<group>"; name = Resources.h; };
-		1F7071C7408C493894DD34B0 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
-		52C2A3E0C9464B6FB0B44A8B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; name = Info.plist; };
-		27FE1D9123B84D9190E3CBE3 /* ThemeEditor_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = ThemeEditor_Prefix.pch; sourceTree = "<group>"; name = ThemeEditor_Prefix.pch; };
-		3C9BD2B2DB044E54A89903F4 /* ImGuiCinder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../../../src/ImGuiCinder.h; sourceTree = "<group>"; name = ImGuiCinder.h; };
-		6A9B0DF7E8194BC48E8B79BE /* imgui.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../../../src/imgui.cpp; sourceTree = "<group>"; name = imgui.cpp; };
-		6C87306B3F46429D85373373 /* ImGuiCinder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../../../src/ImGuiCinder.cpp; sourceTree = "<group>"; name = ImGuiCinder.cpp; };
+		D5DFBE1C2DA247AF9A9247DD /* ThemeEditorApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../src/ThemeEditorApp.cpp; sourceTree = "<group>"; name = ThemeEditorApp.cpp; };
+		81BF4AAC60CE43338A20EE07 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../include/Resources.h; sourceTree = "<group>"; name = Resources.h; };
+		AB161FC2FBCA4AEEB788FEE1 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
+		0C4B507E28114AC4B34CF0AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; name = Info.plist; };
+		3E331833216A4BC6901D6144 /* ThemeEditor_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = ThemeEditor_Prefix.pch; sourceTree = "<group>"; name = ThemeEditor_Prefix.pch; };
+		032747CA22AC47A783AF5BA7 /* imgui.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../../../lib/imgui/imgui.h; sourceTree = "<group>"; name = imgui.h; };
+		2C976F62910A4D32AD38F152 /* imgui.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../../../lib/imgui/imgui.cpp; sourceTree = "<group>"; name = imgui.cpp; };
+		384E8CD0385E4655BF81C099 /* ImGuiCinder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../../../src/ImGuiCinder.h; sourceTree = "<group>"; name = ImGuiCinder.h; };
+		DF8BA8C807144254944B37B9 /* ImGuiCinder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../../../src/ImGuiCinder.cpp; sourceTree = "<group>"; name = ImGuiCinder.cpp; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,7 +70,7 @@
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				B21DEF602422439CA5424B8C /* ThemeEditorApp.cpp */,
+				D5DFBE1C2DA247AF9A9247DD /* ThemeEditorApp.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -118,20 +120,37 @@
 			name = ThemeEditor;
 			sourceTree = "<group>";
 		};
-		4E3EE7217374403086C3CD7F /* src */ = {
+		4BD85BDEF9264ADD93DE384F /* imgui */ = {
 			isa = PBXGroup;
 			children = (
-				3C9BD2B2DB044E54A89903F4 /* ImGuiCinder.h */,
-				6A9B0DF7E8194BC48E8B79BE /* imgui.cpp */,
-				6C87306B3F46429D85373373 /* ImGuiCinder.cpp */,
+				032747CA22AC47A783AF5BA7 /* imgui.h */,
+				2C976F62910A4D32AD38F152 /* imgui.cpp */,
+			);
+			name = imgui;
+			sourceTree = "<group>";
+		};
+		DFC47371FDE74969BCE80F31 /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				4BD85BDEF9264ADD93DE384F /* imgui */,
+			);
+			name = lib;
+			sourceTree = "<group>";
+		};
+		C1C7A0F73133447783855460 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				384E8CD0385E4655BF81C099 /* ImGuiCinder.h */,
+				DF8BA8C807144254944B37B9 /* ImGuiCinder.cpp */,
 			);
 			name = src;
 			sourceTree = "<group>";
 		};
-		7C924FF4FD804DA2A452CDC2 /* imGui */ = {
+		8B07AA4D249144CB8EC90F92 /* imGui */ = {
 			isa = PBXGroup;
 			children = (
-				4E3EE7217374403086C3CD7F /* src */,
+				DFC47371FDE74969BCE80F31 /* lib */,
+				C1C7A0F73133447783855460 /* src */,
 			);
 			name = imGui;
 			sourceTree = "<group>";
@@ -139,7 +158,7 @@
 		01B97315FEAEA392516A2CEA /* Blocks */ = {
 			isa = PBXGroup;
 			children = (
-				7C924FF4FD804DA2A452CDC2 /* imGui */,
+				8B07AA4D249144CB8EC90F92 /* imGui */,
 			);
 			name = Blocks;
 			sourceTree = "<group>";
@@ -147,8 +166,8 @@
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				BFFC41DFAFFA450BB0BC4A83 /* Resources.h */,
-				27FE1D9123B84D9190E3CBE3 /* ThemeEditor_Prefix.pch */,
+				81BF4AAC60CE43338A20EE07 /* Resources.h */,
+				3E331833216A4BC6901D6144 /* ThemeEditor_Prefix.pch */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
@@ -156,8 +175,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				1F7071C7408C493894DD34B0 /* CinderApp.icns */,
-				52C2A3E0C9464B6FB0B44A8B /* Info.plist */,
+				AB161FC2FBCA4AEEB788FEE1 /* CinderApp.icns */,
+				0C4B507E28114AC4B34CF0AF /* Info.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -221,7 +240,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				466D378D5A6549DDA2CD67E0 /* CinderApp.icns in Resources */,
+				60ED9235B64649B2802C6721 /* CinderApp.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -232,9 +251,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D1417EA50A9947DB8033697A /* ThemeEditorApp.cpp in Sources */,
-				BB88C2C583A54A0FB455B574 /* imgui.cpp in Sources */,
-				B2617B5A85E04B64BB3015E2 /* ImGuiCinder.cpp in Sources */,
+				B9BAD963AA954A5F98142410 /* ThemeEditorApp.cpp in Sources */,
+				49C3FFD9ABE44C0AA249675C /* imgui.cpp in Sources */,
+				7BD49ECF3EC54BEDBBC7BF25 /* ImGuiCinder.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -308,7 +327,7 @@
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = (
 					"\"$(CINDER_PATH)/include\" ../include",
-					../../../include,
+					../../../lib/imgui,
 				);
 			};
 			name = Debug;
@@ -328,7 +347,7 @@
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = (
 					"\"$(CINDER_PATH)/include\" ../include",
-					../../../include,
+					../../../lib/imgui,
 				);
 			};
 			name = Release;

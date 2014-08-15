@@ -7,6 +7,7 @@
 #include "cinder/gl/GlslProg.h"
 #include "cinder/DataSource.h"
 #include "cinder/Clipboard.h"
+#include "cinder/Vector.h"
 
 using namespace std;
 using namespace ci;

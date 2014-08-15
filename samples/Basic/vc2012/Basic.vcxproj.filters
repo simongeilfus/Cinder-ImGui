@@ -13,13 +13,19 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
     <Filter Include="Blocks">
-      <UniqueIdentifier>{FD382A4F-6EEE-4F64-BC9E-9F4334897206}</UniqueIdentifier>
+      <UniqueIdentifier>{EB0AD23C-D599-4E5E-AD58-A747836EB436}</UniqueIdentifier>
     </Filter>
     <Filter Include="Blocks\imGui">
-      <UniqueIdentifier>{CD8DD921-17E4-449B-A7A1-F40CC509639E}</UniqueIdentifier>
+      <UniqueIdentifier>{DDCD7CB5-C53E-40AF-81F9-6041435F23F6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\imGui\lib">
+      <UniqueIdentifier>{A8023E51-D4B9-4B4E-89D8-86F4396B2A5D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\imGui\lib\imgui">
+      <UniqueIdentifier>{9FF499BC-0E6C-4D7B-8C44-D0DB33D3A9A7}</UniqueIdentifier>
     </Filter>
     <Filter Include="Blocks\imGui\src">
-      <UniqueIdentifier>{AE9C21F2-763A-4EE5-8E94-AE7C20226DC8}</UniqueIdentifier>
+      <UniqueIdentifier>{D0732B20-0506-432A-A8F3-8900279BAE80}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -32,12 +38,15 @@
     <ClInclude Include="..\include\Resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\lib\imgui\imgui.h">
+      <Filter>Blocks\imGui\lib\imgui</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\lib\imgui\imgui.cpp">
+      <Filter>Blocks\imGui\lib\imgui</Filter>
+    </ClCompile>
     <ClInclude Include="..\..\..\src\ImGuiCinder.h">
       <Filter>Blocks\imGui\src</Filter>
     </ClInclude>
-    <ClCompile Include="..\..\..\src\imgui.cpp">
-      <Filter>Blocks\imGui\src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\ImGuiCinder.cpp">
       <Filter>Blocks\imGui\src</Filter>
     </ClCompile>

@@ -11,7 +11,9 @@
 	library=	"http://github.com/ocornut/imgui/"
 	>
 
-	<includePath>include</includePath>
+	<includePath>lib/imgui</includePath>
+	<headerPattern>lib/imgui/imgui.h</headerPattern>
+	<sourcePattern>lib/imgui/imgui.cpp</sourcePattern>
 	<headerPattern>src/*.h</headerPattern>
 	<sourcePattern>src/*.cpp</sourcePattern>
 </block>

@@ -1,9 +1,5 @@
 #pragma once
 
-#include "imgui.h"
-
-//#define IMGUI_RENDERER_FIXED_PIPELINE
-
 // cinder forward declarations
 namespace cinder {
     namespace gl {
@@ -12,11 +8,29 @@ namespace cinder {
         typedef std::shared_ptr<class GlslProg> GlslProgRef;
     }
     namespace app { typedef std::shared_ptr<class Window> WindowRef; }
-    template<typename T> class ColorAT;
-    typedef class ColorAT<float> ColorA;
+    template<typename T> class ColorAT; typedef class ColorAT<float> ColorA;
+    template<typename T> class Vec2; typedef Vec2<float> Vec2f;
+    template<typename T> class Vec4; typedef Vec4<float> Vec4f;
     typedef std::shared_ptr<class DataSource> DataSourceRef;
     class Buffer;
 }
+
+// this would usually be in imguicondig.h but it is easier
+// to leave it here so we don't need to modify the library
+#define IM_VEC2_CLASS_EXTRA												\
+ImVec2(const ci::Vec2f& f) { x = f.x; y = f.y; }						\
+operator ci::Vec2f() const { return ci::Vec2f(x,y); }
+
+#define IM_VEC4_CLASS_EXTRA												\
+ImVec4(const ci::Vec4f& f) { x = f.x; y = f.y; z = f.z; w = f.w; }		\
+operator ci::Vec4f() const { return ci::Vec4f(x,y,z,w); }
+
+
+#include "imgui.h"
+
+// uncomment this to change the way imgui batches got rendered
+//#define IMGUI_RENDERER_FIXED_PIPELINE
+
 
 //! cinder imgui namespace
 namespace ImGui {
