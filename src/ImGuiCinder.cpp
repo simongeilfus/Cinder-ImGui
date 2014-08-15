@@ -168,7 +168,7 @@ namespace ImGui {
                       ImVec4( 0.57f, 0.57f, 0.57f, 1.0f ) );
         
         ImGuiStyle& style            = ImGui::GetStyle();
-        style.WindowPadding          = ImVec2( 25,10 );
+        style.WindowPadding          = ImVec2( 10,10 );
         style.WindowMinSize          = ImVec2( 160,80 );
         style.FramePadding           = ImVec2( 4,4 );
         style.ItemSpacing            = ImVec2( 10,5 );
@@ -191,7 +191,7 @@ namespace ImGui {
                       ImVec4( 0.27f, 0.27f, 0.27f, 1.0f ) );
         
         ImGuiStyle& style            = ImGui::GetStyle();
-        style.WindowPadding          = ImVec2( 25, 10 );
+        style.WindowPadding          = ImVec2( 10, 10 );
         style.WindowMinSize          = ImVec2( 160, 80 );
         style.FramePadding           = ImVec2( 4, 4 );
         style.ItemSpacing            = ImVec2( 10, 5 );
