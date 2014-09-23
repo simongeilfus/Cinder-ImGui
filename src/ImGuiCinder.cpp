@@ -1,13 +1,8 @@
 #include "imGuiCinder.h"
 
 #include "cinder/app/App.h"
-#include "cinder/app/Window.h"
-#include "cinder/gl/Vbo.h"
-#include "cinder/gl/Texture.h"
-#include "cinder/gl/GlslProg.h"
-#include "cinder/DataSource.h"
+#include "cinder/gl/Context.h"
 #include "cinder/Clipboard.h"
-#include "cinder/Vector.h"
 
 using namespace std;
 using namespace ci;
@@ -18,102 +13,160 @@ namespace ImGui {
     
     
     // static variables
-    gl::TextureRef Renderer::mFontTexture;
-    gl::VboMeshRef Renderer::mVbo;
-    gl::GlslProgRef Renderer::mShader;
-    ci::Buffer Renderer::mFontData;
+    gl::Texture2dRef	Renderer::mFontTexture;
+    gl::VaoRef			Renderer::mVao;
+    gl::VboRef			Renderer::mVbo;
+    gl::GlslProgRef		Renderer::mShader;
+    ci::Buffer			Renderer::mFontData;
+	bool				Renderer::mInitialized = false;
     
-    //! sets current window
-    void setWindow( app::WindowRef window )
-    {
-        window->getSignalMouseDown().connect( [](MouseEvent event){
-            ImGuiIO& io = ImGui::GetIO();
-            io.MousePos = ImVec2( event.getPos() );
-            if( event.isLeftDown() ){
-                io.MouseDown[0] = true;
-                io.MouseDown[1] = false;
-            }
-            else if( event.isLeftDown() ){
-                io.MouseDown[0] = false;
-                io.MouseDown[1] = true;
-            }
-        } );
-        window->getSignalMouseUp().connect( [](MouseEvent event){
-            ImGuiIO& io = ImGui::GetIO();
-            io.MouseDown[0] = false;
-            io.MouseDown[1] = false;
-        } );
-        window->getSignalMouseDrag().connect( [](MouseEvent event){
-            ImGuiIO& io = ImGui::GetIO();
-            io.MousePos = ImVec2( event.getPos() );
-        } );
-        window->getSignalMouseMove().connect( [](MouseEvent event){
-            ImGuiIO& io = ImGui::GetIO();
-            io.MousePos = ImVec2( event.getPos() );
-        } );
-        window->getSignalMouseWheel().connect( [](MouseEvent event){
-            ImGuiIO& io = ImGui::GetIO();
-            io.MouseWheel = 10.0f * event.getWheelIncrement();
-        } );
-        window->getSignalResize().connect( [](){
-            ImGuiIO& io = ImGui::GetIO();
-            io.DisplaySize = ImVec2( getWindowSize() );
-        } );
-        window->getSignalKeyDown().connect( [](KeyEvent event){
-            ImGuiIO& io = ImGui::GetIO();
-            //io.KeyCtrl = event.isAccelDown();
-            //io.KeyShift = event.isShiftDown();
-            io.KeysDown[ event.getCode() ] = true;
-            
-            uint32_t character = event.getCharUtf32();
-            if( character > 0 && character <= 255 ){
-                io.AddInputCharacter( (char) character );
-            }
-        } );
-        window->getSignalKeyUp().connect( [](KeyEvent event){
-            ImGuiIO& io = ImGui::GetIO();
-            //io.KeyCtrl = event.isAccelDown();
-            //io.KeyShift = event.isShiftDown();
-            io.KeysDown[ event.getCode() ] = false;
-        } );
-        
-        ImGuiIO& io = ImGui::GetIO();
-        io.DisplaySize = ImVec2( window->getSize() );
-        io.DeltaTime = 1.0f / 60.0f;
-        io.KeyMap[ImGuiKey_Tab] = KeyEvent::KEY_TAB;
-        io.KeyMap[ImGuiKey_LeftArrow] = KeyEvent::KEY_LEFT;
-        io.KeyMap[ImGuiKey_RightArrow] = KeyEvent::KEY_RIGHT;
-        io.KeyMap[ImGuiKey_UpArrow] = KeyEvent::KEY_UP;
-        io.KeyMap[ImGuiKey_DownArrow] = KeyEvent::KEY_DOWN;
-        io.KeyMap[ImGuiKey_Home] = KeyEvent::KEY_HOME;
-        io.KeyMap[ImGuiKey_End] = KeyEvent::KEY_END;
-        io.KeyMap[ImGuiKey_Delete] = KeyEvent::KEY_DELETE;
-        io.KeyMap[ImGuiKey_Backspace] = KeyEvent::KEY_BACKSPACE;
-        io.KeyMap[ImGuiKey_Enter] = KeyEvent::KEY_RETURN;
-        io.KeyMap[ImGuiKey_Escape] = KeyEvent::KEY_ESCAPE;
-        /*io.KeyMap[ImGuiKey_A] = KeyEvent::KEY_A;
-        io.KeyMap[ImGuiKey_C] = KeyEvent::KEY_C;
-        io.KeyMap[ImGuiKey_V] = KeyEvent::KEY_V;
-        io.KeyMap[ImGuiKey_X] = KeyEvent::KEY_X;
-        io.KeyMap[ImGuiKey_Y] = KeyEvent::KEY_Y;
-        io.KeyMap[ImGuiKey_Z] = KeyEvent::KEY_Z;*/
-        
-        io.SetClipboardTextFn = [](const char* text, const char* text_end){
-            if (!text_end) text_end = text + strlen(text);
-            char* buf = (char*)malloc(text_end - text + 1);
-            memcpy(buf, text, text_end-text);
-            buf[text_end-text] = '\0';
-            Clipboard::setString( buf );
-            free(buf);
-        };
-        io.GetClipboardTextFn = [](){
-            return Clipboard::getString().c_str();
-        };
-        io.RenderDrawListsFn = Renderer::renderDrawList;
-        
-        setDarkTheme();
-    }
-    
+    // same as ImDrawVert
+    struct RenderData {
+        vec2 pos;
+        vec2 uv;
+        vec4 color;
+    };
+	
+	
+	
+	//! sets the right mouseDown IO values in imgui
+	void mouseDown( ci::app::MouseEvent& event )
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.MousePos = ImVec2( event.getPos() );
+		if( event.isLeftDown() ){
+			io.MouseDown[0] = true;
+			io.MouseDown[1] = false;
+		}
+		else if( event.isLeftDown() ){
+			io.MouseDown[0] = false;
+			io.MouseDown[1] = true;
+		}
+		
+		event.setHandled( io.WantCaptureMouse );
+	}
+	//! sets the right mouseMove IO values in imgui
+	void mouseMove( ci::app::MouseEvent& event )
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.MousePos = ImVec2( event.getPos() );
+		
+		event.setHandled( io.WantCaptureMouse );
+	}
+	//! sets the right mouseDrag IO values in imgui
+	void mouseDrag( ci::app::MouseEvent& event )
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.MousePos = ImVec2( event.getPos() );
+		
+		event.setHandled( io.WantCaptureMouse );
+	}
+	//! sets the right mouseDrag IO values in imgui
+	void mouseUp( ci::app::MouseEvent& event )
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.MouseDown[0] = false;
+		io.MouseDown[1] = false;
+		
+		event.setHandled( io.WantCaptureMouse );
+	}
+	//! sets the right mouseWheel IO values in imgui
+	void mouseWheel( ci::app::MouseEvent& event )
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.MouseWheel = 10.0f * event.getWheelIncrement();
+		
+		event.setHandled( io.WantCaptureMouse );
+	}
+	//! sets the right keyDown IO values in imgui
+	void keyDown( ci::app::KeyEvent& event )
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		//io.KeyCtrl = event.isAccelDown();
+		//io.KeyShift = event.isShiftDown();
+		io.KeysDown[ event.getCode() ] = true;
+		
+		uint32_t character = event.getCharUtf32();
+		if( character > 0 && character <= 255 ){
+			io.AddInputCharacter( (char) character );
+		}
+		
+		event.setHandled( io.WantCaptureKeyboard );
+	}
+	//! sets the right keyUp IO values in imgui
+	void keyUp( ci::app::KeyEvent& event )
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		//io.KeyCtrl = event.isAccelDown();
+		//io.KeyShift = event.isShiftDown();
+		io.KeysDown[ event.getCode() ] = false;
+		
+		event.setHandled( io.WantCaptureKeyboard );
+	}
+	
+	//! sets current window size and events
+	void setWindow( ci::app::WindowRef window )
+	{
+		connectSignals( window );
+		setSize( window->getSize() );
+		setDarkTheme();
+	}
+	//! sets current size
+	void setSize( ci::ivec2 size )
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.DisplaySize = vec2( size );
+	}
+	
+	//! connects window signals to imgui events
+	void connectSignals( ci::app::WindowRef window )
+	{
+		window->getSignalMouseDown().connect( mouseDown );
+		window->getSignalMouseUp().connect( mouseUp );
+		window->getSignalMouseDrag().connect( mouseDrag );
+		window->getSignalMouseMove().connect( mouseMove );
+		window->getSignalMouseWheel().connect( mouseWheel );
+		window->getSignalKeyDown().connect( keyDown );
+		window->getSignalKeyUp().connect( keyUp );
+		window->getSignalResize().connect( [](){
+			setSize( getWindowSize() );
+		} );
+		
+		ImGuiIO& io = ImGui::GetIO();
+		io.DisplaySize = ImVec2( window->getSize() );
+		io.DeltaTime = 1.0f / 60.0f;
+		io.KeyMap[ImGuiKey_Tab] = KeyEvent::KEY_TAB;
+		io.KeyMap[ImGuiKey_LeftArrow] = KeyEvent::KEY_LEFT;
+		io.KeyMap[ImGuiKey_RightArrow] = KeyEvent::KEY_RIGHT;
+		io.KeyMap[ImGuiKey_UpArrow] = KeyEvent::KEY_UP;
+		io.KeyMap[ImGuiKey_DownArrow] = KeyEvent::KEY_DOWN;
+		io.KeyMap[ImGuiKey_Home] = KeyEvent::KEY_HOME;
+		io.KeyMap[ImGuiKey_End] = KeyEvent::KEY_END;
+		io.KeyMap[ImGuiKey_Delete] = KeyEvent::KEY_DELETE;
+		io.KeyMap[ImGuiKey_Backspace] = KeyEvent::KEY_BACKSPACE;
+		io.KeyMap[ImGuiKey_Enter] = KeyEvent::KEY_RETURN;
+		io.KeyMap[ImGuiKey_Escape] = KeyEvent::KEY_ESCAPE;
+		/*io.KeyMap[ImGuiKey_A] = KeyEvent::KEY_A;
+		 io.KeyMap[ImGuiKey_C] = KeyEvent::KEY_C;
+		 io.KeyMap[ImGuiKey_V] = KeyEvent::KEY_V;
+		 io.KeyMap[ImGuiKey_X] = KeyEvent::KEY_X;
+		 io.KeyMap[ImGuiKey_Y] = KeyEvent::KEY_Y;
+		 io.KeyMap[ImGuiKey_Z] = KeyEvent::KEY_Z;*/
+		
+		io.SetClipboardTextFn = [](const char* text, const char* text_end){
+			if (!text_end) text_end = text + strlen(text);
+			char* buf = (char*)malloc(text_end - text + 1);
+			memcpy(buf, text, text_end-text);
+			buf[text_end-text] = '\0';
+			Clipboard::setString( buf );
+			free(buf);
+		};
+		io.GetClipboardTextFn = [](){
+			return Clipboard::getString().c_str();
+		};
+		io.RenderDrawListsFn = Renderer::renderDrawList;
+	}
+	
     void setThemeColor( ImVec4 color0, ImVec4 color1, ImVec4 color2, ImVec4 color3, ImVec4 color4 ){
         
         ImGuiStyle& style = ImGui::GetStyle();
@@ -215,110 +268,60 @@ namespace ImGui {
     //! renders imgui drawlist
     void Renderer::renderDrawList( ImDrawList** const cmd_lists, int cmd_lists_count )
     {
-        
-#ifdef IMGUI_RENDERER_FIXED_PIPELINE
-        if (cmd_lists_count == 0)
-            return;
-        
-        // Setup render state: alpha-blending enabled, no face culling, no depth testing
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glDisable(GL_CULL_FACE);
-        glDisable(GL_DEPTH_TEST);
-        //glEnable(GL_SCISSOR_TEST);
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-        glEnableClientState(GL_COLOR_ARRAY);
-        
-        // Bind texture
-        getFontTextureRef()->enableAndBind();
-        
-        // Setup matrices
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glOrtho(0.0f, ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y, 0.0f, -1.0f, +1.0f);
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-        
-        // Render command lists
-        for (int n = 0; n < cmd_lists_count; n++)
-        {
-            const ImDrawList* cmd_list = cmd_lists[n];
-            const unsigned char* vtx_buffer = (const unsigned char*)cmd_list->vtx_buffer.begin();
-            glVertexPointer(2, GL_FLOAT, sizeof(ImDrawVert), (void*)(vtx_buffer));
-            glTexCoordPointer(2, GL_FLOAT, sizeof(ImDrawVert), (void*)(vtx_buffer+8));
-            glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(ImDrawVert), (void*)(vtx_buffer+16));
-            
-            int vtx_offset = 0;
-            const ImDrawCmd* pcmd_end = cmd_list->commands.end();
-            for (const ImDrawCmd* pcmd = cmd_list->commands.begin(); pcmd != pcmd_end; pcmd++)
-            {
-                glScissor((int)pcmd->clip_rect.x, (int)pcmd->clip_rect.y, (int)(pcmd->clip_rect.z - pcmd->clip_rect.x), (int)(pcmd->clip_rect.w - pcmd->clip_rect.y));
-                glDrawArrays(GL_TRIANGLES, vtx_offset, pcmd->vtx_count);
-                vtx_offset += pcmd->vtx_count;
-            }
-        }
-        glDisable(GL_SCISSOR_TEST);
-        
-        getFontTextureRef()->unbind();
-        
-#else
         size_t total_vtx_count = 0;
         for (int n = 0; n < cmd_lists_count; n++)
             total_vtx_count += cmd_lists[n]->vtx_buffer.size();
         if (total_vtx_count == 0)
             return;
         
-        if( getVboMeshRef()->getNumVertices() < total_vtx_count ){
-            gl::VboMesh::Layout layout;
-            layout.setDynamicColorsRGBA();
-            layout.setDynamicPositions();
-            layout.setDynamicTexCoords2d();
-            
-            mVbo = gl::VboMesh::create( total_vtx_count, 0, layout, GL_TRIANGLES );
+        if( getVbo()->getSize() < total_vtx_count * sizeof( RenderData ) ){
+            initBuffers( total_vtx_count );
+            cout << "re-init " << total_vtx_count << endl;
         }
         
         int vtx_consumed = 0;
         {
-            gl::VboMesh::VertexIter iter = getVboMeshRef()->mapVertexBuffer();
+            gl::VboRef vbo = getVbo();
+            gl::ScopedBuffer scopedBuffer( vbo );
+            RenderData *data = static_cast<RenderData*>( vbo->map( GL_WRITE_ONLY ) );
+            
             for (int n = 0; n < cmd_lists_count; n++) {
                 const ImDrawList* cmd_list = cmd_lists[n];
                 if (!cmd_list->vtx_buffer.empty()) {
                     vtx_consumed += cmd_list->vtx_buffer.size();
                     int count = cmd_list->vtx_buffer.size();
                     for( int i = 0; i < count; i++ ){
-                        
-                        iter.setPosition( Vec3f( cmd_list->vtx_buffer[ i ].pos, 0.0f ) );
-                        iter.setTexCoord2d0( cmd_list->vtx_buffer[i].uv );
-                        
                         ImU32 color = cmd_list->vtx_buffer[i].col;
-                        
                         uint32_t a = color >> 24 & 255;
                         uint32_t b = color >> 16 & 255;
                         uint32_t g = color >> 8 & 255;
                         uint32_t r = color >> 0 & 255;
-                        iter.setColorRGBA( ColorA( r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f  ) );
-                        ++iter;
+                        
+                        RenderData d;
+                        d.pos   = vec2( cmd_list->vtx_buffer[i].pos );
+                        d.uv    = vec2( cmd_list->vtx_buffer[i].uv );
+                        d.color = vec4( r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f  );
+                        *data = d;
+                        ++data;
                     }
                 }
             }
+            
+            vbo->unmap();
         }
         
-        getGlslProg()->bind();
+        gl::ScopedVao           scopedVao( getVao() );
+        gl::ScopedGlslProg      scopedShader( getGlslProg() );
+        gl::ScopedTextureBind   scopedTexture( getFontTextureRef(), 0 );
         
-        float windowHeight = GetIO().DisplaySize.y;
-        getGlslProg()->uniform( "height", windowHeight );
+        getGlslProg()->uniform( "uModelViewProjection", gl::getModelViewProjection() );
+        getGlslProg()->uniform( "uTex", 0 );
         
         gl::enableAlphaBlending();
         gl::disableDepthRead();
         glDisable( GL_CULL_FACE );
         
-        getFontTextureRef()->enableAndBind();
-        
         vtx_consumed = 0;						// offset in vertex buffer. each command consume ImDrawCmd::vtx_count of those
-        
-        getVboMeshRef()->enableClientStates();
-        getVboMeshRef()->bindAllData();
         
         for (int n = 0; n < cmd_lists_count; n++) {
             const ImDrawList* cmd_list = cmd_lists[n];
@@ -328,22 +331,16 @@ namespace ImGui {
             const ImDrawCmd* pcmd_end = &cmd_list->commands.back();
             while (pcmd <= pcmd_end) {
                 const ImDrawCmd& cmd = *pcmd++;
-                getGlslProg()->uniform( "ClipRect", Vec4f( cmd.clip_rect ) );
-                glDrawArrays(GL_TRIANGLES, vtx_consumed, cmd.vtx_count);
+                
+                gl::ScopedScissor scissors( vec2( cmd.clip_rect.x, GetIO().DisplaySize.y-cmd.clip_rect.y-cmd.clip_rect.w), vec2( cmd.clip_rect.z, cmd.clip_rect.w ) );
+                
+                glDrawArrays( GL_TRIANGLES, vtx_consumed, cmd.vtx_count );
                 vtx_consumed += cmd.vtx_count;
             }
         }
-        getVboMeshRef()->unbindBuffers();
-        getVboMeshRef()->disableClientStates();
-        
-        getFontTextureRef()->unbind();
-        getGlslProg()->unbind();
-        
-        
-#endif
     }
     
-    //! initalizes and returns the font texture
+    //! initializes and returns the font texture
     gl::TextureRef Renderer::getFontTextureRef()
     {
         if( !mFontTexture ){
@@ -351,24 +348,45 @@ namespace ImGui {
         }
         return mFontTexture;
     }
-    //! initalizes and returns the vbo mesh
-    gl::VboMeshRef Renderer::getVboMeshRef()
+    //! initializes and returns the vbo mesh
+    gl::VaoRef Renderer::getVao()
+    {
+        if( !mVao ){
+            initBuffers();
+        }
+        return mVao;
+    }
+    
+    //! initializes and returns the vbo
+    gl::VboRef Renderer::getVbo()
     {
         if( !mVbo ){
-            initVbo();
+            initBuffers();
         }
         return mVbo;
     }
     
-    //! initalizes the vbo mesh
-    void Renderer::initVbo()
+    //! initializes the vbo mesh
+    void Renderer::initBuffers( int size )
     {
-        gl::VboMesh::Layout layout;
-        layout.setDynamicColorsRGBA();
-        layout.setDynamicPositions();
-        layout.setDynamicTexCoords2d();
         
-        mVbo = gl::VboMesh::create( 1000, 0, layout, GL_TRIANGLES );
+        vector<RenderData> renderData;
+        renderData.assign( size, RenderData() );
+        
+        mVbo    = gl::Vbo::create( GL_ARRAY_BUFFER, renderData, GL_STREAM_DRAW );
+        mVao    = gl::Vao::create();
+        
+        gl::ScopedVao mVaoScope( mVao );
+        gl::ScopedBuffer mVboScope( mVbo );
+        
+        gl::enableVertexAttribArray( 0 );
+        gl::enableVertexAttribArray( 1 );
+        gl::enableVertexAttribArray( 2 );
+        
+        gl::vertexAttribPointer( 0, 2, GL_FLOAT, GL_FALSE, sizeof(RenderData), (const GLvoid*)offsetof(RenderData, pos) );
+        gl::vertexAttribPointer( 1, 2, GL_FLOAT, GL_TRUE, sizeof(RenderData), (const GLvoid*)offsetof(RenderData, uv) );
+        gl::vertexAttribPointer( 2, 4, GL_FLOAT, GL_TRUE, sizeof(RenderData), (const GLvoid*)offsetof(RenderData, color) );
+        
     }
     //! initalizes the font texture
     void Renderer::initFontTexture()
@@ -376,7 +394,7 @@ namespace ImGui {
         gl::Texture::Format format;
         format.setMagFilter( GL_NEAREST );
         format.setMinFilter( GL_NEAREST );
-        
+
         const void* png_data;
         unsigned int png_size;
         ImGui::GetDefaultFontData( NULL, NULL, &png_data, &png_size);
@@ -398,28 +416,48 @@ namespace ImGui {
     void Renderer::initGlslProg()
     {
         try {
-            mShader = gl::GlslProg::create(
-                                           "void main() {"
-                                           "   gl_FrontColor = gl_Color;"
-                                           "   gl_TexCoord[0] = gl_MultiTexCoord0;"
-                                           "   gl_Position = ftransform();"
-                                           "}",
-                                           
-                                           "uniform sampler2D Tex;"
-                                           "uniform vec4 ClipRect;"
-                                           "uniform float height;"
-                                           "void main() {"
-                                           "   vec4 color = texture2D( Tex, gl_TexCoord[0].st ) * gl_Color;"
-                                           "   vec2 pixel_pos = gl_FragCoord.st;"
-                                           "   pixel_pos.y = height - pixel_pos.y;"
-                                           // Clipping: using discard
-                                           //"   if (pixel_pos.x < ClipRect.x || pixel_pos.y < ClipRect.y || pixel_pos.x > ClipRect.z || pixel_pos.y > ClipRect.w) discard;"
-                                           // Clipping: using discard and step
-                                           //"   if (step(ClipRect.x,pixel_pos.x) * step(ClipRect.y,pixel_pos.y) * step(pixel_pos.x,ClipRect.z) * step(pixel_pos.y,ClipRect.w) < 1.0f) discard;"
-                                           // Clipping: branch-less
-                                           "   color.w *= (step(ClipRect.x,pixel_pos.x) * step(ClipRect.y,pixel_pos.y) * step(pixel_pos.x,ClipRect.z) * step(pixel_pos.y,ClipRect.w));"
-                                           "   gl_FragColor = color;"
-                                           "}"
+            mShader = gl::GlslProg::create( gl::GlslProg::Format()
+                                           .vertex(
+                                                   CI_GLSL( 150,
+                                                           uniform mat4 uModelViewProjection;
+                                                           
+                                                           in vec2      iPosition;
+                                                           in vec2      iUv;
+                                                           in vec4      iColor;
+                                                           
+                                                           out vec2     vUv;
+                                                           out vec4     vColor;
+                                                           
+                                                           void main() {
+                                                               vColor       = iColor;
+                                                               vUv          = iUv;
+                                                               gl_Position  = uModelViewProjection * vec4( iPosition, 0.0, 1.0 );
+                                                           } ) )
+                                           .fragment(
+                                                     CI_GLSL( 150,
+                                                             
+                                                             in vec2            vUv;
+                                                             in vec4            vColor;
+                                                             
+                                                             uniform sampler2D  uTex;
+                                                             
+                                                             out vec4           oColor;
+                                                             
+                                                             void main() {
+                                                                 vec4 color = texture( uTex, vec2( vUv.x, 1.0 - vUv.y ) ) * vColor;
+                                                                 //vec2 pixel_pos = gl_FragCoord.st;
+                                                                 //pixel_pos.y = uHeight - pixel_pos.y;
+                                                                 // Clipping: using discard
+                                                                 //   if (pixel_pos.x < uClipRect.x || pixel_pos.y < uClipRect.y || pixel_pos.x > uClipRect.z || pixel_pos.y > uClipRect.w) discard;
+                                                                 // Clipping: using discard and step
+                                                                 //   if (step(uClipRect.x,pixel_pos.x) * step(uClipRect.y,pixel_pos.y) * step(pixel_pos.x,uClipRect.z) * step(pixel_pos.y,uClipRect.w) < 1.0f) discard;
+                                                                 // Clipping: branch-less
+                                                                 //color.w *= (step(uClipRect.x,pixel_pos.x) * step(uClipRect.y,pixel_pos.y) * step(pixel_pos.x,uClipRect.z) * step(pixel_pos.y,uClipRect.w));
+                                                                 oColor = color;
+                                                             } ) )
+                                           .attribLocation( "iPosition", 0 )
+                                           .attribLocation( "iUv", 1 )
+                                           .attribLocation( "iColor", 2 )
                                        );
         }
         catch( gl::GlslProgCompileExc exc ){
@@ -436,8 +474,8 @@ namespace ImGui {
         ImGui::GetIO().FontHeight = ImGui::GetIO().Font->GetFontSize();
         
         gl::Texture::Format format;
-        format.setMagFilter( GL_NEAREST );
-        format.setMinFilter( GL_NEAREST );
+        format.setMagFilter( GL_LINEAR );
+        format.setMinFilter( GL_LINEAR );
         mFontTexture = gl::Texture::create( loadImage( texture ), format );
     }
 }
