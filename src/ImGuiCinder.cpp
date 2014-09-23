@@ -33,7 +33,7 @@ namespace ImGui {
 	void mouseDown( ci::app::MouseEvent& event )
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		io.MousePos = ImVec2( event.getPos() );
+		io.MousePos = ImVec2( event.getPos().x, event.getPos().y );
 		if( event.isLeftDown() ){
 			io.MouseDown[0] = true;
 			io.MouseDown[1] = false;
@@ -49,7 +49,7 @@ namespace ImGui {
 	void mouseMove( ci::app::MouseEvent& event )
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		io.MousePos = ImVec2( event.getPos() );
+		io.MousePos = ImVec2( event.getPos().x, event.getPos().y );
 		
 		event.setHandled( io.WantCaptureMouse );
 	}
@@ -57,7 +57,7 @@ namespace ImGui {
 	void mouseDrag( ci::app::MouseEvent& event )
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		io.MousePos = ImVec2( event.getPos() );
+		io.MousePos = ImVec2( event.getPos().x, event.getPos().y );
 		
 		event.setHandled( io.WantCaptureMouse );
 	}
@@ -115,7 +115,7 @@ namespace ImGui {
 	void setSize( ci::ivec2 size )
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		io.DisplaySize = vec2( size );
+		io.DisplaySize = ImVec2( size.x, size.y );
 	}
 	
 	//! connects window signals to imgui events
@@ -133,7 +133,7 @@ namespace ImGui {
 		} );
 		
 		ImGuiIO& io = ImGui::GetIO();
-		io.DisplaySize = ImVec2( window->getSize() );
+		io.DisplaySize = ImVec2( window->getSize().x, window->getSize().y );
 		io.DeltaTime = 1.0f / 60.0f;
 		io.KeyMap[ImGuiKey_Tab] = KeyEvent::KEY_TAB;
 		io.KeyMap[ImGuiKey_LeftArrow] = KeyEvent::KEY_LEFT;
@@ -298,8 +298,8 @@ namespace ImGui {
                         uint32_t r = color >> 0 & 255;
                         
                         RenderData d;
-                        d.pos   = vec2( cmd_list->vtx_buffer[i].pos );
-                        d.uv    = vec2( cmd_list->vtx_buffer[i].uv );
+                        d.pos   = vec2( cmd_list->vtx_buffer[i].pos.x, cmd_list->vtx_buffer[i].pos.y );
+                        d.uv    = vec2( cmd_list->vtx_buffer[i].uv.x, cmd_list->vtx_buffer[i].uv.y );
                         d.color = vec4( r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f  );
                         *data = d;
                         ++data;

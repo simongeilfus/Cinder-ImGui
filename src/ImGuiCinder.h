@@ -23,17 +23,6 @@
 
 #include <memory>
 
-// this would usually be in imguicondig.h but it is easier
-// to leave it here so we don't need to modify the library
-#define IM_VEC2_CLASS_EXTRA												\
-ImVec2(const ci::vec2& f) { x = f.x; y = f.y; }						\
-operator ci::vec2() const { return ci::vec2(x,y); }
-
-#define IM_VEC4_CLASS_EXTRA												\
-ImVec4(const ci::vec4& f) { x = f.x; y = f.y; z = f.z; w = f.w; }		\
-operator ci::vec4() const { return ci::vec4(x,y,z,w); }
-
-
 #include "imgui.h"
 
 #include "cinder/DataSource.h"
