@@ -2,7 +2,7 @@ Cinder-ImGui
 ===================
 https://github.com/ocornut/imgui/   
 Immediate mode GUI Library from Omar Cornut.   
-Non-kosher wrapper for use with the last Cinder version.
+Non-kosher wrapper for use with the latest Cinder version (glNext).
 
 #####Basic Use
 Call this in your setup:
