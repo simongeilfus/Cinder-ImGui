@@ -1,4 +1,5 @@
 #include "cinder/app/AppNative.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Perlin.h"
 
@@ -103,7 +104,7 @@ void ProfilerGraphApp::draw()
     // draw spheres
     gl::enableWireframe();
     for( int i = 0; i < numSpheres; i++ ){
-        gl::drawSphere( Vec3f( getWindowWidth() * 0.5f, getWindowHeight() * 0.5f, 0.0f ), 300.0f, sphereSegments );
+        gl::drawSphere( vec3( getWindowWidth() * 0.5f, getWindowHeight() * 0.5f, 0.0f ), 300.0f, sphereSegments );
     }
     gl::disableWireframe();
     
