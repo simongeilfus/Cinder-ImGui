@@ -91,8 +91,8 @@ namespace ImGui {
         static void renderDrawList( ImDrawList** const cmd_lists, int cmd_lists_count );
         //! sets font must be in BMFont/Angelcode format
         static void setFont( ci::DataSourceRef font, ci::DataSourceRef texture );
-        
-    //private:
+		
+	protected:
         //! initializes and returns the font texture
         static ci::gl::Texture2dRef getFontTextureRef();
         //! initializes and returns the vao
@@ -101,7 +101,7 @@ namespace ImGui {
         static ci::gl::VboRef getVbo();
         //! initializes and returns the shader
         static ci::gl::GlslProgRef getGlslProg();
-        
+		
         //! initalizes the font texture
         static void initFontTexture();
         //! initalizes the vbo mesh
