@@ -1,8 +1,6 @@
 Cinder-ImGui
 ===================
-####Immediate mode GUI Library from Omar Cornut.
-
-This is a non-kosher wrapper for use with Cinder (glNext branch).
+####Immediate mode GUI Library from Omar Cornut wrapped for use with Cinder.
 
 ImGui is a bloat-free graphical user interface library for C/C++. It is portable, renderer agnostic and carries minimal amount of dependencies (only 3 files are needed). It is based on an "immediate" graphical user interface paradigm which allows you to build simple user interfaces with ease.
 
@@ -78,7 +76,7 @@ void SomeWindow()
 * multi-window option
 
 
-Credits
+Credits (from [ImGui](https://github.com/ocornut/imgui/) README)
 -------
 
 Developed by [Omar Cornut](http://www.miracleworld.net). The library was developed with the support of [Media Molecule](http://www.mediamolecule.com) and first used internally on the game [Tearaway](http://tearaway.mediamolecule.com). 
