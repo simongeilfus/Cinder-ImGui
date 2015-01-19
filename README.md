@@ -9,7 +9,7 @@ ImGui is designed to allow programmers to create "content creation" or "debug" t
 https://github.com/ocornut/imgui/   
 
 #####Namespace
-For ease of use I added a namespace alias for ImGui, feel free to not use it
+For ease of use I added a namespace alias for ImGui, feel free to disable it by defining CINDER_IMGUI_NO_NAMESPACE_ALIAS
 
 #####Initialization
 This is the most basic initialization:
