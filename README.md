@@ -28,6 +28,20 @@ void CinderApp::setup()
     ui::initialize( ui::Options().font( "font.ttf", 12 ).window( uiWindow ).frameRounding( 0.0f ) );
 }
 ```
+Multiple fonts and special glyphs are specified the same way (see ImGui docs for more info):
+```c++
+void CinderApp::setup()
+{
+    ui::initialize( ui::Options()
+                    .fonts( {
+                        { getAssetPath( "Kontrapunkt Bob Light.ttf" ), 12 },
+                        { getAssetPath( "Kontrapunkt Bob Bold.ttf" ), 20 },
+                        { getAssetPath( "FontAwesome.ttf" ), 12 }
+                    } )
+                    .fontGlyphRanges( "FontAwesome", { 0xf000, 0xf06e, 0 } )
+                );
+}
+```
 
 #####UI Creation
 By default or if you don't specify an empty windowRef, the wrapper will take care of calling ImGui::NewFrame and ImGui::Render, meaning that you don't have to worry about anything else than the actual UI. You can add UI code in any place you want, that's it. The Renderer takes care of setting the matrices and the proper shader to draw the ui through a postDraw signal. (You can disable this behavior through the initialization options).
