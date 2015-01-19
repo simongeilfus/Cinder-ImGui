@@ -652,7 +652,6 @@ namespace ImGui {
     {
         ImGuiIO& io = ImGui::GetIO();
         io.MouseWheel = 10.0f * event.getWheelIncrement();
-        cout << io.MouseWheel << endl;
         event.setHandled( io.WantCaptureMouse );
     }
     //! sets the right keyDown IO values in imgui
