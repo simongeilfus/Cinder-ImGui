@@ -2,35 +2,60 @@ Cinder-ImGui
 ===================
 https://github.com/ocornut/imgui/   
 Immediate mode GUI Library from Omar Cornut.   
-Non-kosher wrapper for use with the latest Cinder version (glNext).
+Non-kosher wrapper for use with the latest Cinder version.
 
-#####Basic Use
-Call this in your setup:
+#####Namespace
+For ease of use I added a namespace alias for ImGui, feel free to not use it
+
+#####Initialization
+This is the most basic initialization:
 ```c++
 void CinderApp::setup()
 {
-    // set ui window and io events callbacks
-    ImGui::setWindow( getWindow() );
+    ui::initialize();
+}
+```
+You can provide an ui::Options object to the initialize method to setup the ui the way you want:
+```c++
+void CinderApp::setup()
+{
+    ui::initialize( ui::Options().font( "font.ttf", 12 ).window( uiWindow ).frameRounding( 0.0f ) );
 }
 ```
 
-And then create your UI between ImGui::NewFrame and ImGui::Render:
+#####UI Creation
+By default or if you don't specify an empty windowRef, the wrapper will take care of calling ImGui::NewFrame and ImGui::Render, meaning that you don't have to worry about anything else than the actual UI. You can add UI code in any place you want, that's it. The Renderer takes care of setting the matrices and the proper shader to draw the ui through a postDraw signal. (You can disable this behavior through the initialization options).
+
 ```c++
 void CinderApp::draw()
 {
-    // start gui
-    ImGui::NewFrame();
+    ui::Combo( "Blending", &blendMode, blendModes, 3 );
+    ui::SliderInt( "Circles", &n, 0, 500 );
+    ui::SliderFloat( "Min Radius", &minRadius, 1, 499 );
+    ui::Image( mFbo->getColorTexture(), mFbo->getSize() );
+}
+void SomeFunctionCalledSomewhereElse()
+{
+    ui::Button( "MyButton" );
+}
+```
+
+#####Scoped Objects
+Being a big fan of Cinder's Opengl scoped objects, I decided to experiment with them in this wrapper, we'll see if I keep them or not.
+```c++
+void SomeWindow()
+{
+    ui::ScopedWindow window( "Title" );
+    ui::ScopedFont font( "Font-Bold" );
     
-    // make some nice ui here!
-    
-    // render gui
-    ImGui::Render();
+    ui::Text( "Some Bold Title" );
+    ui::Image( mFbo->getColorTexture(), mFbo->getSize() );
 }
 ```
 
 #####Todo
 * fix keyboard events handling (modifiers not working for the moment)
-
+* multi-window option
 
 
 ImGui
