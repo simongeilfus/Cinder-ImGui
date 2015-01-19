@@ -1,12 +1,10 @@
 Cinder-ImGui
 ===================
-####Immediate mode GUI Library from Omar Cornut wrapped for use with Cinder.
+####[Immediate mode GUI Library](https://github.com/ocornut/imgui/) from [Omar Cornut](https://github.com/ocornut) wrapped for use with Cinder.
 
 ImGui is a bloat-free graphical user interface library for C/C++. It is portable, renderer agnostic and carries minimal amount of dependencies (only 3 files are needed). It is based on an "immediate" graphical user interface paradigm which allows you to build simple user interfaces with ease.
 
 ImGui is designed to allow programmers to create "content creation" or "debug" tools (as opposed to tools for the average end-user). It favors simplicity and thus lacks certain features normally found in more high-level libraries, such as string localisation.
-
-https://github.com/ocornut/imgui/   
 
 #####Namespace
 For ease of use I added a namespace alias for ImGui, feel free to disable it by defining CINDER_IMGUI_NO_NAMESPACE_ALIAS
