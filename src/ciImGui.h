@@ -25,39 +25,45 @@
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  */
-
 #pragma once
 
 #include <memory>
-
 #include "cinder/Vector.h"
-#include "cinder/gl/Texture.h"
 
+// forward declarations
 namespace cinder {
     typedef std::shared_ptr<class DataSource>	DataSourceRef;
     namespace app {
         typedef std::shared_ptr<class Window>   WindowRef;
     }
+    namespace gl {
+        typedef std::shared_ptr<class Texture2d>		Texture2dRef;
+        typedef Texture2dRef							TextureRef;
+    }
 }
 
 // Custom implicit cast operators
-#define IM_VEC2_CLASS_EXTRA                                             \
-ImVec2(const glm::vec2& f) { x = f.x; y = f.y; }                        \
-operator glm::vec2() const { return glm::vec2(x,y); }                   \
-ImVec2(const glm::ivec2& f) { x = f.x; y = f.y; }                       \
-operator glm::ivec2() const { return glm::ivec2(x,y); }
+#ifndef CINDER_IMGUI_NO_IMPLICIT_CASTS
+    #define IM_VEC2_CLASS_EXTRA                                             \
+    ImVec2(const glm::vec2& f) { x = f.x; y = f.y; }                        \
+    operator glm::vec2() const { return glm::vec2(x,y); }                   \
+    ImVec2(const glm::ivec2& f) { x = f.x; y = f.y; }                       \
+    operator glm::ivec2() const { return glm::ivec2(x,y); }
 
-#define IM_VEC4_CLASS_EXTRA                                             \
-ImVec4(const glm::vec4& f) { x = f.x; y = f.y; z = f.z; w = f.w; }      \
-operator glm::vec4() const { return glm::vec4(x,y,z,w); }               \
-ImVec4(const ci::ColorA& f) { x = f.r; y = f.g; z = f.b; w = f.a; }     \
-operator ci::ColorA() const { return ci::ColorA(x,y,z,w); }             \
-ImVec4(const ci::Color& f) { x = f.r; y = f.g; z = f.b; w = 1.0f; }     \
-operator ci::Color() const { return ci::Color(x,y,z); }
+    #define IM_VEC4_CLASS_EXTRA                                             \
+    ImVec4(const glm::vec4& f) { x = f.x; y = f.y; z = f.z; w = f.w; }      \
+    operator glm::vec4() const { return glm::vec4(x,y,z,w); }               \
+    ImVec4(const ci::ColorA& f) { x = f.r; y = f.g; z = f.b; w = f.a; }     \
+    operator ci::ColorA() const { return ci::ColorA(x,y,z,w); }             \
+    ImVec4(const ci::Color& f) { x = f.r; y = f.g; z = f.b; w = 1.0f; }     \
+    operator ci::Color() const { return ci::Color(x,y,z); }
+#endif
 
 #include "imgui.h"
 
-namespace ui = ImGui;
+#ifndef CINDER_IMGUI_NO_NAMESPACE_ALIAS
+    namespace ui = ImGui;
+#endif
 
 //! cinder imgui namespace
 namespace ImGui {
