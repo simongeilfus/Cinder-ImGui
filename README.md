@@ -76,15 +76,24 @@ void SomeWindow()
 
 Credits (from [ImGui](https://github.com/ocornut/imgui/) README)
 -------
+Developed by Omar Cornut and every direct or indirect contributors to the GitHub. The early version of this library was developed with the support of Media Molecule and first used internally on the game Tearaway.
 
-Developed by [Omar Cornut](http://www.miracleworld.net). The library was developed with the support of [Media Molecule](http://www.mediamolecule.com) and first used internally on the game [Tearaway](http://tearaway.mediamolecule.com). 
+Embeds ProggyClean.ttf font by Tristan Grimmer (MIT license).
 
-Embeds [proggy_clean](http://www.proggyfonts.net/) font by Tristan Grimmer (also MIT license).
+Embeds stb_textedit.h, stb_truetype.h, stb_rectpack.h by Sean Barrett (public domain).
 
-Inspiration, feedback, and testing: Casey Muratori, Atman Binstock, Mikko Mononen, Emmanuel Briney, Stefan Kamoda, Matt Willis. Thanks!
+Inspiration, feedback, and testing for early versions: Casey Muratori, Atman Binstock, Mikko Mononen, Emmanuel Briney, Stefan Kamoda, Anton Mikhailov, Matt Willis. And everybody posting feedback, questions and patches on the GitHub.
+
+ImGui is financially supported on Patreon.
+
+Special supporters
+
+Jetha Chan
+Supporters
+
+Michel Courtine
+And other supporters; thanks!
 
 License
--------
 
 ImGui is licensed under the MIT License, see LICENSE for more information.
-
