@@ -1,8 +1,14 @@
 Cinder-ImGui
 ===================
+####Immediate mode GUI Library from Omar Cornut.
+
+This is a non-kosher wrapper for use with Cinder (glNext branch).
+
+ImGui is a bloat-free graphical user interface library for C/C++. It is portable, renderer agnostic and carries minimal amount of dependencies (only 3 files are needed). It is based on an "immediate" graphical user interface paradigm which allows you to build simple user interfaces with ease.
+
+ImGui is designed to allow programmers to create "content creation" or "debug" tools (as opposed to tools for the average end-user). It favors simplicity and thus lacks certain features normally found in more high-level libraries, such as string localisation.
+
 https://github.com/ocornut/imgui/   
-Immediate mode GUI Library from Omar Cornut.   
-Non-kosher wrapper for use with the latest Cinder version.
 
 #####Namespace
 For ease of use I added a namespace alias for ImGui, feel free to not use it
