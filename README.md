@@ -25,7 +25,7 @@ You can provide an ui::Options object to the initialize method to setup the ui t
 ```c++
 void CinderApp::setup()
 {
-    ui::initialize( ui::Options().font( "font.ttf", 12 ).window( uiWindow ).frameRounding( 0.0f ) );
+    ui::initialize( ui::Options().font( ttfFontPath, 12 ).window( uiWindow ).frameRounding( 0.0f ) );
 }
 ```
 Multiple fonts and special glyphs are specified the same way (see ImGui docs for more info):
