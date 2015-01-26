@@ -57,18 +57,19 @@ namespace ImGui {
     ImGui::Options::Options()
     : mWindow( ci::app::getWindow() )
     {
-        mStyle.WindowPadding            = ImVec2( 10,10 );
-        mStyle.WindowMinSize            = ImVec2( 160,80 );
-        mStyle.FramePadding             = ImVec2( 4,4 );
-        mStyle.ItemSpacing              = ImVec2( 10,5 );
-        mStyle.ItemInnerSpacing         = ImVec2( 5,5 );
-        mStyle.WindowFillAlphaDefault   = 0.7;
-        mStyle.WindowRounding           = 0;
-        mStyle.TreeNodeSpacing          = 22;
+        mStyle.WindowPadding            = ImVec2( 10, 10 );
+        mStyle.WindowMinSize            = ImVec2( 160, 80 );
+        mStyle.FramePadding             = ImVec2( 4, 4 );
+        mStyle.ItemSpacing              = ImVec2( 8, 4 );
+        mStyle.ItemInnerSpacing         = ImVec2( 4, 4 );
+        mStyle.WindowFillAlphaDefault   = 1.0f;
+        mStyle.WindowRounding           = 2.0f;
+        mStyle.FrameRounding            = 2.0f;
+        mStyle.TreeNodeSpacing          = 6;
         mStyle.ColumnsMinSpacing        = 50;
         mStyle.ScrollBarWidth           = 12;
         
-        darkTheme();
+        dark();
     }
     
     ImGui::Options& ImGui::Options::window( const ci::app::WindowRef &window )
@@ -239,7 +240,7 @@ namespace ImGui {
         for( int i = 0; i < ImGuiCol_COUNT; i++ )
             imGuiStyle.Colors[i] = style.Colors[i];
         
-        // set io and keymaps
+        // set io and keymap
         ImGuiIO& io                         = ImGui::GetIO();
         io.DisplaySize                      = ImVec2( window->getSize().x, window->getSize().y );
         io.DeltaTime                        = 1.0f / 60.0f;
@@ -254,12 +255,12 @@ namespace ImGui {
         io.KeyMap[ImGuiKey_Backspace]       = KeyEvent::KEY_BACKSPACE;
         io.KeyMap[ImGuiKey_Enter]           = KeyEvent::KEY_RETURN;
         io.KeyMap[ImGuiKey_Escape]          = KeyEvent::KEY_ESCAPE;
-        /*io.KeyMap[ImGuiKey_A] = KeyEvent::KEY_A;
-         io.KeyMap[ImGuiKey_C] = KeyEvent::KEY_C;
-         io.KeyMap[ImGuiKey_V] = KeyEvent::KEY_V;
-         io.KeyMap[ImGuiKey_X] = KeyEvent::KEY_X;
-         io.KeyMap[ImGuiKey_Y] = KeyEvent::KEY_Y;
-         io.KeyMap[ImGuiKey_Z] = KeyEvent::KEY_Z;*/
+        io.KeyMap[ImGuiKey_A]               = KeyEvent::KEY_a;
+        io.KeyMap[ImGuiKey_C]               = KeyEvent::KEY_c;
+        io.KeyMap[ImGuiKey_V]               = KeyEvent::KEY_v;
+        io.KeyMap[ImGuiKey_X]               = KeyEvent::KEY_c;
+        io.KeyMap[ImGuiKey_Y]               = KeyEvent::KEY_y;
+        io.KeyMap[ImGuiKey_Z]               = KeyEvent::KEY_z;
         
         // setup fonts
         ImFontAtlas* fontAtlas  = ImGui::GetIO().Fonts;
@@ -296,69 +297,91 @@ namespace ImGui {
         sInitialized = true;
     }
     
-	
-    Options& Options::themeColors( ImVec4 color0, ImVec4 color1, ImVec4 color2, ImVec4 color3, ImVec4 color4 ){
-        mStyle.Colors[ImGuiCol_Text]                = color3;
-        mStyle.Colors[ImGuiCol_WindowBg]            = color0;
-        mStyle.Colors[ImGuiCol_Border]				= color0;
-        mStyle.Colors[ImGuiCol_BorderShadow]		= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-        mStyle.Colors[ImGuiCol_FrameBg]				= color2;	// Background of checkbox, radio button, plot, slider, text input
-        mStyle.Colors[ImGuiCol_TitleBg]				= color2;
-        mStyle.Colors[ImGuiCol_TitleBgCollapsed]	= color4;
-        mStyle.Colors[ImGuiCol_ScrollbarBg]			= color2;
-        mStyle.Colors[ImGuiCol_ScrollbarGrab]		= color4;
-        mStyle.Colors[ImGuiCol_ScrollbarGrabHovered]= color0;
-        mStyle.Colors[ImGuiCol_ScrollbarGrabActive]	= color3;
-        mStyle.Colors[ImGuiCol_ComboBg]				= color2;
-        mStyle.Colors[ImGuiCol_CheckActive]			= color3;
-        mStyle.Colors[ImGuiCol_CheckHovered]		= color4;
-        mStyle.Colors[ImGuiCol_SliderGrab]			= color4;
-        mStyle.Colors[ImGuiCol_SliderGrabActive]	= color3;
-        mStyle.Colors[ImGuiCol_Button]				= color2;
-        mStyle.Colors[ImGuiCol_ButtonHovered]		= color4;
-        mStyle.Colors[ImGuiCol_ButtonActive]		= color3;
-        mStyle.Colors[ImGuiCol_Header]				= color2;
-        mStyle.Colors[ImGuiCol_HeaderHovered]		= color4;
-        mStyle.Colors[ImGuiCol_HeaderActive]		= color3;
-        mStyle.Colors[ImGuiCol_Column]				= color2;
-        mStyle.Colors[ImGuiCol_ColumnHovered]		= color3;
-        mStyle.Colors[ImGuiCol_ColumnActive]		= color4;
-        mStyle.Colors[ImGuiCol_ResizeGrip]			= color2;
-        mStyle.Colors[ImGuiCol_ResizeGripHovered]	= color3;
-        mStyle.Colors[ImGuiCol_ResizeGripActive]	= color4;
-        mStyle.Colors[ImGuiCol_CloseButton]			= color4;
-        mStyle.Colors[ImGuiCol_CloseButtonHovered]	= color2;
-        mStyle.Colors[ImGuiCol_CloseButtonActive]	= color3;
-        mStyle.Colors[ImGuiCol_PlotLines]			= color4;
-        mStyle.Colors[ImGuiCol_PlotLinesHovered]	= color3;
-        mStyle.Colors[ImGuiCol_PlotHistogram]		= color4;
-        mStyle.Colors[ImGuiCol_PlotHistogramHovered]= color3;
-        mStyle.Colors[ImGuiCol_TextSelectedBg]		= color4;
-        mStyle.Colors[ImGuiCol_TooltipBg]			= color1;
+    Options& Options::light()
+    {
+        mStyle.Colors[ImGuiCol_Text]                  = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
+        mStyle.Colors[ImGuiCol_WindowBg]              = ImVec4(0.76f, 0.76f, 0.76f, 1.00f);
+        mStyle.Colors[ImGuiCol_Border]                = ImVec4(0.76f, 0.76f, 0.76f, 1.00f);
+        mStyle.Colors[ImGuiCol_BorderShadow]          = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+        mStyle.Colors[ImGuiCol_FrameBg]               = ImVec4(0.71f, 0.71f, 0.71f, 1.00f);
+        mStyle.Colors[ImGuiCol_TitleBg]               = ImVec4(0.71f, 0.71f, 0.71f, 1.00f);
+        mStyle.Colors[ImGuiCol_TitleBgCollapsed]      = ImVec4(0.57f, 0.57f, 0.57f, 1.00f);
+        mStyle.Colors[ImGuiCol_ScrollbarBg]           = ImVec4(0.71f, 0.71f, 0.71f, 1.00f);
+        mStyle.Colors[ImGuiCol_ScrollbarGrab]         = ImVec4(0.57f, 0.57f, 0.57f, 1.00f);
+        mStyle.Colors[ImGuiCol_ScrollbarGrabHovered]  = ImVec4(0.76f, 0.76f, 0.76f, 1.00f);
+        mStyle.Colors[ImGuiCol_ScrollbarGrabActive]   = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
+        mStyle.Colors[ImGuiCol_ComboBg]               = ImVec4(0.71f, 0.71f, 0.71f, 1.00f);
+        mStyle.Colors[ImGuiCol_CheckHovered]          = ImVec4(0.57f, 0.57f, 0.57f, 1.00f);
+        mStyle.Colors[ImGuiCol_CheckActive]           = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
+        mStyle.Colors[ImGuiCol_CheckMark]             = ImVec4(0.22f, 0.22f, 0.22f, 0.50f);
+        mStyle.Colors[ImGuiCol_SliderGrab]            = ImVec4(0.57f, 0.57f, 0.57f, 1.00f);
+        mStyle.Colors[ImGuiCol_SliderGrabActive]      = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
+        mStyle.Colors[ImGuiCol_Button]                = ImVec4(0.71f, 0.71f, 0.71f, 1.00f);
+        mStyle.Colors[ImGuiCol_ButtonHovered]         = ImVec4(0.57f, 0.57f, 0.57f, 1.00f);
+        mStyle.Colors[ImGuiCol_ButtonActive]          = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
+        mStyle.Colors[ImGuiCol_Header]                = ImVec4(0.71f, 0.71f, 0.71f, 1.00f);
+        mStyle.Colors[ImGuiCol_HeaderHovered]         = ImVec4(0.57f, 0.57f, 0.57f, 1.00f);
+        mStyle.Colors[ImGuiCol_HeaderActive]          = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
+        mStyle.Colors[ImGuiCol_Column]                = ImVec4(0.71f, 0.71f, 0.71f, 1.00f);
+        mStyle.Colors[ImGuiCol_ColumnHovered]         = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
+        mStyle.Colors[ImGuiCol_ColumnActive]          = ImVec4(0.57f, 0.57f, 0.57f, 1.00f);
+        mStyle.Colors[ImGuiCol_ResizeGrip]            = ImVec4(0.71f, 0.71f, 0.71f, 1.00f);
+        mStyle.Colors[ImGuiCol_ResizeGripHovered]     = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
+        mStyle.Colors[ImGuiCol_ResizeGripActive]      = ImVec4(0.57f, 0.57f, 0.57f, 1.00f);
+        mStyle.Colors[ImGuiCol_CloseButton]           = ImVec4(0.57f, 0.57f, 0.57f, 1.00f);
+        mStyle.Colors[ImGuiCol_CloseButtonHovered]    = ImVec4(0.71f, 0.71f, 0.71f, 1.00f);
+        mStyle.Colors[ImGuiCol_CloseButtonActive]     = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
+        mStyle.Colors[ImGuiCol_PlotLines]             = ImVec4(0.57f, 0.57f, 0.57f, 1.00f);
+        mStyle.Colors[ImGuiCol_PlotLinesHovered]      = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
+        mStyle.Colors[ImGuiCol_PlotHistogram]         = ImVec4(0.57f, 0.57f, 0.57f, 1.00f);
+        mStyle.Colors[ImGuiCol_PlotHistogramHovered]  = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
+        mStyle.Colors[ImGuiCol_TextSelectedBg]        = ImVec4(0.57f, 0.57f, 0.57f, 1.00f);
+        mStyle.Colors[ImGuiCol_TooltipBg]             = ImVec4(0.76f, 0.76f, 0.76f, 1.00f);
         
         return *this;
     }
     
-    
-    //! sets light theme style
-    Options& Options::lightTheme()
+    Options& Options::dark()
     {
-        themeColors( ImVec4( 0.76f, 0.76f, 0.76f, 1.0f ),
-                      ImVec4( 0.76f, 0.76f, 0.76f, 1.0f ),
-                      ImVec4( 0.71f, 0.71f, 0.71f, 1.0f ),
-                      ImVec4( 0.25f, 0.25f, 0.25f, 1.0f ),
-                    ImVec4( 0.57f, 0.57f, 0.57f, 1.0f ) );
-        return *this;
-    }
-    
-    //! sets dark theme style
-    Options& Options::darkTheme()
-    {
-        themeColors( ImVec4( 0.16f,0.16f, 0.16f, 1.0f ),
-                      ImVec4( 0.04f, 0.04f, 0.04f, 1.0f ),
-                      ImVec4( 0.20f, 0.20f, 0.20f, 1.0f ),
-                      ImVec4( 0.69f, 0.69f, 0.69f, 1.0f ),
-                      ImVec4( 0.27f, 0.27f, 0.27f, 1.0f ) );
+        mStyle.Colors[ImGuiCol_Text]                  = ImVec4(0.41f, 0.41f, 0.41f, 1.00f);
+        mStyle.Colors[ImGuiCol_WindowBg]              = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+        mStyle.Colors[ImGuiCol_Border]                = ImVec4(0.21f, 0.21f, 0.21f, 1.00f);
+        mStyle.Colors[ImGuiCol_BorderShadow]          = ImVec4(0.00f, 0.00f, 0.00f, 0.38f);
+        mStyle.Colors[ImGuiCol_FrameBg]               = ImVec4(0.11f, 0.11f, 0.11f, 1.00f);
+        mStyle.Colors[ImGuiCol_TitleBg]               = ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
+        mStyle.Colors[ImGuiCol_TitleBgCollapsed]      = ImVec4(0.17f, 0.17f, 0.17f, 1.00f);
+        mStyle.Colors[ImGuiCol_ScrollbarBg]           = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
+        mStyle.Colors[ImGuiCol_ScrollbarGrab]         = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+        mStyle.Colors[ImGuiCol_ScrollbarGrabHovered]  = ImVec4(0.26f, 0.26f, 0.26f, 1.00f);
+        mStyle.Colors[ImGuiCol_ScrollbarGrabActive]   = ImVec4(0.26f, 0.26f, 0.26f, 1.00f);
+        mStyle.Colors[ImGuiCol_ComboBg]               = ImVec4(0.13f, 0.13f, 0.13f, 1.00f);
+        mStyle.Colors[ImGuiCol_CheckHovered]          = ImVec4(0.27f, 0.27f, 0.27f, 1.00f);
+        mStyle.Colors[ImGuiCol_CheckActive]           = ImVec4(0.36f, 0.36f, 0.36f, 1.00f);
+        mStyle.Colors[ImGuiCol_CheckMark]             = ImVec4(0.22f, 0.22f, 0.22f, 0.50f);
+        mStyle.Colors[ImGuiCol_SliderGrab]            = ImVec4(0.15f, 0.15f, 0.15f, 1.00f);
+        mStyle.Colors[ImGuiCol_SliderGrabActive]      = ImVec4(0.30f, 0.30f, 0.30f, 1.00f);
+        mStyle.Colors[ImGuiCol_Button]                = ImVec4(0.17f, 0.17f, 0.17f, 1.00f);
+        mStyle.Colors[ImGuiCol_ButtonHovered]         = ImVec4(0.27f, 0.27f, 0.27f, 1.00f);
+        mStyle.Colors[ImGuiCol_ButtonActive]          = ImVec4(0.38f, 0.38f, 0.38f, 1.00f);
+        mStyle.Colors[ImGuiCol_Header]                = ImVec4(0.11f, 0.11f, 0.11f, 1.00f);
+        mStyle.Colors[ImGuiCol_HeaderHovered]         = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
+        mStyle.Colors[ImGuiCol_HeaderActive]          = ImVec4(0.27f, 0.27f, 0.27f, 1.00f);
+        mStyle.Colors[ImGuiCol_Column]                = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
+        mStyle.Colors[ImGuiCol_ColumnHovered]         = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
+        mStyle.Colors[ImGuiCol_ColumnActive]          = ImVec4(0.27f, 0.27f, 0.27f, 1.00f);
+        mStyle.Colors[ImGuiCol_ResizeGrip]            = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
+        mStyle.Colors[ImGuiCol_ResizeGripHovered]     = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
+        mStyle.Colors[ImGuiCol_ResizeGripActive]      = ImVec4(0.27f, 0.27f, 0.27f, 1.00f);
+        mStyle.Colors[ImGuiCol_CloseButton]           = ImVec4(0.28f, 0.28f, 0.28f, 1.00f);
+        mStyle.Colors[ImGuiCol_CloseButtonHovered]    = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
+        mStyle.Colors[ImGuiCol_CloseButtonActive]     = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
+        mStyle.Colors[ImGuiCol_PlotLines]             = ImVec4(0.22f, 0.22f, 0.22f, 1.00f);
+        mStyle.Colors[ImGuiCol_PlotLinesHovered]      = ImVec4(0.42f, 0.42f, 0.42f, 1.00f);
+        mStyle.Colors[ImGuiCol_PlotHistogram]         = ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
+        mStyle.Colors[ImGuiCol_PlotHistogramHovered]  = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
+        mStyle.Colors[ImGuiCol_TextSelectedBg]        = ImVec4(0.24f, 0.24f, 0.24f, 1.00f);
+        mStyle.Colors[ImGuiCol_TooltipBg]             = ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
+        
         return *this;
     }
     
@@ -641,7 +664,7 @@ namespace ImGui {
     //! sets the right mouseDrag IO values in imgui
     void mouseUp( ci::app::MouseEvent& event )
     {
-        ImGuiIO& io = ImGui::GetIO();
+        ImGuiIO& io     = ImGui::GetIO();
         io.MouseDown[0] = false;
         io.MouseDown[1] = false;
         
@@ -650,21 +673,32 @@ namespace ImGui {
     //! sets the right mouseWheel IO values in imgui
     void mouseWheel( ci::app::MouseEvent& event )
     {
-        ImGuiIO& io = ImGui::GetIO();
-        io.MouseWheel = 10.0f * event.getWheelIncrement();
+        ImGuiIO& io     = ImGui::GetIO();
+        io.MouseWheel   += event.getWheelIncrement();
+       
         event.setHandled( io.WantCaptureMouse );
     }
     //! sets the right keyDown IO values in imgui
     void keyDown( ci::app::KeyEvent& event )
     {
         ImGuiIO& io = ImGui::GetIO();
-        //io.KeyCtrl = event.isAccelDown();
-        //io.KeyShift = event.isShiftDown();
-        io.KeysDown[ event.getCode() ] = true;
-        
-        uint32_t character = event.getCharUtf32();
-        if( character > 0 && character <= 255 ){
-            io.AddInputCharacter( (char) character );
+        switch( event.getCode() ){
+            /*case KeyEvent::KEY_LMETA:
+            case KeyEvent::KEY_RMETA:
+                io.KeyCtrl = true;
+                break;
+            case KeyEvent::KEY_LSHIFT:
+            case KeyEvent::KEY_RSHIFT:
+                io.KeyShift = true;
+                break;*/
+            default:
+                io.KeysDown[ event.getCode() ] = true;
+                
+                uint32_t character = event.getCharUtf32();
+                if( character > 0 && character <= 255 ){
+                    io.AddInputCharacter( (char) character );
+                }
+                break;
         }
         
         event.setHandled( io.WantCaptureKeyboard );
@@ -673,9 +707,21 @@ namespace ImGui {
     void keyUp( ci::app::KeyEvent& event )
     {
         ImGuiIO& io = ImGui::GetIO();
-        //io.KeyCtrl = event.isAccelDown();
-        //io.KeyShift = event.isShiftDown();
-        io.KeysDown[ event.getCode() ] = false;
+        switch( event.getCode() ){
+            /*case KeyEvent::KEY_LMETA:
+            case KeyEvent::KEY_RMETA:
+                io.KeyCtrl = false;
+                for( int i = 0; i < 512; i++ ) io.KeysDown[i] = false; // feels wrong
+                break;
+            case KeyEvent::KEY_LSHIFT:
+            case KeyEvent::KEY_RSHIFT:
+                io.KeyShift = false;
+                for( int i = 0; i < 512; i++ ) io.KeysDown[i] = false; // feels wrong
+                break;*/
+            default:
+                io.KeysDown[ event.getCode() ] = false;
+                break;
+        }
         
         event.setHandled( io.WantCaptureKeyboard );
     }
@@ -683,6 +729,20 @@ namespace ImGui {
     {
         ImGuiIO& io = ImGui::GetIO();
         io.DisplaySize = getWindowSize();
+    }
+    void render(){
+        gl::ScopedMatrices matrices;
+        gl::ScopedViewport viewport( ivec2(0), getWindowSize() );
+        gl::setMatricesWindow( getWindowSize() );
+        ImGui::Render();
+        
+        static float elapsedTime    = 0.0f;
+        float currentElapsedTime    = getElapsedSeconds();
+        ImGuiIO& io                 = ImGui::GetIO();
+        io.DeltaTime                = ( currentElapsedTime - elapsedTime );
+        elapsedTime                 = currentElapsedTime;
+        
+        App::get()->dispatchAsync( [](){ ImGui::NewFrame(); } );
     }
     
     void connectWindow( ci::app::WindowRef window )
@@ -695,13 +755,7 @@ namespace ImGui {
         window->getSignalKeyDown().connect( keyDown );
         window->getSignalKeyUp().connect( keyUp );
         window->getSignalResize().connect( resize );
-        window->getSignalPostDraw().connect( [](){
-            gl::ScopedMatrices matrices;
-            gl::ScopedViewport viewport( ivec2(0), getWindowSize() );
-            gl::setMatricesWindow( getWindowSize() );
-            ImGui::Render();
-            ImGui::NewFrame();
-        } );
+        window->getSignalPostDraw().connect( render );
     }
     void disconnectWindow( ci::app::WindowRef window )
     {
@@ -713,13 +767,7 @@ namespace ImGui {
         window->getSignalKeyDown().disconnect( keyDown );
         window->getSignalKeyUp().disconnect( keyUp );
         window->getSignalResize().disconnect( resize );
-        window->getSignalPostDraw().disconnect( [](){
-            gl::ScopedMatrices matrices;
-            gl::ScopedViewport viewport( ivec2(0), getWindowSize() );
-            gl::setMatricesWindow( getWindowSize() );
-            ImGui::Render();
-            ImGui::NewFrame();
-        } );
+        window->getSignalPostDraw().disconnect( render );
     }
     
     ScopedWindow::ScopedWindow( const std::string &name, bool* opened, glm::vec2 size, float fillAlpha, ImGuiWindowFlags flags )
@@ -803,4 +851,3 @@ namespace ImGui {
         ImGui::PopID();
     }
 }
-

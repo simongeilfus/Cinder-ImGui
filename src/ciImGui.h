@@ -112,9 +112,9 @@ namespace ImGui {
         Options& scrollBarWidth( float width );
         
         //! sets light theme style
-        Options& lightTheme();
+        Options& light();
         //! sets dark theme style
-        Options& darkTheme();
+        Options& dark();
         //! sets theme colors
         Options& themeColors( ImVec4 color0, ImVec4 color1, ImVec4 color2, ImVec4 color3, ImVec4 color4 );
         
