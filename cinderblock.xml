@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cinder>
+<block
+	name="ImGui"
+	id="ocornut.imgui"
+	author="Simon Geilfus"
+	summary="Omar Cornut's ImGui for Cinder"
+	license="MIT License"
+	>
+	<supports os="msw" />
+	<supports os="macosx" />
+	<includePath>lib</includePath>
+	<includePath>include</includePath>
+	<header>include/CinderImGui.h</header>
+	<header>lib/imgui/imgui.h</header>
+	<source>src/CinderImGui.cpp</source>
+	<source>lib/imgui/imgui.cpp</source>
+</block>
+</cinder>
