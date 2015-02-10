@@ -57,7 +57,7 @@ void SomeFunctionCalledSomewhereElse()
 ```
 
 #####Scoped Objects
-I'm a big fan of Cinder's Opengl scoped objects and for the sake of simplifying a bit more the use of this lib, there's Scoped* objects for most push/pop functions. The state will be pushed when creating the object and poped at the end of its lifespan.
+For the sake of simplifying a bit more the use of this lib, there's Scoped* objects for most push/pop functions. The state will be pushed when creating the object and poped at the end of its lifespan.
 ```c++
 void SomeWindow()
 {
