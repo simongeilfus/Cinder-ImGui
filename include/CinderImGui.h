@@ -1,6 +1,6 @@
 /*
  Cinder-ImGui
- This code is intended for use with the Cinder
+ This code is intended for use with Cinder
  and Omar Cornut ImGui C++ libraries.
  
  http://libcinder.org
