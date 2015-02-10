@@ -623,10 +623,15 @@ namespace ImGui {
     }
     
     
-    void Image( ci::gl::Texture2dRef texture, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, ImU32 tint_col, ImU32 border_col )
+    void Image( const ci::gl::Texture2dRef &texture, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& tint_col, const ImVec4& border_col )
     {
         Image( (void*)(intptr_t) texture->getId(), size, uv0, uv1, tint_col, border_col );
     }
+    bool ImageButton( const ci::gl::Texture2dRef &texture, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, int frame_padding, const ImVec4& bg_col, const ImVec4& tint_col)
+    {
+        return ImageButton( (void*)(intptr_t) texture->getId(), size, uv0, uv1, frame_padding, bg_col, tint_col );
+    }
+    
     void PushFont( const std::string& name )
     {
         auto renderer   = getRenderer();
