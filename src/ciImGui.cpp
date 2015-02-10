@@ -36,6 +36,7 @@
 #include "cinder/gl/GlslProg.h"
 #include "cinder/Clipboard.h"
 #include "cinder/CinderAssert.h"
+#include "cinder/Log.h"
 
 using namespace std;
 using namespace ci;
@@ -53,7 +54,7 @@ namespace ImGui {
         vec2 uv;
         vec4 color;
     };
-	
+    
     ImGui::Options::Options()
     : mWindow( ci::app::getWindow() )
     {
@@ -61,14 +62,14 @@ namespace ImGui {
         mStyle.WindowMinSize            = ImVec2( 160, 80 );
         mStyle.FramePadding             = ImVec2( 4, 4 );
         mStyle.ItemSpacing              = ImVec2( 8, 4 );
-        mStyle.ItemInnerSpacing         = ImVec2( 4, 4 );
+        mStyle.ItemInnerSpacing         = ImVec2( 6, 4 );
         mStyle.WindowFillAlphaDefault   = 1.0f;
         mStyle.WindowRounding           = 2.0f;
         mStyle.FrameRounding            = 2.0f;
         mStyle.TreeNodeSpacing          = 6;
         mStyle.ColumnsMinSpacing        = 50;
         mStyle.ScrollBarWidth           = 12;
-        
+       
         dark();
     }
     
@@ -262,6 +263,12 @@ namespace ImGui {
         io.KeyMap[ImGuiKey_Y]               = KeyEvent::KEY_y;
         io.KeyMap[ImGuiKey_Z]               = KeyEvent::KEY_z;
         
+        // setup config file path
+        string path = ( getAssetPath( "" ) / "imgui.ini" ).string();
+        char* pathCStr = new char[ path.size() + 1];
+        std::copy( path.begin(), path.end(), pathCStr );
+        io.IniFilename = pathCStr;
+        
         // setup fonts
         ImFontAtlas* fontAtlas  = ImGui::GetIO().Fonts;
         fontAtlas->Clear();
@@ -366,8 +373,8 @@ namespace ImGui {
         mStyle.Colors[ImGuiCol_Header]                = ImVec4(0.11f, 0.11f, 0.11f, 1.00f);
         mStyle.Colors[ImGuiCol_HeaderHovered]         = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
         mStyle.Colors[ImGuiCol_HeaderActive]          = ImVec4(0.27f, 0.27f, 0.27f, 1.00f);
-        mStyle.Colors[ImGuiCol_Column]                = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
-        mStyle.Colors[ImGuiCol_ColumnHovered]         = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
+        mStyle.Colors[ImGuiCol_Column]                = ImVec4(0.04f, 0.04f, 0.04f, 0.22f);
+        mStyle.Colors[ImGuiCol_ColumnHovered]         = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
         mStyle.Colors[ImGuiCol_ColumnActive]          = ImVec4(0.27f, 0.27f, 0.27f, 1.00f);
         mStyle.Colors[ImGuiCol_ResizeGrip]            = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
         mStyle.Colors[ImGuiCol_ResizeGripHovered]     = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
@@ -529,16 +536,16 @@ namespace ImGui {
     }
     
     /*ImFont* addFont( ci::DataSourceRef font, float size, int fontId )
-    {
-        ImFont* newFont = getRenderer()->addFont( font, size, fontId );
-        return newFont;
-    }
-    */
+     {
+     ImFont* newFont = getRenderer()->addFont( font, size, fontId );
+     return newFont;
+     }
+     */
     
     ImFont* Renderer::addFont( ci::DataSourceRef font, float size, const ImWchar* glyph_ranges )
     {
         ImFontAtlas* fontAtlas  = ImGui::GetIO().Fonts;
-
+        
         
         Font ciFont( font, size );
         
@@ -547,7 +554,7 @@ namespace ImGui {
         memcpy( bufferCopy, buffer.getData(), buffer.getDataSize() );
         
         ImFont* newFont         = fontAtlas->AddFontFromMemoryTTF( bufferCopy, buffer.getDataSize(), size, glyph_ranges );
-
+        
         mFonts.insert( make_pair( font->getFilePath().stem().string(), newFont ) );
         return newFont;
     }
@@ -599,10 +606,10 @@ namespace ImGui {
                                            .attribLocation( "iPosition", 0 )
                                            .attribLocation( "iUv", 1 )
                                            .attribLocation( "iColor", 2 )
-                                       );
+                                           );
         }
         catch( gl::GlslProgCompileExc exc ){
-            cout << "Problem Compiling ImGui::Renderer shader" << endl << exc.what() << endl;
+            CI_LOG_E( "Problem Compiling ImGui::Renderer shader " << exc.what() );
         }
     }
     ImFont* Renderer::getFont( const std::string &name )
@@ -675,7 +682,7 @@ namespace ImGui {
     {
         ImGuiIO& io     = ImGui::GetIO();
         io.MouseWheel   += event.getWheelIncrement();
-       
+        
         event.setHandled( io.WantCaptureMouse );
     }
     //! sets the right keyDown IO values in imgui
@@ -683,14 +690,14 @@ namespace ImGui {
     {
         ImGuiIO& io = ImGui::GetIO();
         switch( event.getCode() ){
-            /*case KeyEvent::KEY_LMETA:
-            case KeyEvent::KEY_RMETA:
-                io.KeyCtrl = true;
-                break;
-            case KeyEvent::KEY_LSHIFT:
-            case KeyEvent::KEY_RSHIFT:
-                io.KeyShift = true;
-                break;*/
+                /*case KeyEvent::KEY_LMETA:
+                 case KeyEvent::KEY_RMETA:
+                 io.KeyCtrl = true;
+                 break;
+                 case KeyEvent::KEY_LSHIFT:
+                 case KeyEvent::KEY_RSHIFT:
+                 io.KeyShift = true;
+                 break;*/
             default:
                 io.KeysDown[ event.getCode() ] = true;
                 
@@ -708,16 +715,16 @@ namespace ImGui {
     {
         ImGuiIO& io = ImGui::GetIO();
         switch( event.getCode() ){
-            /*case KeyEvent::KEY_LMETA:
-            case KeyEvent::KEY_RMETA:
-                io.KeyCtrl = false;
-                for( int i = 0; i < 512; i++ ) io.KeysDown[i] = false; // feels wrong
-                break;
-            case KeyEvent::KEY_LSHIFT:
-            case KeyEvent::KEY_RSHIFT:
-                io.KeyShift = false;
-                for( int i = 0; i < 512; i++ ) io.KeysDown[i] = false; // feels wrong
-                break;*/
+                /*case KeyEvent::KEY_LMETA:
+                 case KeyEvent::KEY_RMETA:
+                 io.KeyCtrl = false;
+                 for( int i = 0; i < 512; i++ ) io.KeysDown[i] = false; // feels wrong
+                 break;
+                 case KeyEvent::KEY_LSHIFT:
+                 case KeyEvent::KEY_RSHIFT:
+                 io.KeyShift = false;
+                 for( int i = 0; i < 512; i++ ) io.KeysDown[i] = false; // feels wrong
+                 break;*/
             default:
                 io.KeysDown[ event.getCode() ] = false;
                 break;
@@ -730,7 +737,13 @@ namespace ImGui {
         ImGuiIO& io = ImGui::GetIO();
         io.DisplaySize = getWindowSize();
     }
-    void render(){
+    
+    static bool sNewFrame = false;
+    static uint32_t sLastFrame = -1;
+    void render()
+    {
+        if( getElapsedFrames() == sLastFrame ) return;
+        
         gl::ScopedMatrices matrices;
         gl::ScopedViewport viewport( ivec2(0), getWindowSize() );
         gl::setMatricesWindow( getWindowSize() );
@@ -741,8 +754,15 @@ namespace ImGui {
         ImGuiIO& io                 = ImGui::GetIO();
         io.DeltaTime                = ( currentElapsedTime - elapsedTime );
         elapsedTime                 = currentElapsedTime;
-        
-        App::get()->dispatchAsync( [](){ ImGui::NewFrame(); } );
+        sLastFrame                  = getElapsedFrames();
+        sNewFrame                   = false;
+        App::get()->dispatchAsync( [](){ ImGui::NewFrame(); sNewFrame = true; } );
+    }
+    void newFrameGuard()
+    {
+        if( !sNewFrame ){
+            ImGui::NewFrame();
+        }
     }
     
     void connectWindow( ci::app::WindowRef window )
@@ -755,6 +775,7 @@ namespace ImGui {
         window->getSignalKeyDown().connect( keyDown );
         window->getSignalKeyUp().connect( keyUp );
         window->getSignalResize().connect( resize );
+        window->getSignalDraw().connect( newFrameGuard );
         window->getSignalPostDraw().connect( render );
     }
     void disconnectWindow( ci::app::WindowRef window )
@@ -767,6 +788,7 @@ namespace ImGui {
         window->getSignalKeyDown().disconnect( keyDown );
         window->getSignalKeyUp().disconnect( keyUp );
         window->getSignalResize().disconnect( resize );
+        window->getSignalDraw().disconnect( newFrameGuard );
         window->getSignalPostDraw().disconnect( render );
     }
     
