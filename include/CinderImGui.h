@@ -28,6 +28,7 @@
 #pragma once
 
 #include <memory>
+#include "cinder/app/App.h"
 #include "cinder/Vector.h"
 
 // forward declarations
@@ -37,27 +38,27 @@ namespace cinder {
         typedef std::shared_ptr<class Window>   WindowRef;
     }
     namespace gl {
-        typedef std::shared_ptr<class Texture2d>		Texture2dRef;
-        typedef Texture2dRef							TextureRef;
+        typedef std::shared_ptr<class Texture>		TextureRef;
+        //typedef Texture2dRef							TextureRef;
     }
 }
 
 // Custom implicit cast operators
-#ifndef CINDER_IMGUI_NO_IMPLICIT_CASTS
-    #define IM_VEC2_CLASS_EXTRA                                             \
-    ImVec2(const glm::vec2& f) { x = f.x; y = f.y; }                        \
-    operator glm::vec2() const { return glm::vec2(x,y); }                   \
-    ImVec2(const glm::ivec2& f) { x = f.x; y = f.y; }                       \
-    operator glm::ivec2() const { return glm::ivec2(x,y); }
-
-    #define IM_VEC4_CLASS_EXTRA                                             \
-    ImVec4(const glm::vec4& f) { x = f.x; y = f.y; z = f.z; w = f.w; }      \
-    operator glm::vec4() const { return glm::vec4(x,y,z,w); }               \
-    ImVec4(const ci::ColorA& f) { x = f.r; y = f.g; z = f.b; w = f.a; }     \
-    operator ci::ColorA() const { return ci::ColorA(x,y,z,w); }             \
-    ImVec4(const ci::Color& f) { x = f.r; y = f.g; z = f.b; w = 1.0f; }     \
-    operator ci::Color() const { return ci::Color(x,y,z); }
-#endif
+// #ifndef CINDER_IMGUI_NO_IMPLICIT_CASTS
+//     #define IM_VEC2_CLASS_EXTRA                                             \
+//     ImVec2(const ci::Vec2f& f) { x = f.x; y = f.y; }                        \
+//     operator ci::Vec2f() const { return ci::Vec2f(x,y); }                   \
+//     ImVec2(const ci::Vec2i& f) { x = (float) f.x; (float) y = f.y; }        \
+//     operator ci::Vec2i() const { return ci::Vec2i(x,y); }
+// 
+//     #define IM_VEC4_CLASS_EXTRA                                             \
+//     ImVec4(const ci::Vec4f& f) { x = f.x; y = f.y; z = f.z; w = f.w; }      \
+//     operator ci::Vec4f() const { return ci::Vec4f(x,y,z,w); }               \
+//     ImVec4(const ci::ColorA& f) { x = f.r; y = f.g; z = f.b; w = f.a; }     \
+//     operator ci::ColorA() const { return ci::ColorA(x,y,z,w); }             \
+//     ImVec4(const ci::Color& f) { x = f.r; y = f.g; z = f.b; w = 1.0f; }     \
+//     operator ci::Color() const { return ci::Color(x,y,z); }
+// #endif
 
 #include "imgui.h"
 
@@ -85,23 +86,23 @@ namespace ImGui {
         //! Global alpha applies to everything in ImGui
         Options& alpha( float a );
         //! Padding within a window
-        Options& windowPadding( const glm::vec2 &padding );
+        Options& windowPadding( const ci::Vec2f &padding );
         //! Minimum window size
-        Options& windowMinSize( const glm::vec2 &minSize );
+        Options& windowMinSize( const ci::Vec2f &minSize );
         //! Radius of window corners rounding. Set to 0.0f to have rectangular windows
         Options& windowRounding( float rounding );
         //! Padding within a framed rectangle (used by most widgets)
-        Options& framePadding( const glm::vec2 &padding );
+        Options& framePadding( const ci::Vec2f &padding );
         //! Radius of frame corners rounding. Set to 0.0f to have rectangular frame (used by most widgets).
         Options& frameRounding( float rounding );
         //! Horizontal and vertical spacing between widgets/lines
-        Options& itemSpacing( const glm::vec2 &spacing );
+        Options& itemSpacing( const ci::Vec2f &spacing );
         //! Horizontal and vertical spacing between within elements of a composed widget (e.g. a slider and its label)
-        Options& itemInnerSpacing( const glm::vec2 &spacing );
+        Options& itemInnerSpacing( const ci::Vec2f &spacing );
         //! Expand bounding box for touch-based system where touch position is not accurate enough (unnecessary for mouse inputs). Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget running. So dont grow this too much!
-        Options& touchExtraPadding( const glm::vec2 &padding );
+        Options& touchExtraPadding( const ci::Vec2f &padding );
         //! Extra space after auto-fit (double-clicking on resize grip)
-        Options& autoFitPadding( const glm::vec2 &padding );
+        Options& autoFitPadding( const ci::Vec2f &padding );
         //! Default alpha of window background, if not specified in ImGui::Begin()
         Options& windowFillAlphaDefault( float defaultAlpha );
         //! Horizontal spacing when entering a tree node
@@ -142,17 +143,17 @@ namespace ImGui {
     void    disconnectWindow( ci::app::WindowRef window );
 	    
     // Cinder Helpers
-    void Image( const ci::gl::Texture2dRef &texture, const ImVec2& size, const ImVec2& uv0 = ImVec2(0,0), const ImVec2& uv1 = ImVec2(1,1), const ImVec4& tint_col = ImVec4(1,1,1,1), const ImVec4& border_col = ImVec4(0,0,0,0) );
-    bool ImageButton( const ci::gl::Texture2dRef &texture, const ImVec2& size, const ImVec2& uv0 = ImVec2(0,0),  const ImVec2& uv1 = ImVec2(1,1), int frame_padding = -1, const ImVec4& bg_col = ImVec4(0,0,0,1), const ImVec4& tint_col = ImVec4(1,1,1,1) );
+    void Image( const ci::gl::TextureRef &texture, const ImVec2& size, const ImVec2& uv0 = ImVec2(0,0), const ImVec2& uv1 = ImVec2(1,1), const ImVec4& tint_col = ImVec4(1,1,1,1), const ImVec4& border_col = ImVec4(0,0,0,0) );
+    bool ImageButton( const ci::gl::TextureRef &texture, const ImVec2& size, const ImVec2& uv0 = ImVec2(0,0),  const ImVec2& uv1 = ImVec2(1,1), int frame_padding = -1, const ImVec4& bg_col = ImVec4(0,0,0,1), const ImVec4& tint_col = ImVec4(1,1,1,1) );
     void PushFont( const std::string& name = "" );
     
     // Scoped objects goodness (push the state when created and pop it when destroyed)
     struct ScopedWindow : public boost::noncopyable {
-        ScopedWindow( const std::string &name = "Debug", bool* opened = NULL, glm::vec2 size = glm::vec2(0), float fillAlpha = -1.0f, ImGuiWindowFlags flags = 0 );
+        ScopedWindow( const std::string &name = "Debug", bool* opened = NULL, ci::Vec2f size = ci::Vec2f(0), float fillAlpha = -1.0f, ImGuiWindowFlags flags = 0 );
         ~ScopedWindow();
     };
     struct ScopedChild : public boost::noncopyable {
-        ScopedChild( const std::string &name, glm::vec2 size = glm::vec2(0), bool border = false, ImGuiWindowFlags extraFlags = 0 );
+        ScopedChild( const std::string &name, ci::Vec2f size = ci::Vec2f(0), bool border = false, ImGuiWindowFlags extraFlags = 0 );
         ~ScopedChild();
     };
     struct ScopedFont : public boost::noncopyable {
