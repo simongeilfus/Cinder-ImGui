@@ -464,13 +464,6 @@ namespace ImGui {
     }
     return mFontTexture;
   }
-//   ! initializes and returns the vbo mesh
-//     gl::VaoRef Renderer::getVao() {
-//       if ( !mVao ) {
-//         initBuffers();
-//       }
-//       return mVao;
-//     }
 
   //! initializes and returns the vbo
   gl::VboMeshRef Renderer::getVbo() {
@@ -683,8 +676,6 @@ namespace ImGui {
   void render() {
     if ( getElapsedFrames() == sLastFrame ) return;
 
-    //gl::ScopedMatrices matrices;
-    //gl::ScopedViewport viewport( ivec2( 0 ), getWindowSize() );
     gl::setMatricesWindow( getWindowSize() );
     ImGui::Render();
 
