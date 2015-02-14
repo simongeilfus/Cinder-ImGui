@@ -43,23 +43,23 @@ namespace cinder {
     }
 }
 
-// NOTE(hunter): These only seem to work in the imconfig.h file
-// Custom implicit cast operators
-// #ifndef CINDER_IMGUI_NO_IMPLICIT_CASTS
-//     #define IM_VEC2_CLASS_EXTRA                                             \
-//     ImVec2(const ci::Vec2f& f) { x = f.x; y = f.y; }                        \
-//     operator ci::Vec2f() const { return ci::Vec2f(x,y); }                   \
-//     ImVec2(const ci::Vec2i& f) { x = (float) f.x; (float) y = f.y; }        \
-//     operator ci::Vec2i() const { return ci::Vec2i(x,y); }
-// 
-//     #define IM_VEC4_CLASS_EXTRA                                             \
-//     ImVec4(const ci::Vec4f& f) { x = f.x; y = f.y; z = f.z; w = f.w; }      \
-//     operator ci::Vec4f() const { return ci::Vec4f(x,y,z,w); }               \
-//     ImVec4(const ci::ColorA& f) { x = f.r; y = f.g; z = f.b; w = f.a; }     \
-//     operator ci::ColorA() const { return ci::ColorA(x,y,z,w); }             \
-//     ImVec4(const ci::Color& f) { x = f.r; y = f.g; z = f.b; w = 1.0f; }     \
-//     operator ci::Color() const { return ci::Color(x,y,z); }
-// #endif
+
+//! Custom implicit cast operators
+#ifndef CINDER_IMGUI_NO_IMPLICIT_CASTS
+    #define IM_VEC2_CLASS_EXTRA                                             \
+    ImVec2(const ci::Vec2f& f) { x = f.x; y = f.y; }                        \
+    operator ci::Vec2f() const { return ci::Vec2f(x,y); }                   \
+    ImVec2(const ci::Vec2i& f) { x = (float) f.x; (float) y = f.y; }        \
+    operator ci::Vec2i() const { return ci::Vec2i(x,y); }
+
+    #define IM_VEC4_CLASS_EXTRA                                             \
+    ImVec4(const ci::Vec4f& f) { x = f.x; y = f.y; z = f.z; w = f.w; }      \
+    operator ci::Vec4f() const { return ci::Vec4f(x,y,z,w); }               \
+    ImVec4(const ci::ColorA& f) { x = f.r; y = f.g; z = f.b; w = f.a; }     \
+    operator ci::ColorA() const { return ci::ColorA(x,y,z,w); }             \
+    ImVec4(const ci::Color& f) { x = f.r; y = f.g; z = f.b; w = 1.0f; }     \
+    operator ci::Color() const { return ci::Color(x,y,z); }
+#endif
 
 #include "imgui.h"
 
@@ -119,9 +119,9 @@ namespace ImGui {
         Options& dark();
 
         //! sets a theme color
-        Options& setThemeColor( ImGuiCol_ option, ImVec4 v ) { mStyle.Colors[option] = v; return *this; }
-        Options& setThemeColor( ImGuiCol_ option, ci::ColorA v ) { mStyle.Colors[option] = v; return *this; }
-        Options& setThemeColor( ImGuiCol_ option, ci::Color v ) { mStyle.Colors[option] = v; return *this; }
+        Options& color( ImGuiCol option, ImVec4 &v ) { mStyle.Colors[option] = v; return *this; }
+        Options& color( ImGuiCol option, ci::ColorA &v ) { mStyle.Colors[ option ] = v; return *this; }
+        Options& color( ImGuiCol option, ci::Color &v ) { mStyle.Colors[ option ] = v; return *this; }
 
         //! returns the window that will be use to connect the signals and render ImGui
         ci::app::WindowRef                                  getWindow() const { return mWindow; }
