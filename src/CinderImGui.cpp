@@ -58,17 +58,18 @@ namespace ImGui {
     ImGui::Options::Options()
     : mWindow( ci::app::getWindow() )
     {
-        mStyle.WindowPadding            = ImVec2( 10, 10 );
-        mStyle.WindowMinSize            = ImVec2( 160, 80 );
-        mStyle.FramePadding             = ImVec2( 4, 4 );
-        mStyle.ItemSpacing              = ImVec2( 8, 4 );
-        mStyle.ItemInnerSpacing         = ImVec2( 6, 4 );
+        mStyle.WindowPadding            = ImVec2( 10.0f, 10.0f );
+        mStyle.WindowMinSize            = ImVec2( 160.0f, 80.0f );
+        mStyle.FramePadding             = ImVec2( 4.0f, 4.0f );
+        mStyle.ItemSpacing              = ImVec2( 8.0f, 4.0f );
+        mStyle.ItemInnerSpacing         = ImVec2( 6.0f, 4.0f );
         mStyle.WindowFillAlphaDefault   = 1.0f;
         mStyle.WindowRounding           = 2.0f;
         mStyle.FrameRounding            = 2.0f;
-        mStyle.TreeNodeSpacing          = 6;
-        mStyle.ColumnsMinSpacing        = 50;
-        mStyle.ScrollBarWidth           = 12;
+        mStyle.TreeNodeSpacing          = 6.0f;
+        mStyle.ColumnsMinSpacing        = 50.0f;
+        mStyle.ScrollBarWidth           = 12.0f;
+        mStyle.ChildWindowRounding      = 0.0f;
        
         dark();
     }
@@ -237,6 +238,7 @@ namespace ImGui {
         imGuiStyle.TreeNodeSpacing          = style.TreeNodeSpacing;
         imGuiStyle.ColumnsMinSpacing        = style.ColumnsMinSpacing;
         imGuiStyle.ScrollBarWidth           = style.ScrollBarWidth;
+        imGuiStyle.ChildWindowRounding      = style.ChildWindowRounding;
         // set colors
         for( int i = 0; i < ImGuiCol_COUNT; i++ )
             imGuiStyle.Colors[i] = style.Colors[i];
@@ -256,12 +258,12 @@ namespace ImGui {
         io.KeyMap[ImGuiKey_Backspace]       = KeyEvent::KEY_BACKSPACE;
         io.KeyMap[ImGuiKey_Enter]           = KeyEvent::KEY_RETURN;
         io.KeyMap[ImGuiKey_Escape]          = KeyEvent::KEY_ESCAPE;
-        io.KeyMap[ImGuiKey_A]               = KeyEvent::KEY_a;
-        io.KeyMap[ImGuiKey_C]               = KeyEvent::KEY_c;
-        io.KeyMap[ImGuiKey_V]               = KeyEvent::KEY_v;
-        io.KeyMap[ImGuiKey_X]               = KeyEvent::KEY_c;
-        io.KeyMap[ImGuiKey_Y]               = KeyEvent::KEY_y;
-        io.KeyMap[ImGuiKey_Z]               = KeyEvent::KEY_z;
+//         io.KeyMap[ImGuiKey_A]               = KeyEvent::KEY_a;
+//         io.KeyMap[ImGuiKey_C]               = KeyEvent::KEY_c;
+//         io.KeyMap[ImGuiKey_V]               = KeyEvent::KEY_v;
+//         io.KeyMap[ImGuiKey_X]               = KeyEvent::KEY_c;
+//         io.KeyMap[ImGuiKey_Y]               = KeyEvent::KEY_y;
+//         io.KeyMap[ImGuiKey_Z]               = KeyEvent::KEY_z;
         
         // setup config file path
         string path = ( getAssetPath( "" ) / "imgui.ini" ).string();
@@ -694,23 +696,28 @@ namespace ImGui {
     void keyDown( ci::app::KeyEvent& event )
     {
         ImGuiIO& io = ImGui::GetIO();
-        switch( event.getCode() ){
-                /*case KeyEvent::KEY_LMETA:
-                 case KeyEvent::KEY_RMETA:
-                 io.KeyCtrl = true;
-                 break;
-                 case KeyEvent::KEY_LSHIFT:
-                 case KeyEvent::KEY_RSHIFT:
-                 io.KeyShift = true;
-                 break;*/
-            default:
-                io.KeysDown[ event.getCode() ] = true;
-                
-                uint32_t character = event.getCharUtf32();
-                if( character > 0 && character <= 255 ){
-                    io.AddInputCharacter( (char) character );
-                }
-                break;
+
+        io.KeyShift = event.isShiftDown();
+        io.KeyCtrl = event.isControlDown();
+        
+        if ( io.KeyCtrl && event.getCode() == KeyEvent::KEY_a ) // for CTRL+A: select all
+            io.KeysDown[ImGuiKey_A] = true; 
+        if ( io.KeyCtrl && event.getCode() == KeyEvent::KEY_c ) // for CTRL+C: copy
+            io.KeysDown[ImGuiKey_C] = true; 
+        if ( io.KeyCtrl && event.getCode() == KeyEvent::KEY_v ) // for CTRL+V: paste
+            io.KeysDown[ImGuiKey_V] = true; 
+        if ( io.KeyCtrl && event.getCode() == KeyEvent::KEY_x ) // for CTRL+X: cut
+            io.KeysDown[ImGuiKey_X] = true; 
+        if ( io.KeyCtrl && event.getCode() == KeyEvent::KEY_y ) // for CTRL+Y: redo
+            io.KeysDown[ImGuiKey_Y] = true; 
+        if ( io.KeyCtrl && event.getCode() == KeyEvent::KEY_z ) // for CTRL+Z: undo
+            io.KeysDown[ImGuiKey_Z] = true; 
+
+        io.KeysDown[event.getCode()] = true;
+
+        uint32_t character = event.getCharUtf32();
+        if ( character > 0 && character <= 255 ) {
+            io.AddInputCharacter( ( char ) character );
         }
         
         event.setHandled( io.WantCaptureKeyboard );
@@ -719,22 +726,24 @@ namespace ImGui {
     void keyUp( ci::app::KeyEvent& event )
     {
         ImGuiIO& io = ImGui::GetIO();
-        switch( event.getCode() ){
-                /*case KeyEvent::KEY_LMETA:
-                 case KeyEvent::KEY_RMETA:
-                 io.KeyCtrl = false;
-                 for( int i = 0; i < 512; i++ ) io.KeysDown[i] = false; // feels wrong
-                 break;
-                 case KeyEvent::KEY_LSHIFT:
-                 case KeyEvent::KEY_RSHIFT:
-                 io.KeyShift = false;
-                 for( int i = 0; i < 512; i++ ) io.KeysDown[i] = false; // feels wrong
-                 break;*/
-            default:
-                io.KeysDown[ event.getCode() ] = false;
-                break;
-        }
-        
+
+        io.KeyShift = event.isShiftDown();
+        io.KeyCtrl = event.isControlDown();
+
+        if ( io.KeyCtrl && event.getCode() != KeyEvent::KEY_a ) // for CTRL+A: select all
+            io.KeysDown[ImGuiKey_A] = false; 
+        if ( io.KeyCtrl && event.getCode() != KeyEvent::KEY_c ) // for CTRL+C: copy
+            io.KeysDown[ImGuiKey_C] = false; 
+        if ( io.KeyCtrl && event.getCode() != KeyEvent::KEY_v ) // for CTRL+V: paste
+            io.KeysDown[ImGuiKey_V] = false; 
+        if ( io.KeyCtrl && event.getCode() != KeyEvent::KEY_x ) // for CTRL+X: cut
+            io.KeysDown[ImGuiKey_X] = false; 
+        if ( io.KeyCtrl && event.getCode() != KeyEvent::KEY_y ) // for CTRL+Y: redo
+            io.KeysDown[ImGuiKey_Y] = false; 
+        if ( io.KeyCtrl && event.getCode() != KeyEvent::KEY_z ) // for CTRL+Z: undo
+            io.KeysDown[ImGuiKey_Z] = false; 
+
+        io.KeysDown[event.getCode()] = false;
         event.setHandled( io.WantCaptureKeyboard );
     }
     void resize()
