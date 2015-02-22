@@ -700,17 +700,17 @@ namespace ImGui {
         io.KeyShift = event.isShiftDown();
         io.KeyCtrl = event.isControlDown();
         
-        if ( io.KeyCtrl && event.getCode() == KeyEvent::KEY_a ) // for CTRL+A: select all
+        if ( io.KeyCtrl && !io.KeyShift && event.getCode() == KeyEvent::KEY_a ) // for CTRL+A: select all
             io.KeysDown[ImGuiKey_A] = true; 
-        if ( io.KeyCtrl && event.getCode() == KeyEvent::KEY_c ) // for CTRL+C: copy
+        if ( io.KeyCtrl && !io.KeyShift && event.getCode() == KeyEvent::KEY_c ) // for CTRL+C: copy
             io.KeysDown[ImGuiKey_C] = true; 
-        if ( io.KeyCtrl && event.getCode() == KeyEvent::KEY_v ) // for CTRL+V: paste
+        if ( io.KeyCtrl && !io.KeyShift && event.getCode() == KeyEvent::KEY_v ) // for CTRL+V: paste
             io.KeysDown[ImGuiKey_V] = true; 
-        if ( io.KeyCtrl && event.getCode() == KeyEvent::KEY_x ) // for CTRL+X: cut
+        if ( io.KeyCtrl && !io.KeyShift && event.getCode() == KeyEvent::KEY_x ) // for CTRL+X: cut
             io.KeysDown[ImGuiKey_X] = true; 
-        if ( io.KeyCtrl && event.getCode() == KeyEvent::KEY_y ) // for CTRL+Y: redo
+        if ( io.KeyCtrl && !io.KeyShift && event.getCode() == KeyEvent::KEY_y ) // for CTRL+Y: redo
             io.KeysDown[ImGuiKey_Y] = true; 
-        if ( io.KeyCtrl && event.getCode() == KeyEvent::KEY_z ) // for CTRL+Z: undo
+        if ( io.KeyCtrl && !io.KeyShift && event.getCode() == KeyEvent::KEY_z ) // for CTRL+Z: undo
             io.KeysDown[ImGuiKey_Z] = true; 
 
         io.KeysDown[event.getCode()] = true;
@@ -730,18 +730,14 @@ namespace ImGui {
         io.KeyShift = event.isShiftDown();
         io.KeyCtrl = event.isControlDown();
 
-        if ( io.KeyCtrl && event.getCode() != KeyEvent::KEY_a ) // for CTRL+A: select all
-            io.KeysDown[ImGuiKey_A] = false; 
-        if ( io.KeyCtrl && event.getCode() != KeyEvent::KEY_c ) // for CTRL+C: copy
-            io.KeysDown[ImGuiKey_C] = false; 
-        if ( io.KeyCtrl && event.getCode() != KeyEvent::KEY_v ) // for CTRL+V: paste
-            io.KeysDown[ImGuiKey_V] = false; 
-        if ( io.KeyCtrl && event.getCode() != KeyEvent::KEY_x ) // for CTRL+X: cut
-            io.KeysDown[ImGuiKey_X] = false; 
-        if ( io.KeyCtrl && event.getCode() != KeyEvent::KEY_y ) // for CTRL+Y: redo
-            io.KeysDown[ImGuiKey_Y] = false; 
-        if ( io.KeyCtrl && event.getCode() != KeyEvent::KEY_z ) // for CTRL+Z: undo
-            io.KeysDown[ImGuiKey_Z] = false; 
+        char dKey = event.getChar();
+
+        if ( dKey == 'a' ) io.KeysDown[ImGuiKey_A] = false;  // for CTRL+A: select all
+        if ( dKey == 'c' ) io.KeysDown[ImGuiKey_C] = false;  // for CTRL+C: copy
+        if ( dKey == 'v' ) io.KeysDown[ImGuiKey_V] = false;  // for CTRL+V: paste
+        if ( dKey == 'x' ) io.KeysDown[ImGuiKey_X] = false;  // for CTRL+X: cut
+        if ( dKey == 'y' ) io.KeysDown[ImGuiKey_Y] = false;  // for CTRL+Y: redo
+        if ( dKey == 'z' ) io.KeysDown[ImGuiKey_Z] = false;  // for CTRL+Z: undo
 
         io.KeysDown[event.getCode()] = false;
         event.setHandled( io.WantCaptureKeyboard );
