@@ -68,7 +68,7 @@ namespace ImGui {
         mStyle.FrameRounding            = 2.0f;
         mStyle.TreeNodeSpacing          = 6.0f;
         mStyle.ColumnsMinSpacing        = 50.0f;
-        mStyle.ScrollBarWidth           = 12.0f;
+        mStyle.ScrollbarWidth           = 12.0f;
         mStyle.ChildWindowRounding      = 0.0f;
        
         dark();
@@ -162,7 +162,7 @@ namespace ImGui {
     }
     ImGui::Options& ImGui::Options::scrollBarWidth( float width )
     {
-        mStyle.ScrollBarWidth = width;
+        mStyle.ScrollbarWidth = width;
         return *this;
     }
     const ImWchar* ImGui::Options::getFontGlyphRanges( const std::string &name ) const
@@ -237,7 +237,7 @@ namespace ImGui {
         imGuiStyle.WindowRounding           = style.WindowRounding;
         imGuiStyle.TreeNodeSpacing          = style.TreeNodeSpacing;
         imGuiStyle.ColumnsMinSpacing        = style.ColumnsMinSpacing;
-        imGuiStyle.ScrollBarWidth           = style.ScrollBarWidth;
+        imGuiStyle.ScrollbarWidth           = style.ScrollbarWidth;
         imGuiStyle.ChildWindowRounding      = style.ChildWindowRounding;
         // set colors
         for( int i = 0; i < ImGuiCol_COUNT; i++ )
@@ -699,6 +699,7 @@ namespace ImGui {
 
         io.KeyShift = event.isShiftDown();
         io.KeyCtrl = event.isControlDown();
+        io.KeyAlt = event.isAltDown();
         
         if ( io.KeyCtrl && !io.KeyShift && event.getCode() == KeyEvent::KEY_a ) // for CTRL+A: select all
             io.KeysDown[ImGuiKey_A] = true; 
@@ -729,6 +730,7 @@ namespace ImGui {
 
         io.KeyShift = event.isShiftDown();
         io.KeyCtrl = event.isControlDown();
+        io.KeyAlt = event.isAltDown();
 
         char dKey = event.getChar();
 
