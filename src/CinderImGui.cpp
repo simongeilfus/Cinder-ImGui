@@ -37,6 +37,7 @@
 #include "cinder/Clipboard.h"
 #include "cinder/CinderAssert.h"
 #include "cinder/Log.h"
+#include "cinder/Signals.h"
 
 using namespace std;
 using namespace ci;
@@ -66,7 +67,7 @@ namespace ImGui {
         mStyle.WindowFillAlphaDefault   = 1.0f;
         mStyle.WindowRounding           = 2.0f;
         mStyle.FrameRounding            = 2.0f;
-        mStyle.TreeNodeSpacing          = 6.0f;
+        mStyle.IndentSpacing            = 6.0f;
         mStyle.ColumnsMinSpacing        = 50.0f;
         mStyle.ScrollbarWidth           = 12.0f;
         mStyle.ChildWindowRounding      = 0.0f;
@@ -152,7 +153,7 @@ namespace ImGui {
     }
     ImGui::Options& ImGui::Options::treeNodeSpacing( float spacing )
     {
-        mStyle.TreeNodeSpacing = spacing;
+        mStyle.IndentSpacing = spacing;
         return *this;
     }
     ImGui::Options& ImGui::Options::columnsMinSpacing( float minSpacing )
@@ -235,7 +236,7 @@ namespace ImGui {
         imGuiStyle.AutoFitPadding           = style.AutoFitPadding;
         imGuiStyle.WindowFillAlphaDefault   = style.WindowFillAlphaDefault;
         imGuiStyle.WindowRounding           = style.WindowRounding;
-        imGuiStyle.TreeNodeSpacing          = style.TreeNodeSpacing;
+        imGuiStyle.IndentSpacing            = style.IndentSpacing;
         imGuiStyle.ColumnsMinSpacing        = style.ColumnsMinSpacing;
         imGuiStyle.ScrollbarWidth           = style.ScrollbarWidth;
         imGuiStyle.ChildWindowRounding      = style.ChildWindowRounding;
@@ -792,16 +793,16 @@ namespace ImGui {
     }
     void disconnectWindow( ci::app::WindowRef window )
     {
-        window->getSignalMouseDown().disconnect( mouseDown );
-        window->getSignalMouseUp().disconnect( mouseUp );
-        window->getSignalMouseDrag().disconnect( mouseDrag );
-        window->getSignalMouseMove().disconnect( mouseMove );
-        window->getSignalMouseWheel().disconnect( mouseWheel );
-        window->getSignalKeyDown().disconnect( keyDown );
-        window->getSignalKeyUp().disconnect( keyUp );
-        window->getSignalResize().disconnect( resize );
-        window->getSignalDraw().disconnect( newFrameGuard );
-        window->getSignalPostDraw().disconnect( render );
+//         window->getSignalMouseDown().disconnect( mouseDown );
+//         window->getSignalMouseUp().disconnect( mouseUp );
+//         window->getSignalMouseDrag().disconnect( mouseDrag );
+//         window->getSignalMouseMove().disconnect( mouseMove );
+//         window->getSignalMouseWheel().disconnect( mouseWheel );
+//         window->getSignalKeyDown().disconnect( keyDown );
+//         window->getSignalKeyUp().disconnect( keyUp );
+//         window->getSignalResize().disconnect( resize );
+//         window->getSignalDraw().disconnect( newFrameGuard );
+//         window->getSignalPostDraw().disconnect( render );
     }
     
     ScopedWindow::ScopedWindow( const std::string &name, bool* opened, glm::vec2 size, float fillAlpha, ImGuiWindowFlags flags )
