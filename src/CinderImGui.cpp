@@ -364,9 +364,10 @@ namespace ImGui {
         return *this;
     }
     
-    Options& Options::color( ImGuiCol option, ci::ColorA &v )
+    Options& Options::color( ImGuiCol option, const ci::ColorA &color )
     {
-        mStyle.Colors[ option ] = v; return *this;
+        mStyle.Colors[ option ] = v;
+        return *this;
     }
 
 
