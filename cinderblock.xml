@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <cinder>
 <block
-	name=		"imGui"
-	id=			"sg.cinder.imgui"
-	git=		"git://github.com/simongeilfus/Cinder-ImGui.git"
-	author=		"Simon Geilfus"
-	summary=	"Wrapper around imGui."
-	license=	"mit"
-	url=		"http://github.com/simongeilfus/Cinder-ImGui"
-	library=	"http://github.com/ocornut/imgui/"
+	name="ImGui"
+	id="ocornut.imgui"
+	author="Simon Geilfus"
+	summary="Omar Cornut's ImGui for Cinder"
+	license="MIT License"
 	>
-
-	<includePath>lib/imgui</includePath>
-	<headerPattern>lib/imgui/imgui.h</headerPattern>
-	<sourcePattern>lib/imgui/imgui.cpp</sourcePattern>
-	<headerPattern>src/*.h</headerPattern>
-	<sourcePattern>src/*.cpp</sourcePattern>
+	<supports os="msw" />
+	<supports os="macosx" />
+	<includePath>lib</includePath>
+	<includePath>include</includePath>
+	<header>include/CinderImGui.h</header>
+	<header>lib/imgui/imgui.h</header>
+	<source>src/CinderImGui.cpp</source>
+	<source>lib/imgui/imgui.cpp</source>
 </block>
 </cinder>
