@@ -363,7 +363,11 @@ namespace ImGui {
 
         return *this;
     }
-
+    
+    Options& Options::color( ImGuiCol option, ci::ColorA &v )
+    {
+        mStyle.Colors[ option ] = v; return *this;
+    }
 
 
     Renderer::Renderer() {
