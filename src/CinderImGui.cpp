@@ -37,6 +37,7 @@
 #include "cinder/Clipboard.h"
 #include "cinder/CinderAssert.h"
 #include "cinder/Log.h"
+#include "cinder/Signals.h"
 
 using namespace std;
 using namespace ci;
@@ -58,17 +59,18 @@ namespace ImGui {
     ImGui::Options::Options()
     : mWindow( ci::app::getWindow() )
     {
-        mStyle.WindowPadding            = ImVec2( 10, 10 );
-        mStyle.WindowMinSize            = ImVec2( 160, 80 );
-        mStyle.FramePadding             = ImVec2( 4, 4 );
-        mStyle.ItemSpacing              = ImVec2( 8, 4 );
-        mStyle.ItemInnerSpacing         = ImVec2( 6, 4 );
+        mStyle.WindowPadding            = ImVec2( 10.0f, 10.0f );
+        mStyle.WindowMinSize            = ImVec2( 160.0f, 80.0f );
+        mStyle.FramePadding             = ImVec2( 4.0f, 4.0f );
+        mStyle.ItemSpacing              = ImVec2( 8.0f, 4.0f );
+        mStyle.ItemInnerSpacing         = ImVec2( 6.0f, 4.0f );
         mStyle.WindowFillAlphaDefault   = 1.0f;
         mStyle.WindowRounding           = 2.0f;
         mStyle.FrameRounding            = 2.0f;
-        mStyle.TreeNodeSpacing          = 6;
-        mStyle.ColumnsMinSpacing        = 50;
-        mStyle.ScrollBarWidth           = 12;
+        mStyle.IndentSpacing            = 6.0f;
+        mStyle.ColumnsMinSpacing        = 50.0f;
+        mStyle.ScrollbarWidth           = 12.0f;
+        mStyle.ChildWindowRounding      = 0.0f;
        
         dark();
     }
@@ -151,7 +153,7 @@ namespace ImGui {
     }
     ImGui::Options& ImGui::Options::treeNodeSpacing( float spacing )
     {
-        mStyle.TreeNodeSpacing = spacing;
+        mStyle.IndentSpacing = spacing;
         return *this;
     }
     ImGui::Options& ImGui::Options::columnsMinSpacing( float minSpacing )
@@ -161,7 +163,7 @@ namespace ImGui {
     }
     ImGui::Options& ImGui::Options::scrollBarWidth( float width )
     {
-        mStyle.ScrollBarWidth = width;
+        mStyle.ScrollbarWidth = width;
         return *this;
     }
     const ImWchar* ImGui::Options::getFontGlyphRanges( const std::string &name ) const
@@ -234,9 +236,10 @@ namespace ImGui {
         imGuiStyle.AutoFitPadding           = style.AutoFitPadding;
         imGuiStyle.WindowFillAlphaDefault   = style.WindowFillAlphaDefault;
         imGuiStyle.WindowRounding           = style.WindowRounding;
-        imGuiStyle.TreeNodeSpacing          = style.TreeNodeSpacing;
+        imGuiStyle.IndentSpacing            = style.IndentSpacing;
         imGuiStyle.ColumnsMinSpacing        = style.ColumnsMinSpacing;
-        imGuiStyle.ScrollBarWidth           = style.ScrollBarWidth;
+        imGuiStyle.ScrollbarWidth           = style.ScrollbarWidth;
+        imGuiStyle.ChildWindowRounding      = style.ChildWindowRounding;
         // set colors
         for( int i = 0; i < ImGuiCol_COUNT; i++ )
             imGuiStyle.Colors[i] = style.Colors[i];
@@ -256,12 +259,12 @@ namespace ImGui {
         io.KeyMap[ImGuiKey_Backspace]       = KeyEvent::KEY_BACKSPACE;
         io.KeyMap[ImGuiKey_Enter]           = KeyEvent::KEY_RETURN;
         io.KeyMap[ImGuiKey_Escape]          = KeyEvent::KEY_ESCAPE;
-        io.KeyMap[ImGuiKey_A]               = KeyEvent::KEY_a;
-        io.KeyMap[ImGuiKey_C]               = KeyEvent::KEY_c;
-        io.KeyMap[ImGuiKey_V]               = KeyEvent::KEY_v;
-        io.KeyMap[ImGuiKey_X]               = KeyEvent::KEY_c;
-        io.KeyMap[ImGuiKey_Y]               = KeyEvent::KEY_y;
-        io.KeyMap[ImGuiKey_Z]               = KeyEvent::KEY_z;
+//         io.KeyMap[ImGuiKey_A]               = KeyEvent::KEY_a;
+//         io.KeyMap[ImGuiKey_C]               = KeyEvent::KEY_c;
+//         io.KeyMap[ImGuiKey_V]               = KeyEvent::KEY_v;
+//         io.KeyMap[ImGuiKey_X]               = KeyEvent::KEY_c;
+//         io.KeyMap[ImGuiKey_Y]               = KeyEvent::KEY_y;
+//         io.KeyMap[ImGuiKey_Z]               = KeyEvent::KEY_z;
         
         // setup config file path
         string path = ( getAssetPath( "" ) / "imgui.ini" ).string();
@@ -694,23 +697,29 @@ namespace ImGui {
     void keyDown( ci::app::KeyEvent& event )
     {
         ImGuiIO& io = ImGui::GetIO();
-        switch( event.getCode() ){
-                /*case KeyEvent::KEY_LMETA:
-                 case KeyEvent::KEY_RMETA:
-                 io.KeyCtrl = true;
-                 break;
-                 case KeyEvent::KEY_LSHIFT:
-                 case KeyEvent::KEY_RSHIFT:
-                 io.KeyShift = true;
-                 break;*/
-            default:
-                io.KeysDown[ event.getCode() ] = true;
-                
-                uint32_t character = event.getCharUtf32();
-                if( character > 0 && character <= 255 ){
-                    io.AddInputCharacter( (char) character );
-                }
-                break;
+
+        io.KeyShift = event.isShiftDown();
+        io.KeyCtrl = event.isControlDown();
+        io.KeyAlt = event.isAltDown();
+        
+        if ( io.KeyCtrl && !io.KeyShift && event.getCode() == KeyEvent::KEY_a ) // for CTRL+A: select all
+            io.KeysDown[ImGuiKey_A] = true; 
+        if ( io.KeyCtrl && !io.KeyShift && event.getCode() == KeyEvent::KEY_c ) // for CTRL+C: copy
+            io.KeysDown[ImGuiKey_C] = true; 
+        if ( io.KeyCtrl && !io.KeyShift && event.getCode() == KeyEvent::KEY_v ) // for CTRL+V: paste
+            io.KeysDown[ImGuiKey_V] = true; 
+        if ( io.KeyCtrl && !io.KeyShift && event.getCode() == KeyEvent::KEY_x ) // for CTRL+X: cut
+            io.KeysDown[ImGuiKey_X] = true; 
+        if ( io.KeyCtrl && !io.KeyShift && event.getCode() == KeyEvent::KEY_y ) // for CTRL+Y: redo
+            io.KeysDown[ImGuiKey_Y] = true; 
+        if ( io.KeyCtrl && !io.KeyShift && event.getCode() == KeyEvent::KEY_z ) // for CTRL+Z: undo
+            io.KeysDown[ImGuiKey_Z] = true; 
+
+        io.KeysDown[event.getCode()] = true;
+
+        uint32_t character = event.getCharUtf32();
+        if ( character > 0 && character <= 255 ) {
+            io.AddInputCharacter( ( char ) character );
         }
         
         event.setHandled( io.WantCaptureKeyboard );
@@ -719,22 +728,21 @@ namespace ImGui {
     void keyUp( ci::app::KeyEvent& event )
     {
         ImGuiIO& io = ImGui::GetIO();
-        switch( event.getCode() ){
-                /*case KeyEvent::KEY_LMETA:
-                 case KeyEvent::KEY_RMETA:
-                 io.KeyCtrl = false;
-                 for( int i = 0; i < 512; i++ ) io.KeysDown[i] = false; // feels wrong
-                 break;
-                 case KeyEvent::KEY_LSHIFT:
-                 case KeyEvent::KEY_RSHIFT:
-                 io.KeyShift = false;
-                 for( int i = 0; i < 512; i++ ) io.KeysDown[i] = false; // feels wrong
-                 break;*/
-            default:
-                io.KeysDown[ event.getCode() ] = false;
-                break;
-        }
-        
+
+        io.KeyShift = event.isShiftDown();
+        io.KeyCtrl = event.isControlDown();
+        io.KeyAlt = event.isAltDown();
+
+        char dKey = event.getChar();
+
+        if ( dKey == 'a' ) io.KeysDown[ImGuiKey_A] = false;  // for CTRL+A: select all
+        if ( dKey == 'c' ) io.KeysDown[ImGuiKey_C] = false;  // for CTRL+C: copy
+        if ( dKey == 'v' ) io.KeysDown[ImGuiKey_V] = false;  // for CTRL+V: paste
+        if ( dKey == 'x' ) io.KeysDown[ImGuiKey_X] = false;  // for CTRL+X: cut
+        if ( dKey == 'y' ) io.KeysDown[ImGuiKey_Y] = false;  // for CTRL+Y: redo
+        if ( dKey == 'z' ) io.KeysDown[ImGuiKey_Z] = false;  // for CTRL+Z: undo
+
+        io.KeysDown[event.getCode()] = false;
         event.setHandled( io.WantCaptureKeyboard );
     }
     void resize()
@@ -785,16 +793,16 @@ namespace ImGui {
     }
     void disconnectWindow( ci::app::WindowRef window )
     {
-        window->getSignalMouseDown().disconnect( mouseDown );
-        window->getSignalMouseUp().disconnect( mouseUp );
-        window->getSignalMouseDrag().disconnect( mouseDrag );
-        window->getSignalMouseMove().disconnect( mouseMove );
-        window->getSignalMouseWheel().disconnect( mouseWheel );
-        window->getSignalKeyDown().disconnect( keyDown );
-        window->getSignalKeyUp().disconnect( keyUp );
-        window->getSignalResize().disconnect( resize );
-        window->getSignalDraw().disconnect( newFrameGuard );
-        window->getSignalPostDraw().disconnect( render );
+//         window->getSignalMouseDown().disconnect( mouseDown );
+//         window->getSignalMouseUp().disconnect( mouseUp );
+//         window->getSignalMouseDrag().disconnect( mouseDrag );
+//         window->getSignalMouseMove().disconnect( mouseMove );
+//         window->getSignalMouseWheel().disconnect( mouseWheel );
+//         window->getSignalKeyDown().disconnect( keyDown );
+//         window->getSignalKeyUp().disconnect( keyUp );
+//         window->getSignalResize().disconnect( resize );
+//         window->getSignalDraw().disconnect( newFrameGuard );
+//         window->getSignalPostDraw().disconnect( render );
     }
     
     ScopedWindow::ScopedWindow( const std::string &name, bool* opened, glm::vec2 size, float fillAlpha, ImGuiWindowFlags flags )

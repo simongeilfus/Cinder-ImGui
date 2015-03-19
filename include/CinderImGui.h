@@ -28,6 +28,7 @@
 #pragma once
 
 #include <memory>
+#include "cinder/app/App.h"  // NOTE(hunter): Need for IM_VEC4_CLASS_EXTRA in imgui.h
 #include "cinder/Vector.h"
 
 // forward declarations
@@ -115,8 +116,11 @@ namespace ImGui {
         Options& light();
         //! sets dark theme style
         Options& dark();
-        //! sets theme colors
-        Options& themeColors( ImVec4 color0, ImVec4 color1, ImVec4 color2, ImVec4 color3, ImVec4 color4 );
+        //! sets a theme color
+        Options& color( ImGuiCol option, ImVec4 &v ) { mStyle.Colors[ option ] = v; return *this; }
+        Options& color( ImGuiCol option, ci::ColorA &v ) { mStyle.Colors[ option ] = v; return *this; }
+        Options& color( ImGuiCol option, ci::Color &v ) { mStyle.Colors[ option ] = v; return *this; }
+        Options& childWindowRounding( float v ) { mStyle.ChildWindowRounding = v; return *this; }
         
         //! returns the window that will be use to connect the signals and render ImGui
         ci::app::WindowRef                                  getWindow() const { return mWindow; }
