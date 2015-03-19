@@ -38,8 +38,8 @@ namespace cinder {
         typedef std::shared_ptr<class Window>   WindowRef;
     }
     namespace gl {
-        typedef std::shared_ptr<class Texture>		TextureRef;
-        //typedef Texture2dRef							TextureRef;
+        typedef std::shared_ptr<class Texture>  TextureRef;
+        typedef Texture2dRef                    TextureRef;
     }
 }
 
@@ -64,7 +64,7 @@ namespace cinder {
 #include "imgui.h"
 
 #ifndef CINDER_IMGUI_NO_NAMESPACE_ALIAS
-namespace ui = ImGui;
+    namespace ui = ImGui;
 #endif
 
 //! cinder imgui namespace
@@ -119,14 +119,12 @@ namespace ImGui {
         Options& dark();
 
         //! sets a theme color
-        Options& color( ImGuiCol option, ImVec4 &v ) { mStyle.Colors[option] = v; return *this; }
-        Options& color( ImGuiCol option, ci::ColorA &v ) { mStyle.Colors[ option ] = v; return *this; }
-        Options& color( ImGuiCol option, ci::Color &v ) { mStyle.Colors[ option ] = v; return *this; }
+        Options& color( ImGuiCol option, const ci::ColorA &color );
 
         //! returns the window that will be use to connect the signals and render ImGui
         ci::app::WindowRef                                  getWindow() const { return mWindow; }
         //! returns the list of available fonts to use in ImGui
-        const std::vector<std::pair<ci::fs::path, float>>&   getFonts() const { return mFonts; }
+        const std::vector<std::pair<ci::fs::path, float>>&  getFonts() const { return mFonts; }
         //! returns the glyph ranges if available for this font
         const ImWchar*                                      getFontGlyphRanges( const std::string &name ) const;
         //! returns the window that will be use to connect the signals and render ImGui
@@ -134,8 +132,8 @@ namespace ImGui {
 
     protected:
         ImGuiStyle                                  mStyle;
-        std::vector<std::pair<ci::fs::path, float>>  mFonts;
-        std::map<std::string, std::vector<ImWchar>>  mFontsGlyphRanges;
+        std::vector<std::pair<ci::fs::path, float>> mFonts;
+        std::map<std::string, std::vector<ImWchar>> mFontsGlyphRanges;
         ci::app::WindowRef                          mWindow;
     };
 
