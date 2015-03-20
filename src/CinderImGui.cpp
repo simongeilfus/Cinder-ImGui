@@ -239,9 +239,7 @@ namespace ImGui {
 
         // setup config file path
         string path = ( getAssetPath( "" ) / "imgui.ini" ).string();
-        char* pathCStr = new char[path.size() + 1];
-        std::copy( path.begin(), path.end(), pathCStr );
-        io.IniFilename = pathCStr;
+		io.IniFilename = strdup(path.c_str());
 
         // setup fonts
         ImFontAtlas* fontAtlas = ImGui::GetIO().Fonts;

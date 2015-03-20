@@ -39,7 +39,6 @@ namespace cinder {
     }
     namespace gl {
         typedef std::shared_ptr<class Texture>  TextureRef;
-        //typedef Texture2dRef                    TextureRef;
     }
 }
 
