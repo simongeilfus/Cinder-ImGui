@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -10,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{CBC81392-1373-4002-8D15-882211931DC3}</ProjectGuid>
+    <ProjectGuid>{9DA325F9-E22A-4E5A-9A88-A16A06F05397}</ProjectGuid>
     <RootNamespace>Basic</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -49,7 +50,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;"..\..\..\..\..\\include";"..\..\..\..\..\\boost";..\..\..\lib\imgui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\..\..\..\..\\include;..\..\..\..\..\\boost;..\..\..\include;C:\Users\Bruce\Documents\Cinder\Cinder0.8.6\blocks\Cinder-ImGui\lib\imgui</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;NOMINMAX;_WIN32_WINNT=0x0502;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -75,7 +76,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;"..\..\..\..\..\\include";"..\..\..\..\..\\boost";..\..\..\lib\imgui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\..\..\..\..\\include;..\..\..\..\..\\boost;..\..\..\include;C:\Users\Bruce\Documents\Cinder\Cinder0.8.6\blocks\Cinder-ImGui\lib\imgui</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;NOMINMAX;_WIN32_WINNT=0x0502;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
@@ -106,14 +107,14 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\BasicApp.cpp" />
     <ClCompile Include="..\..\..\lib\imgui\imgui.cpp" />
-    <ClCompile Include="..\..\..\src\ImGuiCinder.cpp" />
+    <ClCompile Include="..\..\..\src\CinderImGui.cpp" />
+    <ClCompile Include="..\src\BasicApp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\Resources.h" />
+    <ClInclude Include="..\..\..\include\CinderImGui.h" />
     <ClInclude Include="..\..\..\lib\imgui\imgui.h" />
-    <ClInclude Include="..\..\..\src\ImGuiCinder.h" />
+    <ClInclude Include="..\include\Resources.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

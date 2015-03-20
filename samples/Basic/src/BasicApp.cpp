@@ -1,7 +1,7 @@
 #include "cinder/app/AppNative.h"
 #include "cinder/gl/gl.h"
 
-#include "imGuiCinder.h"
+#include "CinderImGui.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -17,22 +17,30 @@ class BasicApp : public AppNative {
 
 void BasicApp::setup()
 {
-    // set ui window and io events callbacks
-    ImGui::setWindow( getWindow() );
+	// set ui window and io events callbacks
+	//ImGui::connectWindow(getWindow());
+	//ImGui::initialize();
+	ui::initialize();
 }
 
 void BasicApp::shutdown()
 {
     // close ui and save settings
-    ImGui::Shutdown();
+   //ImGui::Shutdown();
+	 ui::Shutdown();
 }
 void BasicApp::draw()
 {
+	//ui::Combo("Blending", &blendMode, blendModes, 3);
+	static int n = 4;
+	ui::SliderInt("Circles", &n, 0, 500);
+	//ui::SliderFloat("Min Radius", &minRadius, 1, 499);
+	//ui::Image(mFbo->getColorTexture(), mFbo->getSize());
     // start gui. all code lives between ImGui::NewFrame and ImGui::Render
-    ImGui::NewFrame();
+    /*ImGui::NewFrame();
     
     static float f = 0.1f;
-    static bool displayTestWindow = false;
+    static bool displayTestWindow = true;
     
     // add some text. the %.xf allows to specify float precision
     ImGui::Text( "Average FPS %.0f", getAverageFps() );
@@ -43,7 +51,7 @@ void BasicApp::draw()
     
     // more example code in ShowTestWindow()
     if( displayTestWindow ){
-        ImGui::SetNewWindowDefaultPos( ImVec2(350, 20) );
+        ImGui::SetNextWindowPos( ImVec2(350, 20) );
         ImGui::ShowTestWindow( &displayTestWindow );
     }
     
@@ -51,7 +59,7 @@ void BasicApp::draw()
 	gl::clear( Color( f, f, f ) );
     
     // render gui
-    ImGui::Render();
+    ImGui::Render();*/
 }
 
 CINDER_APP_NATIVE( BasicApp, RendererGl )
