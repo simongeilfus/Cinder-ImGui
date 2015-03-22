@@ -564,10 +564,10 @@ namespace ImGui {
 		}
 	}
 
-
 	void Image(const ci::gl::TextureRef &texture, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& tint_col, const ImVec4& border_col) {
 		Image((void*)(intptr_t)texture->getId(), size, uv0, uv1, tint_col, border_col);
 	}
+
 	bool ImageButton(const ci::gl::TextureRef &texture, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, int frame_padding, const ImVec4& bg_col, const ImVec4& tint_col) {
 		return ImageButton((void*)(intptr_t)texture->getId(), size, uv0, uv1, frame_padding, bg_col, tint_col);
 	}
@@ -592,7 +592,7 @@ namespace ImGui {
 			io.MouseDown[0] = false;
 			io.MouseDown[1] = true;
 		}
-
+		
 		event.setHandled(io.WantCaptureMouse);
 	}
 	//! sets the right mouseMove IO values in imgui
@@ -628,10 +628,8 @@ namespace ImGui {
 	void keyDown(ci::app::KeyEvent& event) {
 		ImGuiIO& io = ImGui::GetIO();
 
-		if (event.isControlDown()) { io.KeyCtrl = true; }
-		else { io.KeyCtrl = false; }
-		if (event.isShiftDown()) { io.KeyShift = true; }
-		else { io.KeyShift = false; }
+		io.KeyCtrl = event.isControlDown();
+		io.KeyShift = event.isShiftDown();
 
 		switch (event.getCode()) {
 		default:
@@ -650,22 +648,11 @@ namespace ImGui {
 	void keyUp(ci::app::KeyEvent& event) {
 		ImGuiIO& io = ImGui::GetIO();
 
-		if (event.isControlDown()) { io.KeyCtrl = true; }
-		else { io.KeyCtrl = false; }
-		if (event.isShiftDown()) { io.KeyShift = true; }
-		else { io.KeyShift = false; }
+		io.KeyCtrl = event.isControlDown();
+		io.KeyShift = event.isShiftDown();
 
 		switch (event.getCode()) {
-			/*case KeyEvent::KEY_LMETA:
-			 case KeyEvent::KEY_RMETA:
-			 io.KeyCtrl = false;
-			 for( int i = 0; i < 512; i++ ) io.KeysDown[i] = false; // feels wrong
-			 break;
-			 case KeyEvent::KEY_LSHIFT:
-			 case KeyEvent::KEY_RSHIFT:
-			 io.KeyShift = false;
-			 for( int i = 0; i < 512; i++ ) io.KeysDown[i] = false; // feels wrong
-			 break;*/
+
 		default:
 			io.KeysDown[event.getCode()] = false;
 			break;
