@@ -444,6 +444,7 @@ namespace ImGui {
 			const ImDrawCmd* pcmd_end = &cmd_list->commands.back();
 			while (pcmd <= pcmd_end) {
 				const ImDrawCmd& cmd = *pcmd++;
+				glBindTexture(GL_TEXTURE_2D, (GLuint)(intptr_t)cmd.texture_id);
 				getGlslProg()->uniform("ClipRect", Vec4f(cmd.clip_rect));
 				glDrawArrays(GL_TRIANGLES, vtx_consumed, cmd.vtx_count);
 				vtx_consumed += cmd.vtx_count;
