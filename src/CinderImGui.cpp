@@ -63,7 +63,7 @@ namespace ImGui {
 		mStyle.WindowFillAlphaDefault = 1.0f;
 		mStyle.WindowRounding = 2.0f;
 		mStyle.FrameRounding = 2.0f;
-		mStyle.TreeNodeSpacing = 6;
+		mStyle.IndentSpacing = 6;
 		mStyle.ColumnsMinSpacing = 50;
 		mStyle.ScrollBarWidth = 12;
 
