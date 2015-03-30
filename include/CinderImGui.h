@@ -28,13 +28,18 @@
 #pragma once
 
 #include <memory>
+#include <vector>
+#include <map>
+
+#include "cinder/Color.h"
 #include "cinder/Vector.h"
+#include "cinder/Filesystem.h"
 
 // forward declarations
 namespace cinder {
-    typedef std::shared_ptr<class DataSource>	DataSourceRef;
+    typedef std::shared_ptr<class DataSource>           DataSourceRef;
     namespace app {
-        typedef std::shared_ptr<class Window>   WindowRef;
+        typedef std::shared_ptr<class Window>           WindowRef;
     }
     namespace gl {
         typedef std::shared_ptr<class Texture2d>		Texture2dRef;
@@ -44,25 +49,25 @@ namespace cinder {
 
 // Custom implicit cast operators
 #ifndef CINDER_IMGUI_NO_IMPLICIT_CASTS
-    #define IM_VEC2_CLASS_EXTRA                                             \
-    ImVec2(const glm::vec2& f) { x = f.x; y = f.y; }                        \
-    operator glm::vec2() const { return glm::vec2(x,y); }                   \
-    ImVec2(const glm::ivec2& f) { x = f.x; y = f.y; }                       \
-    operator glm::ivec2() const { return glm::ivec2(x,y); }
+#define IM_VEC2_CLASS_EXTRA                                             \
+ImVec2(const glm::vec2& f) { x = f.x; y = f.y; }                        \
+operator glm::vec2() const { return glm::vec2(x,y); }                   \
+ImVec2(const glm::ivec2& f) { x = f.x; y = f.y; }                       \
+operator glm::ivec2() const { return glm::ivec2(x,y); }
 
-    #define IM_VEC4_CLASS_EXTRA                                             \
-    ImVec4(const glm::vec4& f) { x = f.x; y = f.y; z = f.z; w = f.w; }      \
-    operator glm::vec4() const { return glm::vec4(x,y,z,w); }               \
-    ImVec4(const ci::ColorA& f) { x = f.r; y = f.g; z = f.b; w = f.a; }     \
-    operator ci::ColorA() const { return ci::ColorA(x,y,z,w); }             \
-    ImVec4(const ci::Color& f) { x = f.r; y = f.g; z = f.b; w = 1.0f; }     \
-    operator ci::Color() const { return ci::Color(x,y,z); }
+#define IM_VEC4_CLASS_EXTRA                                             \
+ImVec4(const glm::vec4& f) { x = f.x; y = f.y; z = f.z; w = f.w; }      \
+operator glm::vec4() const { return glm::vec4(x,y,z,w); }               \
+ImVec4(const ci::ColorA& f) { x = f.r; y = f.g; z = f.b; w = f.a; }     \
+operator ci::ColorA() const { return ci::ColorA(x,y,z,w); }             \
+ImVec4(const ci::Color& f) { x = f.r; y = f.g; z = f.b; w = 1.0f; }     \
+operator ci::Color() const { return ci::Color(x,y,z); }
 #endif
 
 #include "imgui.h"
 
 #ifndef CINDER_IMGUI_NO_NAMESPACE_ALIAS
-    namespace ui = ImGui;
+namespace ui = ImGui;
 #endif
 
 //! cinder imgui namespace
@@ -116,7 +121,7 @@ namespace ImGui {
         //! sets dark theme style
         Options& dark();
         //! sets theme colors
-        Options& themeColors( ImVec4 color0, ImVec4 color1, ImVec4 color2, ImVec4 color3, ImVec4 color4 );
+        Options& color( ImGuiCol option, const ci::ColorA &color );
         
         //! returns the window that will be use to connect the signals and render ImGui
         ci::app::WindowRef                                  getWindow() const { return mWindow; }
@@ -140,7 +145,7 @@ namespace ImGui {
     void    connectWindow( ci::app::WindowRef window );
     //! disconnects window signals from imgui
     void    disconnectWindow( ci::app::WindowRef window );
-	    
+    
     // Cinder Helpers
     void Image( const ci::gl::Texture2dRef &texture, const ImVec2& size, const ImVec2& uv0 = ImVec2(0,0), const ImVec2& uv1 = ImVec2(1,1), const ImVec4& tint_col = ImVec4(1,1,1,1), const ImVec4& border_col = ImVec4(0,0,0,0) );
     bool ImageButton( const ci::gl::Texture2dRef &texture, const ImVec2& size, const ImVec2& uv0 = ImVec2(0,0),  const ImVec2& uv1 = ImVec2(1,1), int frame_padding = -1, const ImVec4& bg_col = ImVec4(0,0,0,1), const ImVec4& tint_col = ImVec4(1,1,1,1) );
@@ -183,4 +188,3 @@ namespace ImGui {
         ~ScopedId();
     };
 }
-
