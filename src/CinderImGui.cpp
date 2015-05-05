@@ -139,7 +139,7 @@ namespace ImGui {
     }
     ImGui::Options& ImGui::Options::autoFitPadding( const glm::vec2 &padding )
     {
-        mStyle.AutoFitPadding = padding;
+        mStyle.WindowPadding = padding;
         return *this;
     }
     ImGui::Options& ImGui::Options::windowFillAlphaDefault( float defaultAlpha )
@@ -229,7 +229,7 @@ namespace ImGui {
         imGuiStyle.ItemSpacing              = style.ItemSpacing;
         imGuiStyle.ItemInnerSpacing         = style.ItemInnerSpacing;
         imGuiStyle.TouchExtraPadding        = style.TouchExtraPadding;
-        imGuiStyle.AutoFitPadding           = style.AutoFitPadding;
+        imGuiStyle.WindowPadding            = style.WindowPadding;
         imGuiStyle.WindowFillAlphaDefault   = style.WindowFillAlphaDefault;
         imGuiStyle.WindowRounding           = style.WindowRounding;
         imGuiStyle.IndentSpacing            = style.IndentSpacing;
