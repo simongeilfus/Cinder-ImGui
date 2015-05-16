@@ -555,11 +555,11 @@ ImFont* Renderer::addFont( ci::DataSourceRef font, float size, const ImWchar* gl
     
     Font ciFont( font, size );
     
-    Buffer &buffer          = font->getBuffer();
-    void* bufferCopy        = (void*) malloc( buffer.getDataSize() );
-    memcpy( bufferCopy, buffer.getData(), buffer.getDataSize() );
+    auto buffer				= font->getBuffer();
+    void* bufferCopy        = (void*) malloc( buffer->getSize() );
+    memcpy( bufferCopy, buffer->getData(), buffer->getSize() );
     
-    ImFont* newFont         = fontAtlas->AddFontFromMemoryTTF( bufferCopy, buffer.getDataSize(), size, glyph_ranges );
+    ImFont* newFont         = fontAtlas->AddFontFromMemoryTTF( bufferCopy, buffer->getSize(), size, glyph_ranges );
     
     mFonts.insert( make_pair( font->getFilePath().stem().string(), newFont ) );
     return newFont;
