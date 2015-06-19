@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "cinder/gl/Vbo.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/GlslProg.h"
+#include "cinder/gl/Scoped.h"
+#include "cinder/Font.h"
 #include "cinder/Clipboard.h"
 #include "cinder/CinderAssert.h"
 #include "cinder/Log.h"
@@ -554,13 +556,13 @@ ImFont* Renderer::addFont( ci::DataSourceRef font, float size, const ImWchar* gl
     
     
     Font ciFont( font, size );
-    
-    Buffer &buffer          = font->getBuffer();
-    void* bufferCopy        = (void*) malloc( buffer.getDataSize() );
-    memcpy( bufferCopy, buffer.getData(), buffer.getDataSize() );
-    
-    ImFont* newFont         = fontAtlas->AddFontFromMemoryTTF( bufferCopy, buffer.getDataSize(), size, glyph_ranges );
-    
+
+    const BufferRef &buffer = font->getBuffer();
+    void* bufferCopy        = (void*) malloc( buffer->getSize() );
+    memcpy( bufferCopy, buffer->getData(), buffer->getSize() );
+
+    ImFont* newFont         = fontAtlas->AddFontFromMemoryTTF( bufferCopy, buffer->getSize(), size, glyph_ranges );
+
     mFonts.insert( make_pair( font->getFilePath().stem().string(), newFont ) );
     return newFont;
 }
