@@ -94,7 +94,11 @@ struct Options {
     //! Minimum window size
     Options& windowMinSize( const glm::vec2 &minSize );
     //! Radius of window corners rounding. Set to 0.0f to have rectangular windows
-    Options& windowRounding( float rounding );
+	Options& windowRounding( float rounding );
+	//! Alignment for title bar text
+	Options& windowTitleAlign( ImGuiAlign align );
+	//! Radius of child window corners rounding. Set to 0.0f to have rectangular windows
+	Options& childWindowRounding( float rounding );
     //! Padding within a framed rectangle (used by most widgets)
     Options& framePadding( const glm::vec2 &padding );
     //! Radius of frame corners rounding. Set to 0.0f to have rectangular frame (used by most widgets).
@@ -105,8 +109,6 @@ struct Options {
     Options& itemInnerSpacing( const glm::vec2 &spacing );
     //! Expand bounding box for touch-based system where touch position is not accurate enough (unnecessary for mouse inputs). Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget running. So dont grow this too much!
     Options& touchExtraPadding( const glm::vec2 &padding );
-    //! Extra space after auto-fit (double-clicking on resize grip)
-    Options& autoFitPadding( const glm::vec2 &padding );
     //! Default alpha of window background, if not specified in ImGui::Begin()
     Options& windowFillAlphaDefault( float defaultAlpha );
     //! Horizontal spacing when entering a tree node
@@ -115,11 +117,21 @@ struct Options {
     Options& columnsMinSpacing( float minSpacing );
     //! Width of the vertical scroll bar
     Options& scrollBarWidth( float width );
-    
-    //! sets light theme style
-    Options& light();
-    //! sets dark theme style
-    Options& dark();
+	//! Radius of grab corners for scrollbar
+	Options& scrollbarRounding( float rounding );
+	//! Minimum width/height of a grab box for slider/scrollbar
+	Options& grabMinSize( float minSize );
+	//! Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs.
+	//Options& grabRounding( float rounding );
+	//! Window positions are clamped to be visible within the display area by at least this amount. Only covers regular windows.
+	Options& displayWindowPadding( const glm::vec2 &padding );
+	//! If you cannot see the edge of your screen (e.g. on a TV) increase the safe area padding. Covers popups/tooltips as well regular windows.
+	Options& displaySafeAreaPadding( const glm::vec2 &padding );
+	
+    //! sets imgui original theme
+    Options& defaultTheme();
+    //! sets the dark theme
+    Options& darkTheme();
     //! sets theme colors
     Options& color( ImGuiCol option, const ci::ColorA &color );
     
@@ -147,18 +159,29 @@ void    connectWindow( ci::app::WindowRef window );
 void    disconnectWindow( ci::app::WindowRef window );
     
 // Cinder Helpers
-void Image( const ci::gl::Texture2dRef &texture, const ImVec2& size, const ImVec2& uv0 = ImVec2(0,0), const ImVec2& uv1 = ImVec2(1,1), const ImVec4& tint_col = ImVec4(1,1,1,1), const ImVec4& border_col = ImVec4(0,0,0,0) );
-bool ImageButton( const ci::gl::Texture2dRef &texture, const ImVec2& size, const ImVec2& uv0 = ImVec2(0,0),  const ImVec2& uv1 = ImVec2(1,1), int frame_padding = -1, const ImVec4& bg_col = ImVec4(0,0,0,1), const ImVec4& tint_col = ImVec4(1,1,1,1) );
+void Image( const ci::gl::Texture2dRef &texture, const ImVec2& size, const ImVec2& uv0 = ImVec2(0,1), const ImVec2& uv1 = ImVec2(1,0), const ImVec4& tint_col = ImVec4(1,1,1,1), const ImVec4& border_col = ImVec4(0,0,0,0) );
+bool ImageButton( const ci::gl::Texture2dRef &texture, const ImVec2& size, const ImVec2& uv0 = ImVec2(0,1),  const ImVec2& uv1 = ImVec2(1,0), int frame_padding = -1, const ImVec4& bg_col = ImVec4(0,0,0,1), const ImVec4& tint_col = ImVec4(1,1,1,1) );
 void PushFont( const std::string& name = "" );
+	
+// Std Helpers
+bool ListBox( const char* label, int* current_item, const std::vector<std::string>& items, int height_in_items = -1);
+bool InputText( const char* label, std::string* buf, ImGuiInputTextFlags flags = 0, ImGuiTextEditCallback callback = NULL, void* user_data = NULL);
+bool InputTextMultiline( const char* label, std::string* buf, const ImVec2& size = ImVec2(0,0), ImGuiInputTextFlags flags = 0, ImGuiTextEditCallback callback = NULL, void* user_data = NULL);
+bool Combo( const char* label, int* current_item, const std::vector<std::string>& items, int height_in_items = -1);
 
 // Scoped objects goodness (push the state when created and pop it when destroyed)
 struct ScopedWindow : public boost::noncopyable {
-    ScopedWindow( const std::string &name = "Debug", bool* opened = NULL, glm::vec2 size = glm::vec2(0), float fillAlpha = -1.0f, ImGuiWindowFlags flags = 0 );
+    ScopedWindow( const std::string &name = "Debug", ImGuiWindowFlags flags = 0 );
+    ScopedWindow( const std::string &name, glm::vec2 size, float fillAlpha = -1.0f, ImGuiWindowFlags flags = 0 );
     ~ScopedWindow();
 };
 struct ScopedChild : public boost::noncopyable {
     ScopedChild( const std::string &name, glm::vec2 size = glm::vec2(0), bool border = false, ImGuiWindowFlags extraFlags = 0 );
     ~ScopedChild();
+};
+struct ScopedGroup : public boost::noncopyable {
+    ScopedGroup();
+    ~ScopedGroup();
 };
 struct ScopedFont : public boost::noncopyable {
     ScopedFont( const std::string &name );
@@ -187,4 +210,17 @@ struct ScopedId : public boost::noncopyable {
     ScopedId( const int intId );
     ~ScopedId();
 };
+struct ScopedMainMenuBar : public boost::noncopyable {
+    ScopedMainMenuBar();
+	~ScopedMainMenuBar();	
+protected:
+	bool mOpened;
+};
+struct ScopedMenuBar : public boost::noncopyable {
+    ScopedMenuBar();
+	~ScopedMenuBar();
+protected:
+	bool mOpened;
+};
+	
 }

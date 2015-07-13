@@ -12,6 +12,8 @@
 	<includePath>lib</includePath>
 	<includePath>include</includePath>
 	<header>include/CinderImGui.h</header>
+	<header>include/imgui_user.h</header>
+	<header>include/imgui_user.inl</header>
 	<header>lib/imgui/imgui.h</header>
 	<source>src/CinderImGui.cpp</source>
 	<source>lib/imgui/imgui.cpp</source>
