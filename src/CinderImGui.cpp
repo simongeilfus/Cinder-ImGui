@@ -29,6 +29,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "CinderImGui.h"
 
 #include "cinder/app/App.h"
+#include "cinder/gl/Scoped.h"
+#include "cinder/gl/draw.h"
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Vao.h"
 #include "cinder/gl/Vbo.h"
