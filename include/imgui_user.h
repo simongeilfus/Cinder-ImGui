@@ -31,8 +31,8 @@ namespace ImGui {
 	
 // TODO : Change string font to ImFont* font = nullptr. if null then font = g.Fonts[1]
 
-IMGUI_API bool	IconButton( const std::string &icon, const ImVec2& size = ImVec2(0,0), const std::string &font = "fa", bool frame = false );
-IMGUI_API bool	IconButton( const std::string &icon, const std::string &label, const ImVec2& size = ImVec2(0,0), const std::string &font = "fa", bool frame = true );
+IMGUI_API bool	IconButton( const std::string &icon, const ImVec2& size = ImVec2(0,0), ImFont* font = nullptr, bool frame = false );
+IMGUI_API bool	IconButton( const std::string &icon, const std::string &label, const ImVec2& size = ImVec2(0,0), ImFont* font = nullptr, bool frame = true );
 	
 IMGUI_API bool	ColorPicker( const char* label, float rgb[3] );
 	
