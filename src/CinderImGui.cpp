@@ -1190,6 +1190,10 @@ ScopedGroup::~ScopedGroup()
 {
 	ImGui::EndGroup();
 }
+ScopedFont::ScopedFont( ImFont* font )
+{
+	ImGui::PushFont( font );
+}
 ScopedFont::ScopedFont( const std::string &name )
 {
     ImGui::PushFont( name );

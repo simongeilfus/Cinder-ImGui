@@ -36,16 +36,15 @@ bool ImGui::IconButton( const std::string &icon, const ImVec2& size, ImFont* fon
 	ImGuiState& g = *GImGui;
 	
 	// the icon font should be loaded as the second font for this to work
-	if( font == nullptr ){
-		font = g.IO.Fonts->Fonts[1];
+	if( font == nullptr && ImGui::GetIO().Fonts->Fonts[1] != nullptr ){
+		font = ImGui::GetIO().Fonts->Fonts[1];
 	}
 
 	// no icon font found
 	assert( font != nullptr );
 	
 	// change font
-	ImFont* backupFont = g.Font;
-	g.Font = font;
+	ScopedFont scopedFont( font );
 	
 	const ImVec2& size_arg = size;
 	ImGuiButtonFlags flags = 0;
@@ -83,9 +82,6 @@ bool ImGui::IconButton( const std::string &icon, const ImVec2& size, ImFont* fon
 		ScopedStyleColor color( ImGuiCol_Text, ImVec4( (float)((col >> 0) & 0xFF) / 255.0f, (float)((col >> 8) & 0xFF) / 255.0f, (float)((col >> 16) & 0xFF) / 255.0f, (float)((col >> 24) & 0xFF) / 255.0f ) );
 		RenderTextClipped(bb.Min, bb.Max, icon.c_str(), NULL, &icon_size, ImGuiAlign_Center | ImGuiAlign_VCenter);
 	}
-	
-	// restore font
-	g.Font = backupFont;
 	
 	return pressed;
 }
@@ -134,31 +130,23 @@ bool ImGui::IconButton( const std::string &icon, const std::string &label, const
 		RenderFrame(bb.Min, bb.Max, col, true, style.FrameRounding);
 		{
 			// change font
-			ImFont* backupFont = g.Font;
-			g.Font = font;
+			ScopedFont scopedFont( font );
 			
 			const ImVec2 iconBbSize( icon_size.x + style.FramePadding.x*4, icon_size.y + style.FramePadding.y*2 );
 			const ImRect iconBb( pos, pos + iconBbSize);
 			RenderTextClipped(ImVec2(style.FramePadding.x,0)+iconBb.Min, iconBb.Max, icon.c_str(), NULL, &label_size, ImGuiAlign_Center | ImGuiAlign_VCenter);
-			
-			// restore font
-			g.Font = backupFont;
 		}
 		RenderTextClipped(ImVec2(style.FramePadding.x*2+icon_size.x,0)+bb.Min, bb.Max, label.c_str(), NULL, &label_size, ImGuiAlign_Center | ImGuiAlign_VCenter);
 	}
 	else {
 		{
 			// change font
-			ImFont* backupFont = g.Font;
-			g.Font = font;
+			ScopedFont scopedFont( font );
 			
 			ScopedStyleColor color( ImGuiCol_Text, ImVec4( (float)((col >> 0) & 0xFF) / 255.0f, (float)((col >> 8) & 0xFF) / 255.0f, (float)((col >> 16) & 0xFF) / 255.0f, (float)((col >> 24) & 0xFF) / 255.0f ) );
 			const ImVec2 iconBbSize( icon_size.x + style.FramePadding.x*4, icon_size.y + style.FramePadding.y*2 );
 			const ImRect iconBb( pos, pos + iconBbSize);
 			RenderTextClipped(ImVec2(style.FramePadding.x,0)+iconBb.Min, iconBb.Max, icon.c_str(), NULL, &label_size, ImGuiAlign_Center | ImGuiAlign_VCenter);
-
-			// restore font
-			g.Font = backupFont;
 		}
 		RenderTextClipped(ImVec2(style.FramePadding.x*2+icon_size.x,0)+bb.Min, bb.Max, label.c_str(), NULL, &label_size, ImGuiAlign_Center | ImGuiAlign_VCenter);
 	}

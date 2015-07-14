@@ -184,6 +184,7 @@ struct ScopedGroup : public boost::noncopyable {
     ~ScopedGroup();
 };
 struct ScopedFont : public boost::noncopyable {
+    ScopedFont( ImFont* font );
     ScopedFont( const std::string &name );
     ~ScopedFont();
 };
