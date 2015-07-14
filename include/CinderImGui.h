@@ -64,9 +64,6 @@ namespace gl {
     operator ci::Color() const { return ci::Color(x,y,z); }
 #endif
 
-#define IMGUI_INCLUDE_IMGUI_USER_H
-#define IMGUI_INCLUDE_IMGUI_USER_INL
-
 #include "imgui.h"
 
 #ifndef CINDER_IMGUI_NO_NAMESPACE_ALIAS
