@@ -122,11 +122,15 @@ struct Options {
 	//! Minimum width/height of a grab box for slider/scrollbar
 	Options& grabMinSize( float minSize );
 	//! Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs.
-	//Options& grabRounding( float rounding );
+	Options& grabRounding( float rounding );
 	//! Window positions are clamped to be visible within the display area by at least this amount. Only covers regular windows.
 	Options& displayWindowPadding( const glm::vec2 &padding );
 	//! If you cannot see the edge of your screen (e.g. on a TV) increase the safe area padding. Covers popups/tooltips as well regular windows.
 	Options& displaySafeAreaPadding( const glm::vec2 &padding );
+	//! Enable anti-aliasing on lines/borders. Disable if you are really tight on CPU/GPU.
+	Options& antiAliasedLines( bool antiAliasing );
+	//! Enable anti-aliasing on filled shapes (rounded rectangles, circles, etc.)
+	Options& AntiAliasedShapes( bool antiAliasing );
 	
     //! sets imgui original theme
     Options& defaultTheme();

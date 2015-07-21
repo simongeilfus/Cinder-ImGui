@@ -30,11 +30,12 @@ void BasicApp::mouseDown( MouseEvent event )
 
 void BasicApp::update()
 {
-	static bool showTestWindow = false;
+	static bool showTestWindow = true;
+	static bool showWindowWithMenu = false;
 	
 	// a few scoped object like ScopedWindow allow to quickly
 	// push and pop states
-	{
+	if( showWindowWithMenu ) {
 		ui::ScopedWindow window( "Window with Menu", ImGuiWindowFlags_MenuBar );
 		
 		// setup the window menu bar
@@ -67,6 +68,7 @@ void BasicApp::update()
 		// and a view menu
 		if( ui::BeginMenu( "View" ) ){
 			ui::MenuItem( "TestWindow", nullptr, &showTestWindow );
+			ui::MenuItem( "Window with Menu", nullptr, &showWindowWithMenu );
 			ui::EndMenu();
 		}
 	}

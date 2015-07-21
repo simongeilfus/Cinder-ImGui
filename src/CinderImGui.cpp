@@ -50,13 +50,7 @@ namespace ImGui {
 // static variables
 static bool sInitialized = false;
 
-// same as ImDrawVert
-struct RenderData {
-    vec2 pos;
-    vec2 uv;
-    vec4 color;
-};
-
+	
 ImGui::Options::Options()
 : mWindow( ci::app::getWindow() )
 {
@@ -170,11 +164,11 @@ ImGui::Options& ImGui::Options::grabMinSize( float minSize )
 	mStyle.GrabMinSize = minSize;
 	return *this;
 }
-/*ImGui::Options& ImGui::Options::grabRounding( float rounding )
+ImGui::Options& ImGui::Options::grabRounding( float rounding )
 {
 	mStyle.GrabRounding = rounding;
 	return *this;
-}*/
+}
 ImGui::Options& ImGui::Options::displayWindowPadding( const glm::vec2 &padding )
 {
 	mStyle.DisplayWindowPadding = padding;
@@ -185,6 +179,16 @@ ImGui::Options& ImGui::Options::displaySafeAreaPadding( const glm::vec2 &padding
 	mStyle.DisplaySafeAreaPadding = padding;
 	return *this;
 }
+ImGui::Options& ImGui::Options::antiAliasedLines( bool antiAliasing )
+{
+	mStyle.AntiAliasedLines = antiAliasing;
+	return *this;
+}
+ImGui::Options& ImGui::Options::AntiAliasedShapes( bool antiAliasing )
+{
+	mStyle.AntiAliasedShapes = antiAliasing;
+	return *this;
+}
 	
 const ImWchar* ImGui::Options::getFontGlyphRanges( const std::string &name ) const
 {
@@ -192,152 +196,15 @@ const ImWchar* ImGui::Options::getFontGlyphRanges( const std::string &name ) con
         return &mFontsGlyphRanges.find(name)->second[0];
     else return NULL;
 }
-
-//! cinder renderer
-class Renderer {
-public:
-    Renderer();
-    
-    //! renders imgui drawlist
-    void renderDrawList( ImDrawList** const cmd_lists, int cmd_lists_count );
-    //! sets the font
-    ImFont* addFont( ci::DataSourceRef font, float size, const ImWchar* glyph_ranges = NULL );
-    
-    //! initializes and returns the font texture
-    ci::gl::Texture2dRef getFontTextureRef();
-    //! initializes and returns the vao
-    ci::gl::VaoRef getVao();
-    //! initializes and returns the vbo
-    ci::gl::VboRef getVbo();
-    //! initializes and returns the shader
-    ci::gl::GlslProgRef getGlslProg();
-    
-    //! initializes the font texture
-    void initFontTexture();
-    //! initializes the vbo mesh
-    void initBuffers( size_t size = 1000 );
-    //! initializes the shader
-    void initGlslProg();
-    
-    ImFont* getFont( const std::string &name );
-    
-protected:
-    ci::gl::Texture2dRef    mFontTexture;
-    ci::gl::VaoRef          mVao;
-    ci::gl::VboRef          mVbo;
-    ci::gl::GlslProgRef     mShader;
-    
-    map<string,ImFont*>     mFonts;
-};
-
-typedef std::shared_ptr<Renderer> RendererRef;
-RendererRef getRenderer()
-{
-    static RendererRef renderer = RendererRef( new Renderer() );
-    return renderer;
-}
-
-void initialize( const Options &options )
-{
-    auto renderer                       = getRenderer();
-    auto window                         = options.getWindow();
-    
-    // set style
-    const ImGuiStyle& style             = options.getStyle();
-    ImGuiStyle& imGuiStyle              = ImGui::GetStyle();
-    imGuiStyle.Alpha                    = style.Alpha;
-    imGuiStyle.WindowPadding            = style.WindowPadding;
-    imGuiStyle.WindowMinSize            = style.WindowMinSize;
-    imGuiStyle.FramePadding             = style.FramePadding;
-    imGuiStyle.FrameRounding            = style.FrameRounding;
-    imGuiStyle.ItemSpacing              = style.ItemSpacing;
-    imGuiStyle.ItemInnerSpacing         = style.ItemInnerSpacing;
-    imGuiStyle.IndentSpacing            = style.IndentSpacing;
-    imGuiStyle.TouchExtraPadding        = style.TouchExtraPadding;
-    imGuiStyle.WindowFillAlphaDefault   = style.WindowFillAlphaDefault;
-    imGuiStyle.WindowRounding           = style.WindowRounding;
-    imGuiStyle.ColumnsMinSpacing        = style.ColumnsMinSpacing;
-    imGuiStyle.ScrollbarWidth           = style.ScrollbarWidth;
-    
-    // set colors
-    for( int i = 0; i < ImGuiCol_COUNT; i++ )
-        imGuiStyle.Colors[i] = style.Colors[i];
-    
-    // set io and keymap
-    ImGuiIO& io                         = ImGui::GetIO();
-    io.DisplaySize                      = ImVec2( window->getSize().x, window->getSize().y );
-    io.DeltaTime                        = 1.0f / 60.0f;
-    io.KeyMap[ImGuiKey_Tab]             = KeyEvent::KEY_TAB;
-    io.KeyMap[ImGuiKey_LeftArrow]       = KeyEvent::KEY_LEFT;
-    io.KeyMap[ImGuiKey_RightArrow]      = KeyEvent::KEY_RIGHT;
-    io.KeyMap[ImGuiKey_UpArrow]         = KeyEvent::KEY_UP;
-    io.KeyMap[ImGuiKey_DownArrow]       = KeyEvent::KEY_DOWN;
-    io.KeyMap[ImGuiKey_Home]            = KeyEvent::KEY_HOME;
-    io.KeyMap[ImGuiKey_End]             = KeyEvent::KEY_END;
-    io.KeyMap[ImGuiKey_Delete]          = KeyEvent::KEY_DELETE;
-    io.KeyMap[ImGuiKey_Backspace]       = KeyEvent::KEY_BACKSPACE;
-    io.KeyMap[ImGuiKey_Enter]           = KeyEvent::KEY_RETURN;
-    io.KeyMap[ImGuiKey_Escape]          = KeyEvent::KEY_ESCAPE;
-    io.KeyMap[ImGuiKey_A]               = KeyEvent::KEY_a;
-    io.KeyMap[ImGuiKey_C]               = KeyEvent::KEY_c;
-    io.KeyMap[ImGuiKey_V]               = KeyEvent::KEY_v;
-    io.KeyMap[ImGuiKey_X]               = KeyEvent::KEY_x;
-    io.KeyMap[ImGuiKey_Y]               = KeyEvent::KEY_y;
-    io.KeyMap[ImGuiKey_Z]               = KeyEvent::KEY_z;
-    
-    // setup config file path
-    string path = ( getAssetPath( "" ) / "imgui.ini" ).string();
-    char* pathCStr = new char[ path.size() + 1];
-    std::copy( path.begin(), path.end(), pathCStr );
-    io.IniFilename = pathCStr;
-    
-    // setup fonts
-    ImFontAtlas* fontAtlas  = ImGui::GetIO().Fonts;
-    fontAtlas->Clear();
-    for( auto font : options.getFonts() ){
-        string name = font.first.stem().string();
-        renderer->addFont( loadFile( font.first ), font.second, options.getFontGlyphRanges( name )  );
-    }
-    renderer->initFontTexture();
-    
-    // clipboard callbacks
-    io.SetClipboardTextFn = []( const char* text ){
-        const char* text_end = text + strlen(text);
-        char* buf = (char*)malloc(text_end - text + 1);
-        memcpy(buf, text, text_end-text);
-        buf[text_end-text] = '\0';
-        Clipboard::setString( buf );
-        free(buf);
-    };
-	io.GetClipboardTextFn = [](){
-		string str = Clipboard::getString();
-		static vector<char> strCopy;
-		strCopy = vector<char>(str.begin(), str.end());
-		strCopy.push_back('\0');
-        return (const char *) &strCopy[0];
-    };
-    
-    // renderer callback
-    io.RenderDrawListsFn = []( ImDrawList **const cmd_lists, int cmd_lists_count ){
-        auto renderer = getRenderer();
-        renderer->renderDrawList( cmd_lists, cmd_lists_count );
-    };
-    
-    // connect window's signals
-    connectWindow( window );
-    ImGui::NewFrame();
-    
-    sInitialized = true;
-}
-
-Options& Options::defaultTheme()
+	
+ImGui::Options& ImGui::Options::defaultTheme()
 {
 	mStyle = ImGuiStyle();
 	
-    return *this;
+	return *this;
 }
 
-Options& Options::darkTheme()
+ImGui::Options& ImGui::Options::darkTheme()
 {
 	mStyle.WindowMinSize            = ImVec2( 160, 20 );
 	mStyle.FramePadding             = ImVec2( 4, 2 );
@@ -347,11 +214,13 @@ Options& Options::darkTheme()
 	mStyle.WindowFillAlphaDefault   = 1.0f;
 	mStyle.WindowRounding           = 4.0f;
 	mStyle.FrameRounding            = 2.0f;
-	mStyle.IndentSpacing            = 6;
+	mStyle.IndentSpacing            = 6.0f;
 	mStyle.ItemInnerSpacing			= ImVec2( 2, 4 );
-	mStyle.ColumnsMinSpacing        = 50;
-	mStyle.GrabMinSize				= 2.0f;
-	mStyle.ScrollbarWidth           = 12;
+	mStyle.ColumnsMinSpacing        = 50.0f;
+	mStyle.GrabMinSize				= 14.0f;
+	mStyle.GrabRounding				= 16.0f;
+	mStyle.ScrollbarWidth           = 12.0f;
+	mStyle.ScrollbarRounding		= 16.0f;
 	
 	ImGuiStyle& style = mStyle;
 	style.Colors[ImGuiCol_Text]                  = ImVec4(0.86f, 0.93f, 0.89f, 0.61f);
@@ -384,7 +253,7 @@ Options& Options::darkTheme()
 	style.Colors[ImGuiCol_Column]                = ImVec4(0.47f, 0.77f, 0.83f, 0.32f);
 	style.Colors[ImGuiCol_ColumnHovered]         = ImVec4(0.92f, 0.18f, 0.29f, 0.78f);
 	style.Colors[ImGuiCol_ColumnActive]          = ImVec4(0.92f, 0.18f, 0.29f, 1.00f);
-	style.Colors[ImGuiCol_ResizeGrip]            = ImVec4(0.47f, 0.77f, 0.83f, 0.32f);
+	style.Colors[ImGuiCol_ResizeGrip]            = ImVec4(0.47f, 0.77f, 0.83f, 0.04f);
 	style.Colors[ImGuiCol_ResizeGripHovered]     = ImVec4(0.92f, 0.18f, 0.29f, 0.78f);
 	style.Colors[ImGuiCol_ResizeGripActive]      = ImVec4(0.92f, 0.18f, 0.29f, 1.00f);
 	style.Colors[ImGuiCol_CloseButton]           = ImVec4(0.86f, 0.93f, 0.89f, 0.16f);
@@ -398,112 +267,112 @@ Options& Options::darkTheme()
 	style.Colors[ImGuiCol_TooltipBg]             = ImVec4(0.47f, 0.77f, 0.83f, 0.72f);
 	style.Colors[ImGuiCol_ModalWindowDarkening]  = ImVec4(0.20f, 0.22f, 0.27f, 0.73f);
 	
-/* Dark
+	/* Dark
 	 
 	 mStyle.WindowPadding            = ImVec2( 20, 10 );
-    mStyle.WindowMinSize            = ImVec2( 160, 20 );
-    mStyle.FramePadding             = ImVec2( 4, 4 );
-    mStyle.ItemSpacing              = ImVec2( 8, 4 );
-	mStyle.ItemInnerSpacing         = ImVec2( 6, 4 );
-	mStyle.Alpha					= 0.95f;
-	mStyle.WindowFillAlphaDefault   = 0.95f;
-    mStyle.WindowRounding           = 2.0f;
-    mStyle.FrameRounding            = 2.0f;
-    mStyle.IndentSpacing            = 6;
-    mStyle.ColumnsMinSpacing        = 50;
-    mStyle.ScrollbarWidth           = 12;
-	
-	ImGuiStyle& style = mStyle;
-	style.Colors[ImGuiCol_Text]                  = ImVec4(1.00f, 1.00f, 0.86f, 0.50f);
-	style.Colors[ImGuiCol_TextDisabled]          = ImVec4(1.00f, 1.00f, 0.86f, 0.22f);
-	style.Colors[ImGuiCol_WindowBg]              = ImVec4(0.18f, 0.18f, 0.18f, 1.00f);
-	style.Colors[ImGuiCol_ChildWindowBg]         = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
-	style.Colors[ImGuiCol_Border]                = ImVec4(0.31f, 0.31f, 1.00f, 0.00f);
-	style.Colors[ImGuiCol_BorderShadow]          = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-	style.Colors[ImGuiCol_FrameBg]               = ImVec4(0.22f, 0.22f, 0.22f, 1.00f);
-	style.Colors[ImGuiCol_FrameBgHovered]        = ImVec4(0.27f, 0.27f, 0.27f, 1.00f);
-	style.Colors[ImGuiCol_FrameBgActive]         = ImVec4(0.36f, 0.36f, 0.36f, 1.00f);
-	style.Colors[ImGuiCol_TitleBg]               = ImVec4(0.23f, 0.23f, 0.23f, 1.00f);
-	style.Colors[ImGuiCol_TitleBgCollapsed]      = ImVec4(0.24f, 0.24f, 0.24f, 1.00f);
-	style.Colors[ImGuiCol_TitleBgActive]         = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
-	style.Colors[ImGuiCol_MenuBarBg]             = ImVec4(0.97f, 0.48f, 0.32f, 1.00f);
-	style.Colors[ImGuiCol_ScrollbarBg]           = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
-	style.Colors[ImGuiCol_ScrollbarGrab]         = ImVec4(0.33f, 0.33f, 0.33f, 1.00f);
-	style.Colors[ImGuiCol_ScrollbarGrabHovered]  = ImVec4(0.26f, 0.26f, 0.26f, 1.00f);
-	style.Colors[ImGuiCol_ScrollbarGrabActive]   = ImVec4(0.36f, 0.36f, 0.36f, 1.00f);
-	style.Colors[ImGuiCol_ComboBg]               = ImVec4(0.29f, 0.29f, 0.29f, 1.00f);
-	style.Colors[ImGuiCol_CheckMark]             = ImVec4(0.22f, 0.22f, 0.22f, 0.50f);
-	style.Colors[ImGuiCol_SliderGrab]            = ImVec4(0.23f, 0.23f, 0.23f, 1.00f);
-	style.Colors[ImGuiCol_SliderGrabActive]      = ImVec4(0.38f, 0.38f, 0.38f, 1.00f);
-	style.Colors[ImGuiCol_Button]                = ImVec4(0.32f, 0.32f, 0.32f, 1.00f);
-	style.Colors[ImGuiCol_ButtonHovered]         = ImVec4(0.45f, 0.45f, 0.45f, 1.00f);
-	style.Colors[ImGuiCol_ButtonActive]          = ImVec4(1.00f, 1.00f, 0.62f, 1.00f);
-	style.Colors[ImGuiCol_Header]                = ImVec4(0.34f, 0.34f, 0.34f, 1.00f);
-	style.Colors[ImGuiCol_HeaderHovered]         = ImVec4(0.22f, 0.22f, 0.22f, 1.00f);
-	style.Colors[ImGuiCol_HeaderActive]          = ImVec4(0.27f, 0.27f, 0.27f, 1.00f);
-	style.Colors[ImGuiCol_Column]                = ImVec4(0.38f, 0.38f, 0.38f, 1.00f);
-	style.Colors[ImGuiCol_ColumnHovered]         = ImVec4(0.56f, 0.56f, 0.56f, 1.00f);
-	style.Colors[ImGuiCol_ColumnActive]          = ImVec4(0.68f, 0.68f, 0.68f, 1.00f);
-	style.Colors[ImGuiCol_ResizeGrip]            = ImVec4(0.38f, 0.38f, 0.38f, 1.00f);
-	style.Colors[ImGuiCol_ResizeGripHovered]     = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
-	style.Colors[ImGuiCol_ResizeGripActive]      = ImVec4(0.65f, 0.65f, 0.65f, 1.00f);
-	style.Colors[ImGuiCol_CloseButton]           = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
-	style.Colors[ImGuiCol_CloseButtonHovered]    = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
-	style.Colors[ImGuiCol_CloseButtonActive]     = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
-	style.Colors[ImGuiCol_PlotLines]             = ImVec4(0.51f, 0.51f, 0.51f, 1.00f);
-	style.Colors[ImGuiCol_PlotLinesHovered]      = ImVec4(0.71f, 0.71f, 0.71f, 1.00f);
-	style.Colors[ImGuiCol_PlotHistogram]         = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-	style.Colors[ImGuiCol_PlotHistogramHovered]  = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
-	style.Colors[ImGuiCol_TextSelectedBg]        = ImVec4(0.35f, 0.35f, 0.35f, 1.00f);
-	style.Colors[ImGuiCol_TooltipBg]             = ImVec4(0.16f, 0.16f, 0.16f, 0.72f);
-	style.Colors[ImGuiCol_ModalWindowDarkening]  = ImVec4(0.20f, 0.20f, 0.20f, 0.65f);*/
+	 mStyle.WindowMinSize            = ImVec2( 160, 20 );
+	 mStyle.FramePadding             = ImVec2( 4, 4 );
+	 mStyle.ItemSpacing              = ImVec2( 8, 4 );
+	 mStyle.ItemInnerSpacing         = ImVec2( 6, 4 );
+	 mStyle.Alpha					= 0.95f;
+	 mStyle.WindowFillAlphaDefault   = 0.95f;
+	 mStyle.WindowRounding           = 2.0f;
+	 mStyle.FrameRounding            = 2.0f;
+	 mStyle.IndentSpacing            = 6;
+	 mStyle.ColumnsMinSpacing        = 50;
+	 mStyle.ScrollbarWidth           = 12;
+	 
+	 ImGuiStyle& style = mStyle;
+	 style.Colors[ImGuiCol_Text]                  = ImVec4(1.00f, 1.00f, 0.86f, 0.50f);
+	 style.Colors[ImGuiCol_TextDisabled]          = ImVec4(1.00f, 1.00f, 0.86f, 0.22f);
+	 style.Colors[ImGuiCol_WindowBg]              = ImVec4(0.18f, 0.18f, 0.18f, 1.00f);
+	 style.Colors[ImGuiCol_ChildWindowBg]         = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
+	 style.Colors[ImGuiCol_Border]                = ImVec4(0.31f, 0.31f, 1.00f, 0.00f);
+	 style.Colors[ImGuiCol_BorderShadow]          = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+	 style.Colors[ImGuiCol_FrameBg]               = ImVec4(0.22f, 0.22f, 0.22f, 1.00f);
+	 style.Colors[ImGuiCol_FrameBgHovered]        = ImVec4(0.27f, 0.27f, 0.27f, 1.00f);
+	 style.Colors[ImGuiCol_FrameBgActive]         = ImVec4(0.36f, 0.36f, 0.36f, 1.00f);
+	 style.Colors[ImGuiCol_TitleBg]               = ImVec4(0.23f, 0.23f, 0.23f, 1.00f);
+	 style.Colors[ImGuiCol_TitleBgCollapsed]      = ImVec4(0.24f, 0.24f, 0.24f, 1.00f);
+	 style.Colors[ImGuiCol_TitleBgActive]         = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
+	 style.Colors[ImGuiCol_MenuBarBg]             = ImVec4(0.97f, 0.48f, 0.32f, 1.00f);
+	 style.Colors[ImGuiCol_ScrollbarBg]           = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
+	 style.Colors[ImGuiCol_ScrollbarGrab]         = ImVec4(0.33f, 0.33f, 0.33f, 1.00f);
+	 style.Colors[ImGuiCol_ScrollbarGrabHovered]  = ImVec4(0.26f, 0.26f, 0.26f, 1.00f);
+	 style.Colors[ImGuiCol_ScrollbarGrabActive]   = ImVec4(0.36f, 0.36f, 0.36f, 1.00f);
+	 style.Colors[ImGuiCol_ComboBg]               = ImVec4(0.29f, 0.29f, 0.29f, 1.00f);
+	 style.Colors[ImGuiCol_CheckMark]             = ImVec4(0.22f, 0.22f, 0.22f, 0.50f);
+	 style.Colors[ImGuiCol_SliderGrab]            = ImVec4(0.23f, 0.23f, 0.23f, 1.00f);
+	 style.Colors[ImGuiCol_SliderGrabActive]      = ImVec4(0.38f, 0.38f, 0.38f, 1.00f);
+	 style.Colors[ImGuiCol_Button]                = ImVec4(0.32f, 0.32f, 0.32f, 1.00f);
+	 style.Colors[ImGuiCol_ButtonHovered]         = ImVec4(0.45f, 0.45f, 0.45f, 1.00f);
+	 style.Colors[ImGuiCol_ButtonActive]          = ImVec4(1.00f, 1.00f, 0.62f, 1.00f);
+	 style.Colors[ImGuiCol_Header]                = ImVec4(0.34f, 0.34f, 0.34f, 1.00f);
+	 style.Colors[ImGuiCol_HeaderHovered]         = ImVec4(0.22f, 0.22f, 0.22f, 1.00f);
+	 style.Colors[ImGuiCol_HeaderActive]          = ImVec4(0.27f, 0.27f, 0.27f, 1.00f);
+	 style.Colors[ImGuiCol_Column]                = ImVec4(0.38f, 0.38f, 0.38f, 1.00f);
+	 style.Colors[ImGuiCol_ColumnHovered]         = ImVec4(0.56f, 0.56f, 0.56f, 1.00f);
+	 style.Colors[ImGuiCol_ColumnActive]          = ImVec4(0.68f, 0.68f, 0.68f, 1.00f);
+	 style.Colors[ImGuiCol_ResizeGrip]            = ImVec4(0.38f, 0.38f, 0.38f, 1.00f);
+	 style.Colors[ImGuiCol_ResizeGripHovered]     = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
+	 style.Colors[ImGuiCol_ResizeGripActive]      = ImVec4(0.65f, 0.65f, 0.65f, 1.00f);
+	 style.Colors[ImGuiCol_CloseButton]           = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
+	 style.Colors[ImGuiCol_CloseButtonHovered]    = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
+	 style.Colors[ImGuiCol_CloseButtonActive]     = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
+	 style.Colors[ImGuiCol_PlotLines]             = ImVec4(0.51f, 0.51f, 0.51f, 1.00f);
+	 style.Colors[ImGuiCol_PlotLinesHovered]      = ImVec4(0.71f, 0.71f, 0.71f, 1.00f);
+	 style.Colors[ImGuiCol_PlotHistogram]         = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+	 style.Colors[ImGuiCol_PlotHistogramHovered]  = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
+	 style.Colors[ImGuiCol_TextSelectedBg]        = ImVec4(0.35f, 0.35f, 0.35f, 1.00f);
+	 style.Colors[ImGuiCol_TooltipBg]             = ImVec4(0.16f, 0.16f, 0.16f, 0.72f);
+	 style.Colors[ImGuiCol_ModalWindowDarkening]  = ImVec4(0.20f, 0.20f, 0.20f, 0.65f);*/
 	
 	/* Flat UI Theme https://color.adobe.com/Flat-UI-color-theme-2469224
-	ImGuiStyle& style = ImGui::GetStyle();
-	style.Colors[ImGuiCol_Text]                  = ImVec4(0.93f, 0.94f, 0.95f, 0.61f);
-	style.Colors[ImGuiCol_TextDisabled]          = ImVec4(1.00f, 1.00f, 0.86f, 0.22f);
-	style.Colors[ImGuiCol_WindowBg]              = ImVec4(0.16f, 0.50f, 0.73f, 1.00f);
-	style.Colors[ImGuiCol_ChildWindowBg]         = ImVec4(0.16f, 0.50f, 0.73f, 1.00f);
-	style.Colors[ImGuiCol_Border]                = ImVec4(0.31f, 0.31f, 1.00f, 0.00f);
-	style.Colors[ImGuiCol_BorderShadow]          = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-	style.Colors[ImGuiCol_FrameBg]               = ImVec4(0.20f, 0.60f, 0.86f, 1.00f);
-	style.Colors[ImGuiCol_FrameBgHovered]        = ImVec4(0.91f, 0.30f, 0.24f, 0.78f);
-	style.Colors[ImGuiCol_FrameBgActive]         = ImVec4(0.91f, 0.30f, 0.24f, 1.00f);
-	style.Colors[ImGuiCol_TitleBg]               = ImVec4(0.16f, 0.50f, 0.73f, 1.00f);
-	style.Colors[ImGuiCol_TitleBgCollapsed]      = ImVec4(0.16f, 0.50f, 0.73f, 0.75f);
-	style.Colors[ImGuiCol_TitleBgActive]         = ImVec4(0.91f, 0.30f, 0.24f, 1.00f);
-	style.Colors[ImGuiCol_MenuBarBg]             = ImVec4(0.16f, 0.50f, 0.73f, 0.47f);
-	style.Colors[ImGuiCol_ScrollbarBg]           = ImVec4(0.20f, 0.60f, 0.86f, 1.00f);
-	style.Colors[ImGuiCol_ScrollbarGrab]         = ImVec4(0.16f, 0.50f, 0.73f, 1.00f);
-	style.Colors[ImGuiCol_ScrollbarGrabHovered]  = ImVec4(0.91f, 0.30f, 0.24f, 0.78f);
-	style.Colors[ImGuiCol_ScrollbarGrabActive]   = ImVec4(0.91f, 0.30f, 0.24f, 1.00f);
-	style.Colors[ImGuiCol_ComboBg]               = ImVec4(0.20f, 0.60f, 0.86f, 1.00f);
-	style.Colors[ImGuiCol_CheckMark]             = ImVec4(0.16f, 0.50f, 0.73f, 1.00f);
-	style.Colors[ImGuiCol_SliderGrab]            = ImVec4(0.93f, 0.94f, 0.95f, 1.00f);
-	style.Colors[ImGuiCol_SliderGrabActive]      = ImVec4(0.91f, 0.30f, 0.24f, 1.00f);
-	style.Colors[ImGuiCol_Button]                = ImVec4(0.91f, 0.30f, 0.24f, 0.76f);
-	style.Colors[ImGuiCol_ButtonHovered]         = ImVec4(0.91f, 0.30f, 0.24f, 0.86f);
-	style.Colors[ImGuiCol_ButtonActive]          = ImVec4(0.91f, 0.30f, 0.24f, 1.00f);
-	style.Colors[ImGuiCol_Header]                = ImVec4(0.91f, 0.30f, 0.24f, 0.76f);
-	style.Colors[ImGuiCol_HeaderHovered]         = ImVec4(0.91f, 0.30f, 0.24f, 0.86f);
-	style.Colors[ImGuiCol_HeaderActive]          = ImVec4(0.91f, 0.30f, 0.24f, 1.00f);
-	style.Colors[ImGuiCol_Column]                = ImVec4(0.17f, 0.24f, 0.31f, 0.32f);
-	style.Colors[ImGuiCol_ColumnHovered]         = ImVec4(0.91f, 0.30f, 0.24f, 0.78f);
-	style.Colors[ImGuiCol_ColumnActive]          = ImVec4(0.91f, 0.30f, 0.24f, 1.00f);
-	style.Colors[ImGuiCol_ResizeGrip]            = ImVec4(0.17f, 0.24f, 0.31f, 0.32f);
-	style.Colors[ImGuiCol_ResizeGripHovered]     = ImVec4(0.91f, 0.30f, 0.24f, 0.78f);
-	style.Colors[ImGuiCol_ResizeGripActive]      = ImVec4(0.91f, 0.30f, 0.24f, 1.00f);
-	style.Colors[ImGuiCol_CloseButton]           = ImVec4(0.93f, 0.94f, 0.95f, 0.16f);
-	style.Colors[ImGuiCol_CloseButtonHovered]    = ImVec4(0.93f, 0.94f, 0.95f, 0.39f);
-	style.Colors[ImGuiCol_CloseButtonActive]     = ImVec4(0.93f, 0.94f, 0.95f, 1.00f);
-	style.Colors[ImGuiCol_PlotLines]             = ImVec4(0.93f, 0.94f, 0.95f, 1.00f);
-	style.Colors[ImGuiCol_PlotLinesHovered]      = ImVec4(0.91f, 0.30f, 0.24f, 1.00f);
-	style.Colors[ImGuiCol_PlotHistogram]         = ImVec4(0.93f, 0.94f, 0.95f, 1.00f);
-	style.Colors[ImGuiCol_PlotHistogramHovered]  = ImVec4(0.91f, 0.30f, 0.24f, 1.00f);
-	style.Colors[ImGuiCol_TextSelectedBg]        = ImVec4(0.91f, 0.30f, 0.31f, 1.00f);
-	style.Colors[ImGuiCol_TooltipBg]             = ImVec4(0.17f, 0.24f, 0.31f, 0.72f);
-	style.Colors[ImGuiCol_ModalWindowDarkening]  = ImVec4(0.17f, 0.24f, 0.31f, 0.65f);
-	*/
+	 ImGuiStyle& style = ImGui::GetStyle();
+	 style.Colors[ImGuiCol_Text]                  = ImVec4(0.93f, 0.94f, 0.95f, 0.61f);
+	 style.Colors[ImGuiCol_TextDisabled]          = ImVec4(1.00f, 1.00f, 0.86f, 0.22f);
+	 style.Colors[ImGuiCol_WindowBg]              = ImVec4(0.16f, 0.50f, 0.73f, 1.00f);
+	 style.Colors[ImGuiCol_ChildWindowBg]         = ImVec4(0.16f, 0.50f, 0.73f, 1.00f);
+	 style.Colors[ImGuiCol_Border]                = ImVec4(0.31f, 0.31f, 1.00f, 0.00f);
+	 style.Colors[ImGuiCol_BorderShadow]          = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+	 style.Colors[ImGuiCol_FrameBg]               = ImVec4(0.20f, 0.60f, 0.86f, 1.00f);
+	 style.Colors[ImGuiCol_FrameBgHovered]        = ImVec4(0.91f, 0.30f, 0.24f, 0.78f);
+	 style.Colors[ImGuiCol_FrameBgActive]         = ImVec4(0.91f, 0.30f, 0.24f, 1.00f);
+	 style.Colors[ImGuiCol_TitleBg]               = ImVec4(0.16f, 0.50f, 0.73f, 1.00f);
+	 style.Colors[ImGuiCol_TitleBgCollapsed]      = ImVec4(0.16f, 0.50f, 0.73f, 0.75f);
+	 style.Colors[ImGuiCol_TitleBgActive]         = ImVec4(0.91f, 0.30f, 0.24f, 1.00f);
+	 style.Colors[ImGuiCol_MenuBarBg]             = ImVec4(0.16f, 0.50f, 0.73f, 0.47f);
+	 style.Colors[ImGuiCol_ScrollbarBg]           = ImVec4(0.20f, 0.60f, 0.86f, 1.00f);
+	 style.Colors[ImGuiCol_ScrollbarGrab]         = ImVec4(0.16f, 0.50f, 0.73f, 1.00f);
+	 style.Colors[ImGuiCol_ScrollbarGrabHovered]  = ImVec4(0.91f, 0.30f, 0.24f, 0.78f);
+	 style.Colors[ImGuiCol_ScrollbarGrabActive]   = ImVec4(0.91f, 0.30f, 0.24f, 1.00f);
+	 style.Colors[ImGuiCol_ComboBg]               = ImVec4(0.20f, 0.60f, 0.86f, 1.00f);
+	 style.Colors[ImGuiCol_CheckMark]             = ImVec4(0.16f, 0.50f, 0.73f, 1.00f);
+	 style.Colors[ImGuiCol_SliderGrab]            = ImVec4(0.93f, 0.94f, 0.95f, 1.00f);
+	 style.Colors[ImGuiCol_SliderGrabActive]      = ImVec4(0.91f, 0.30f, 0.24f, 1.00f);
+	 style.Colors[ImGuiCol_Button]                = ImVec4(0.91f, 0.30f, 0.24f, 0.76f);
+	 style.Colors[ImGuiCol_ButtonHovered]         = ImVec4(0.91f, 0.30f, 0.24f, 0.86f);
+	 style.Colors[ImGuiCol_ButtonActive]          = ImVec4(0.91f, 0.30f, 0.24f, 1.00f);
+	 style.Colors[ImGuiCol_Header]                = ImVec4(0.91f, 0.30f, 0.24f, 0.76f);
+	 style.Colors[ImGuiCol_HeaderHovered]         = ImVec4(0.91f, 0.30f, 0.24f, 0.86f);
+	 style.Colors[ImGuiCol_HeaderActive]          = ImVec4(0.91f, 0.30f, 0.24f, 1.00f);
+	 style.Colors[ImGuiCol_Column]                = ImVec4(0.17f, 0.24f, 0.31f, 0.32f);
+	 style.Colors[ImGuiCol_ColumnHovered]         = ImVec4(0.91f, 0.30f, 0.24f, 0.78f);
+	 style.Colors[ImGuiCol_ColumnActive]          = ImVec4(0.91f, 0.30f, 0.24f, 1.00f);
+	 style.Colors[ImGuiCol_ResizeGrip]            = ImVec4(0.17f, 0.24f, 0.31f, 0.32f);
+	 style.Colors[ImGuiCol_ResizeGripHovered]     = ImVec4(0.91f, 0.30f, 0.24f, 0.78f);
+	 style.Colors[ImGuiCol_ResizeGripActive]      = ImVec4(0.91f, 0.30f, 0.24f, 1.00f);
+	 style.Colors[ImGuiCol_CloseButton]           = ImVec4(0.93f, 0.94f, 0.95f, 0.16f);
+	 style.Colors[ImGuiCol_CloseButtonHovered]    = ImVec4(0.93f, 0.94f, 0.95f, 0.39f);
+	 style.Colors[ImGuiCol_CloseButtonActive]     = ImVec4(0.93f, 0.94f, 0.95f, 1.00f);
+	 style.Colors[ImGuiCol_PlotLines]             = ImVec4(0.93f, 0.94f, 0.95f, 1.00f);
+	 style.Colors[ImGuiCol_PlotLinesHovered]      = ImVec4(0.91f, 0.30f, 0.24f, 1.00f);
+	 style.Colors[ImGuiCol_PlotHistogram]         = ImVec4(0.93f, 0.94f, 0.95f, 1.00f);
+	 style.Colors[ImGuiCol_PlotHistogramHovered]  = ImVec4(0.91f, 0.30f, 0.24f, 1.00f);
+	 style.Colors[ImGuiCol_TextSelectedBg]        = ImVec4(0.91f, 0.30f, 0.31f, 1.00f);
+	 style.Colors[ImGuiCol_TooltipBg]             = ImVec4(0.17f, 0.24f, 0.31f, 0.72f);
+	 style.Colors[ImGuiCol_ModalWindowDarkening]  = ImVec4(0.17f, 0.24f, 0.31f, 0.65f);
+	 */
 	
 	/* Sea Wolf https://color.adobe.com/Sea-Wolf-color-theme-782171
 	 ImGuiStyle& style = ImGui::GetStyle();
@@ -597,8 +466,8 @@ Options& Options::darkTheme()
 	 style.Colors[ImGuiCol_TextSelectedBg]        = ImVec4(0.85f, 0.40f, 0.40f, 1.00f);
 	 style.Colors[ImGuiCol_TooltipBg]             = ImVec4(0.97f, 0.60f, 0.51f, 0.72f);
 	 style.Colors[ImGuiCol_ModalWindowDarkening]  = ImVec4(0.97f, 0.60f, 0.51f, 0.65f);
-	*/
-
+	 */
+	
 	/* CS04 Theme https://color.adobe.com/CS04-color-theme-1994456
 	 ImGuiStyle& style = ImGui::GetStyle();
 	 style.Colors[ImGuiCol_Text]                  = ImVec4(0.86f, 0.93f, 0.89f, 0.61f);
@@ -648,103 +517,125 @@ Options& Options::darkTheme()
 	 */
 	
 	
-    return *this;
+	return *this;
 }
 
 
-Options& Options::color( ImGuiCol option, const ci::ColorA &color )
+ImGui::Options& ImGui::Options::color( ImGuiCol option, const ci::ColorA &color )
 {
-    mStyle.Colors[ option ] = color;
-    return *this;
+	mStyle.Colors[ option ] = color;
+	return *this;
 }
+
+//! cinder renderer
+class Renderer {
+public:
+    Renderer();
+    
+    //! renders imgui drawlist
+    void render( ImDrawData* draw_data );
+    //! sets the font
+    ImFont* addFont( ci::DataSourceRef font, float size, const ImWchar* glyph_ranges = NULL );
+    
+    //! initializes and returns the font texture
+    ci::gl::Texture2dRef getFontTextureRef();
+    //! initializes and returns the vao
+    ci::gl::VaoRef getVao();
+    //! initializes and returns the vbo
+    ci::gl::VboRef getVbo();
+    //! initializes and returns the shader
+    ci::gl::GlslProgRef getGlslProg();
+    
+    //! initializes the font texture
+    void initFontTexture();
+    //! initializes the vbo mesh
+    void initBuffers( size_t size = 1000 );
+    //! initializes the shader
+    void initGlslProg();
+    
+    ImFont* getFont( const std::string &name );
+    
+protected:
+    ci::gl::Texture2dRef    mFontTexture;
+	ci::gl::VaoRef          mVao;
+	ci::gl::VboRef          mVbo;
+	ci::gl::VboRef          mIbo;
+    ci::gl::GlslProgRef     mShader;
+    
+    map<string,ImFont*>     mFonts;
+};
+
+
 
 Renderer::Renderer()
 {
-    initFontTexture();
     initGlslProg();
     initBuffers();
 }
 
 //! renders imgui drawlist
-void Renderer::renderDrawList( ImDrawList** const cmd_lists, int cmd_lists_count )
+void Renderer::render( ImDrawData* draw_data )
 {
-    size_t total_vtx_count = 0;
-    for (int n = 0; n < cmd_lists_count; n++)
-        total_vtx_count += cmd_lists[n]->vtx_buffer.size();
-    if (total_vtx_count == 0)
-        return;
-    
-    if( getVbo()->getSize() < total_vtx_count * sizeof( RenderData ) ){
-        initBuffers( total_vtx_count );
-    }
-    
-    int vtx_consumed = 0;
-    {
-        gl::VboRef vbo = getVbo();
-        gl::ScopedBuffer scopedBuffer( vbo );
-        RenderData *data = static_cast<RenderData*>( vbo->mapWriteOnly(true) );
-        
-        for (int n = 0; n < cmd_lists_count; n++) {
-            const ImDrawList* cmd_list = cmd_lists[n];
-            if (!cmd_list->vtx_buffer.empty()) {
-                vtx_consumed += cmd_list->vtx_buffer.size();
-                size_t count = cmd_list->vtx_buffer.size();
-                for( int i = 0; i < count; i++ ){
-                    ImU32 color = cmd_list->vtx_buffer[i].col;
-                    uint32_t a = color >> 24 & 255;
-                    uint32_t b = color >> 16 & 255;
-                    uint32_t g = color >> 8 & 255;
-                    uint32_t r = color >> 0 & 255;
-                    
-                    RenderData d;
-                    d.pos   = vec2( cmd_list->vtx_buffer[i].pos.x, cmd_list->vtx_buffer[i].pos.y );
-                    d.uv    = vec2( cmd_list->vtx_buffer[i].uv.x, cmd_list->vtx_buffer[i].uv.y );
-                    d.color = vec4( r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f  );
-                    *data = d;
-                    ++data;
-                }
-            }
-        }
-        
-        vbo->unmap();
-    }
-    gl::ScopedVao           scopedVao( getVao().get() );
-    gl::ScopedGlslProg      scopedShader( getGlslProg() );
-    gl::ScopedTextureBind   scopedTexture( getFontTextureRef(), 0 );
+	const float width	= ImGui::GetIO().DisplaySize.x;
+	const float height	= ImGui::GetIO().DisplaySize.y;
+	const auto vbo		= getVbo();
+	const auto shader	= getGlslProg();
 	
-	auto mat = gl::getModelViewProjection();
+	const mat4 mat =
+	{
+		{ 2.0f/width,	0.0f,			0.0f,		0.0f },
+		{ 0.0f,			2.0f/-height,	0.0f,		0.0f },
+		{ 0.0f,			0.0f,			-1.0f,		0.0f },
+		{ -1.0f,		1.0f,			0.0f,		1.0f },
+	};
 	// mat = glm::translate( mat, vec3( 0.375f, 0.375f, 0.0f ) );
 	
-    getGlslProg()->uniform( "uModelViewProjection", mat );
-    getGlslProg()->uniform( "uTex", 0 );
-    
-    gl::enableAlphaBlending();
-    gl::disableDepthRead();
-    glDisable( GL_CULL_FACE );
-    
-    vtx_consumed = 0;						// offset in vertex buffer. each command consume ImDrawCmd::vtx_count of those
-    
-    
-    for (int n = 0; n < cmd_lists_count; n++) {
-        const ImDrawList* cmd_list = cmd_lists[n];
-        if (cmd_list->commands.empty() || cmd_list->vtx_buffer.empty())
-            continue;
-        const ImDrawCmd* pcmd = &cmd_list->commands.front();
-        const ImDrawCmd* pcmd_end = &cmd_list->commands.back();
-		while (pcmd <= pcmd_end) {
-			if (pcmd->user_callback) {
-				pcmd->user_callback(cmd_list, pcmd);
+	shader->uniform( "uModelViewProjection", mat );
+	shader->uniform( "uTex", 0 );
+	
+	for (int n = 0; n < draw_data->CmdListsCount; n++) {
+		const ImDrawList* cmd_list = draw_data->CmdLists[n];
+		const ImDrawIdx* idx_buffer = &cmd_list->IdxBuffer.front();
+		
+		// Grow our buffer if needed
+		int needed_vtx_size = cmd_list->VtxBuffer.size() * sizeof(ImDrawVert);
+		if ( vbo->getSize() < needed_vtx_size) {
+			GLsizeiptr size = needed_vtx_size + 2000 * sizeof(ImDrawVert);
+			mVbo->bufferData( size, nullptr, GL_STREAM_DRAW );
+		}
+		
+		
+		// update vbo data
+		{
+			gl::ScopedBuffer scopedVbo( GL_ARRAY_BUFFER, vbo->getId() );
+			ImDrawVert *vtx_data = static_cast<ImDrawVert*>( vbo->mapWriteOnly(true) );
+			if (!vtx_data)
+				continue;
+			memcpy( vtx_data, &cmd_list->VtxBuffer[0], cmd_list->VtxBuffer.size() * sizeof(ImDrawVert) );
+			vbo->unmap();
+		}
+		
+		// issue draw commands
+		for (const ImDrawCmd* pcmd = cmd_list->CmdBuffer.begin(); pcmd != cmd_list->CmdBuffer.end(); pcmd++) {
+			if (pcmd->UserCallback) {
+				pcmd->UserCallback(cmd_list, pcmd);
 			}
 			else {
-				const ImDrawCmd& cmd = *pcmd++;
-				gl::ScopedTextureBind texture( GL_TEXTURE_2D, (GLuint)(intptr_t) cmd.texture_id );
-				gl::ScopedScissor scissors( cmd.clip_rect.x, (ImGui::GetIO().DisplaySize.y - cmd.clip_rect.w), (cmd.clip_rect.z - cmd.clip_rect.x), (cmd.clip_rect.w - cmd.clip_rect.y) );
+				gl::ScopedVao           scopedVao( getVao().get() );
+				gl::ScopedBuffer		scopedIndexBuffer( mIbo );
+				gl::ScopedGlslProg      scopedShader( getGlslProg() );
+				gl::ScopedTextureBind	scopedTexture( GL_TEXTURE_2D, (GLuint)(intptr_t) pcmd->TextureId );
+				gl::ScopedScissor		scopedScissors( (int)pcmd->ClipRect.x, (int)(height - pcmd->ClipRect.w), (int)(pcmd->ClipRect.z - pcmd->ClipRect.x), (int)(pcmd->ClipRect.w - pcmd->ClipRect.y) );
+				gl::ScopedDepth			scopedDepth( false );
+				gl::ScopedBlendAlpha	scopedBlend;
+				gl::ScopedFaceCulling	scopedFaceCulling( false );
 				
-				gl::drawArrays( GL_TRIANGLES, vtx_consumed, cmd.vtx_count );
-				vtx_consumed += cmd.vtx_count;
+				mIbo->bufferData( pcmd->ElemCount * sizeof(ImDrawIdx), idx_buffer, GL_STREAM_DRAW );
+				gl::drawElements( GL_TRIANGLES, (GLsizei) pcmd->ElemCount, GL_UNSIGNED_SHORT, nullptr );
 			}
-        }
-    }
+			idx_buffer += pcmd->ElemCount;
+		}
+	}
 }
 
 //! initializes and returns the font texture
@@ -776,11 +667,8 @@ gl::VboRef Renderer::getVbo()
 //! initializes the vbo mesh
 void Renderer::initBuffers( size_t size )
 {
-    
-    vector<RenderData> renderData;
-    renderData.assign( size, RenderData() );
-    
-    mVbo    = gl::Vbo::create( GL_ARRAY_BUFFER, renderData, GL_STREAM_DRAW );
+	mVbo    = gl::Vbo::create( GL_ARRAY_BUFFER, size, nullptr, GL_STREAM_DRAW );
+	mIbo    = gl::Vbo::create( GL_ELEMENT_ARRAY_BUFFER, 10, nullptr, GL_STREAM_DRAW );
     mVao    = gl::Vao::create();
     
     gl::ScopedVao mVaoScope( mVao );
@@ -790,9 +678,9 @@ void Renderer::initBuffers( size_t size )
     gl::enableVertexAttribArray( 1 );
     gl::enableVertexAttribArray( 2 );
     
-    gl::vertexAttribPointer( 0, 2, GL_FLOAT, GL_FALSE, sizeof(RenderData), (const GLvoid*)offsetof(RenderData, pos) );
-    gl::vertexAttribPointer( 1, 2, GL_FLOAT, GL_TRUE, sizeof(RenderData), (const GLvoid*)offsetof(RenderData, uv) );
-    gl::vertexAttribPointer( 2, 4, GL_FLOAT, GL_TRUE, sizeof(RenderData), (const GLvoid*)offsetof(RenderData, color) );
+    gl::vertexAttribPointer( 0, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (const GLvoid*)offsetof(ImDrawVert, pos) );
+    gl::vertexAttribPointer( 1, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (const GLvoid*)offsetof(ImDrawVert, uv) );
+    gl::vertexAttribPointer( 2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert), (const GLvoid*)offsetof(ImDrawVert, col) );
     
 }
 //! initalizes the font texture
@@ -816,15 +704,15 @@ void Renderer::initFontTexture()
 ImFont* Renderer::addFont( ci::DataSourceRef font, float size, const ImWchar* glyph_ranges )
 {
     ImFontAtlas* fontAtlas  = ImGui::GetIO().Fonts;
-    
-    
+	
     Font ciFont( font, size );
     
     BufferRef buffer		= font->getBuffer();
     void* bufferCopy        = (void*) malloc( buffer->getSize() );
     memcpy( bufferCopy, buffer->getData(), buffer->getSize() );
-    
-    ImFont* newFont         = fontAtlas->AddFontFromMemoryTTF( bufferCopy, buffer->getSize(), size, glyph_ranges );
+	
+	ImFontConfig config;
+    ImFont* newFont         = fontAtlas->AddFontFromMemoryTTF( bufferCopy, buffer->getSize(), size, &config, glyph_ranges );
     
     mFonts.insert( make_pair( font->getFilePath().stem().string(), newFont ) );
     return newFont;
@@ -930,6 +818,117 @@ ImFont* Renderer::getFont( const std::string &name )
     }
 }
 
+
+typedef std::shared_ptr<Renderer> RendererRef;
+RendererRef getRenderer()
+{
+	static RendererRef renderer = RendererRef( new Renderer() );
+	return renderer;
+}
+
+void initialize( const Options &options )
+{
+	auto renderer                       = getRenderer();
+	auto window                         = options.getWindow();
+	
+	// set style
+	const ImGuiStyle& style             = options.getStyle();
+	ImGuiStyle& imGuiStyle              = ImGui::GetStyle();
+	imGuiStyle.Alpha                    = style.Alpha;
+	imGuiStyle.WindowPadding            = style.WindowPadding;
+	imGuiStyle.WindowMinSize            = style.WindowMinSize;
+	imGuiStyle.WindowRounding           = style.WindowRounding;
+	imGuiStyle.WindowTitleAlign			= style.WindowTitleAlign;
+	imGuiStyle.ChildWindowRounding		= style.ChildWindowRounding;
+	imGuiStyle.FramePadding             = style.FramePadding;
+	imGuiStyle.FrameRounding            = style.FrameRounding;
+	imGuiStyle.ItemSpacing              = style.ItemSpacing;
+	imGuiStyle.ItemInnerSpacing         = style.ItemInnerSpacing;
+	imGuiStyle.TouchExtraPadding        = style.TouchExtraPadding;
+	imGuiStyle.WindowFillAlphaDefault   = style.WindowFillAlphaDefault;
+	imGuiStyle.IndentSpacing            = style.IndentSpacing;
+	imGuiStyle.ColumnsMinSpacing		= style.ColumnsMinSpacing;
+	imGuiStyle.ScrollbarWidth           = style.ScrollbarWidth;
+	imGuiStyle.ScrollbarRounding		= style.ScrollbarRounding;
+	imGuiStyle.GrabMinSize				= style.GrabMinSize;
+	imGuiStyle.GrabRounding				= style.GrabRounding;
+	imGuiStyle.DisplayWindowPadding		= style.DisplayWindowPadding;
+	imGuiStyle.DisplaySafeAreaPadding	= style.DisplaySafeAreaPadding;
+	imGuiStyle.AntiAliasedLines			= style.AntiAliasedLines;
+	imGuiStyle.AntiAliasedShapes		= style.AntiAliasedShapes;
+	
+	// set colors
+	for( int i = 0; i < ImGuiCol_COUNT; i++ )
+		imGuiStyle.Colors[i] = style.Colors[i];
+	
+	// set io and keymap
+	ImGuiIO& io                         = ImGui::GetIO();
+	io.DisplaySize                      = ImVec2( window->getSize().x, window->getSize().y );
+	io.DeltaTime                        = 1.0f / 60.0f;
+	io.KeyMap[ImGuiKey_Tab]             = KeyEvent::KEY_TAB;
+	io.KeyMap[ImGuiKey_LeftArrow]       = KeyEvent::KEY_LEFT;
+	io.KeyMap[ImGuiKey_RightArrow]      = KeyEvent::KEY_RIGHT;
+	io.KeyMap[ImGuiKey_UpArrow]         = KeyEvent::KEY_UP;
+	io.KeyMap[ImGuiKey_DownArrow]       = KeyEvent::KEY_DOWN;
+	io.KeyMap[ImGuiKey_Home]            = KeyEvent::KEY_HOME;
+	io.KeyMap[ImGuiKey_End]             = KeyEvent::KEY_END;
+	io.KeyMap[ImGuiKey_Delete]          = KeyEvent::KEY_DELETE;
+	io.KeyMap[ImGuiKey_Backspace]       = KeyEvent::KEY_BACKSPACE;
+	io.KeyMap[ImGuiKey_Enter]           = KeyEvent::KEY_RETURN;
+	io.KeyMap[ImGuiKey_Escape]          = KeyEvent::KEY_ESCAPE;
+	io.KeyMap[ImGuiKey_A]               = KeyEvent::KEY_a;
+	io.KeyMap[ImGuiKey_C]               = KeyEvent::KEY_c;
+	io.KeyMap[ImGuiKey_V]               = KeyEvent::KEY_v;
+	io.KeyMap[ImGuiKey_X]               = KeyEvent::KEY_x;
+	io.KeyMap[ImGuiKey_Y]               = KeyEvent::KEY_y;
+	io.KeyMap[ImGuiKey_Z]               = KeyEvent::KEY_z;
+	
+	// setup config file path
+	string path = ( getAssetPath( "" ) / "imgui.ini" ).string();
+	char* pathCStr = new char[ path.size() + 1];
+	std::copy( path.begin(), path.end(), pathCStr );
+	io.IniFilename = pathCStr;
+	
+	// setup fonts
+	ImFontAtlas* fontAtlas  = ImGui::GetIO().Fonts;
+	fontAtlas->Clear();
+	for( auto font : options.getFonts() ){
+		string name = font.first.stem().string();
+		renderer->addFont( loadFile( font.first ), font.second, options.getFontGlyphRanges( name )  );
+	}
+	renderer->initFontTexture();
+	
+	// clipboard callbacks
+	io.SetClipboardTextFn = []( const char* text ){
+		const char* text_end = text + strlen(text);
+		char* buf = (char*)malloc(text_end - text + 1);
+		memcpy(buf, text, text_end-text);
+		buf[text_end-text] = '\0';
+		Clipboard::setString( buf );
+		free(buf);
+	};
+	io.GetClipboardTextFn = [](){
+		string str = Clipboard::getString();
+		static vector<char> strCopy;
+		strCopy = vector<char>(str.begin(), str.end());
+		strCopy.push_back('\0');
+		return (const char *) &strCopy[0];
+	};
+	
+	// renderer callback
+	io.RenderDrawListsFn = []( ImDrawData* data ) {
+		auto renderer = getRenderer();
+		renderer->render( data );
+	};
+	
+	// connect window's signals
+	connectWindow( window );
+	ImGui::NewFrame();
+	
+	sInitialized = true;
+}
+	
+	
 // Cinder Helpers
 void Image( const ci::gl::Texture2dRef &texture, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& tint_col, const ImVec4& border_col )
 {
@@ -1108,21 +1107,15 @@ namespace {
 	}
 
 	static bool sNewFrame = false;
-	//static uint32_t sLastFrame = -1;
 	void render()
 	{
-		//if( getElapsedFrames() == sLastFrame ) return;
-		
-		gl::ScopedMatrices matrices;
-		gl::ScopedViewport viewport( ivec2(0), getWindowSize() );
-		gl::setMatricesWindow( getWindowSize() );
-		ImGui::Render();
-		
 		static float elapsedTime    = 0.0f;
 		float currentElapsedTime    = getElapsedSeconds();
 		ImGuiIO& io                 = ImGui::GetIO();
 		io.DeltaTime                = ( currentElapsedTime - elapsedTime );
 		elapsedTime                 = currentElapsedTime;
+		
+		ImGui::Render();
 		//sLastFrame                  = getElapsedFrames();
 		sNewFrame                   = false;
 		App::get()->dispatchAsync( [](){ ImGui::NewFrame(); sNewFrame = true; } );
