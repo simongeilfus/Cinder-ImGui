@@ -608,7 +608,7 @@ void Renderer::render( ImDrawData* draw_data )
 		// update vbo data
 		{
 			gl::ScopedBuffer scopedVbo( GL_ARRAY_BUFFER, vbo->getId() );
-			ImDrawVert *vtx_data = static_cast<ImDrawVert*>( vbo->mapWriteOnly(true) );
+			ImDrawVert *vtx_data = static_cast<ImDrawVert*>( vbo->mapReplace() );
 			if (!vtx_data)
 				continue;
 			memcpy( vtx_data, &cmd_list->VtxBuffer[0], cmd_list->VtxBuffer.size() * sizeof(ImDrawVert) );
