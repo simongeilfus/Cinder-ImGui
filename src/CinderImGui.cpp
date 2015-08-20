@@ -795,8 +795,8 @@ void Renderer::initGlslProg()
 												uniform sampler2D	uTex;
 
 												void main() {
-												 vec4 color = texture2D( uTex, vUv ) * vColor;
-												 gl_FragColor = color;
+													vec4 color = texture2D( uTex, vUv ) * vColor;
+													gl_FragColor = color;
 												}  )"
 #elif defined(CINDER_GL_ES_3)
 												R"(
