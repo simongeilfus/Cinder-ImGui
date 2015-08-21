@@ -733,69 +733,98 @@ void Renderer::initGlslProg()
     try {
         mShader = gl::GlslProg::create( gl::GlslProg::Format()
 									   .vertex(
-#ifndef CINDER_GL_ES
+#if defined(CINDER_GL_ES_2)
 												R"(
-												#version 150
+												precision highp float;
 												uniform mat4 uModelViewProjection;
-												in vec2      iPosition;
-												in vec2      iUv;
-												in vec4      iColor;
-												out vec2     vUv;
-												out vec4     vColor;
+
+												attribute vec2      iPosition;
+												attribute vec2      iUv;
+												attribute vec4      iColor;
+
+												varying vec2     vUv;
+												varying vec4     vColor;
+
 												void main() {
 												   vColor       = iColor;
 												   vUv          = iUv;
 												   gl_Position  = uModelViewProjection * vec4( iPosition, 0.0, 1.0 );
 												} )"
-											   
-#else
+#elif defined(CINDER_GL_ES_3)
 												R"(
 												#version 300 es
 												precision highp float;
 												uniform mat4 uModelViewProjection;
-												   
+
 												in vec2      iPosition;
 												in vec2      iUv;
 												in vec4      iColor;
-												   
+
 												out vec2     vUv;
 												out vec4     vColor;
-												   
+
 												void main() {
 													vColor       = iColor;
 													vUv          = iUv;
 													gl_Position  = uModelViewProjection * vec4( iPosition, 0.0, 1.0 );
 												} )"
+#else
+												R"(
+												#version 150
+												uniform mat4 uModelViewProjection;
+												in vec2      iPosition;
+												in vec2      iUv;
+												in vec4      iColor;
+												out vec2     vUv;
+												out vec4     vColor;
+												void main() {
+													vColor       = iColor;
+													vUv          = iUv;
+													gl_Position  = uModelViewProjection * vec4( iPosition, 0.0, 1.0 );
+												} )"
+
 #endif
 										)
                                        .fragment(
-#ifndef CINDER_GL_ES
+#if defined(CINDER_GL_ES_2)
 												R"(
-												#version 150
-											 
-												in vec2            vUv;
-												in vec4				vColor;
-												out vec4			oColor;
+												precision highp float;
+
+												varying highp vec2		vUv;
+												varying highp vec4		vColor;
 												uniform sampler2D	uTex;
-											 
+
+												void main() {
+													vec4 color = texture2D( uTex, vUv ) * vColor;
+													gl_FragColor = color;
+												}  )"
+#elif defined(CINDER_GL_ES_3)
+												R"(
+												#version 300 es
+												precision highp float;
+
+												in highp vec2		vUv;
+												in highp vec4		vColor;
+												out highp vec4      oColor;
+												uniform sampler2D	uTex;
+
 												void main() {
 													vec4 color = texture( uTex, vUv ) * vColor;
 													oColor = color;
 												}  )"
 #else
-												R"(
-												#version 300 es
-												precision highp float;
-											 
-												in highp vec2		vUv;
-												in highp vec4		vColor;
-												out highp vec4      oColor;
-												uniform sampler2D	uTex;
-		
-												void main() {
-													vec4 color = texture( uTex, vUv ) * vColor;
-													oColor = color;
-												}  )"
+												 R"(
+												 #version 150
+
+												 in vec2            vUv;
+												 in vec4				vColor;
+												 out vec4			oColor;
+												 uniform sampler2D	uTex;
+
+												 void main() {
+													 vec4 color = texture( uTex, vUv ) * vColor;
+													 oColor = color;
+												 }  )"
 		
 #endif
 										 )
