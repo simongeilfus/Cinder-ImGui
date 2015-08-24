@@ -9,13 +9,22 @@
 	>
 	<supports os="msw" />
 	<supports os="macosx" />
+	
 	<includePath>lib</includePath>
 	<includePath>include</includePath>
+	
 	<header>include/CinderImGui.h</header>
 	<header>include/imgui_user.h</header>
 	<header>include/imgui_user.inl</header>
+	
+	<header>lib/imgui/imconfig.h</header>
 	<header>lib/imgui/imgui.h</header>
+	<header>lib/imgui/imgui_internal.h</header>
+
 	<source>src/CinderImGui.cpp</source>
 	<source>lib/imgui/imgui.cpp</source>
+	<source>lib/imgui/imgui_draw.cpp</source>
+	<source>lib/imgui/imgui_demo.cpp</source>
+	
 </block>
 </cinder>

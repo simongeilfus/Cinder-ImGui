@@ -16,6 +16,8 @@
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
 		00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995581B128DF400A5C623 /* IOKit.framework */; };
 		00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
+		4B02AFBF1B8B5EC2004AF2E2 /* imgui_draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4B02AFBD1B8B5EC2004AF2E2 /* imgui_draw.cpp */; };
+		4B02AFC11B8B5ED8004AF2E2 /* imgui_demo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4B02AFC01B8B5ED8004AF2E2 /* imgui_demo.cpp */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5E6E94684FA44CA38C481B49 /* imgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE937C7594E4CE19F18B442 /* imgui.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -42,6 +44,10 @@
 		34D47A91AC4741568117ADF1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		40DE7C313FA244EEA86CB0A6 /* imgui_user.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = imgui_user.h; path = ../../../include/imgui_user.h; sourceTree = "<group>"; };
 		42C59536675A423CAFB03803 /* CinderImGui.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CinderImGui.h; path = ../../../include/CinderImGui.h; sourceTree = "<group>"; };
+		4B02AFBC1B8B5EC2004AF2E2 /* imconfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = imconfig.h; path = ../../../lib/imgui/imconfig.h; sourceTree = "<group>"; };
+		4B02AFBD1B8B5EC2004AF2E2 /* imgui_draw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = imgui_draw.cpp; path = ../../../lib/imgui/imgui_draw.cpp; sourceTree = "<group>"; };
+		4B02AFBE1B8B5EC2004AF2E2 /* imgui_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = imgui_internal.h; path = ../../../lib/imgui/imgui_internal.h; sourceTree = "<group>"; };
+		4B02AFC01B8B5ED8004AF2E2 /* imgui_demo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = imgui_demo.cpp; path = ../../../lib/imgui/imgui_demo.cpp; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* Basic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Basic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9049B03296B24B548A212B19 /* imgui.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = imgui.h; path = ../../../lib/imgui/imgui.h; sourceTree = "<group>"; };
@@ -188,6 +194,10 @@
 			children = (
 				9049B03296B24B548A212B19 /* imgui.h */,
 				DFE937C7594E4CE19F18B442 /* imgui.cpp */,
+				4B02AFBC1B8B5EC2004AF2E2 /* imconfig.h */,
+				4B02AFBD1B8B5EC2004AF2E2 /* imgui_draw.cpp */,
+				4B02AFBE1B8B5EC2004AF2E2 /* imgui_internal.h */,
+				4B02AFC01B8B5ED8004AF2E2 /* imgui_demo.cpp */,
 			);
 			name = imgui;
 			sourceTree = "<group>";
@@ -276,6 +286,8 @@
 				E41A11BB015747548BA6ADF4 /* BasicApp.cpp in Sources */,
 				F1D30F1318B749EBAC4F39B2 /* CinderImGui.cpp in Sources */,
 				5E6E94684FA44CA38C481B49 /* imgui.cpp in Sources */,
+				4B02AFC11B8B5ED8004AF2E2 /* imgui_demo.cpp in Sources */,
+				4B02AFBF1B8B5EC2004AF2E2 /* imgui_draw.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
