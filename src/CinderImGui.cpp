@@ -913,10 +913,8 @@ void initialize( const Options &options )
 	io.KeyMap[ImGuiKey_Z]               = KeyEvent::KEY_z;
 	
 	// setup config file path
-	string path = ( getAssetPath( "" ) / "imgui.ini" ).string();
-	char* pathCStr = new char[ path.size() + 1];
-	std::copy( path.begin(), path.end(), pathCStr );
-	io.IniFilename = pathCStr;
+	static string path = ( getAssetPath( "" ) / "imgui.ini" ).string();
+	io.IniFilename = path.c_str();
 	
 	// setup fonts
 	ImFontAtlas* fontAtlas  = ImGui::GetIO().Fonts;
