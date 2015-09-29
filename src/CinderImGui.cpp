@@ -219,7 +219,7 @@ ImGui::Options& ImGui::Options::darkTheme()
 	mStyle.ColumnsMinSpacing        = 50.0f;
 	mStyle.GrabMinSize				= 14.0f;
 	mStyle.GrabRounding				= 16.0f;
-	mStyle.ScrollbarWidth           = 12.0f;
+	mStyle.ScrollbarWidth			= 12.0f;
 	mStyle.ScrollbarRounding		= 16.0f;
 	
 	ImGuiStyle& style = mStyle;
@@ -877,7 +877,7 @@ void initialize( const Options &options )
 	imGuiStyle.WindowFillAlphaDefault   = style.WindowFillAlphaDefault;
 	imGuiStyle.IndentSpacing            = style.IndentSpacing;
 	imGuiStyle.ColumnsMinSpacing		= style.ColumnsMinSpacing;
-	imGuiStyle.ScrollbarWidth           = style.ScrollbarWidth;
+	imGuiStyle.ScrollbarWidth			= style.ScrollbarWidth;
 	imGuiStyle.ScrollbarRounding		= style.ScrollbarRounding;
 	imGuiStyle.GrabMinSize				= style.GrabMinSize;
 	imGuiStyle.GrabRounding				= style.GrabRounding;
