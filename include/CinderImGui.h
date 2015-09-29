@@ -39,7 +39,6 @@ namespace cinder {
     }
     namespace gl {
         typedef std::shared_ptr<class Texture>  TextureRef;
-        typedef Texture2dRef                    TextureRef;
     }
 }
 
@@ -107,11 +106,11 @@ namespace ImGui {
         //! Default alpha of window background, if not specified in ImGui::Begin()
         Options& windowFillAlphaDefault( float defaultAlpha );
         //! Horizontal spacing when entering a tree node
-        Options& treeNodeSpacing( float spacing );
+		Options& indentSpacing(float spacing);
         //! Minimum horizontal spacing between two columns
         Options& columnsMinSpacing( float minSpacing );
         //! Width of the vertical scroll bar
-        Options& scrollBarWidth( float width );
+		Options& grabMinSize(float width);
 
         //! sets light theme style
         Options& light();
@@ -143,7 +142,6 @@ namespace ImGui {
     void    connectWindow( ci::app::WindowRef window );
     //! disconnects window signals from imgui
     void    disconnectWindow( ci::app::WindowRef window );
-
     // Cinder Helpers
     void Image( const ci::gl::TextureRef &texture, const ImVec2& size, const ImVec2& uv0 = ImVec2( 0, 0 ), const ImVec2& uv1 = ImVec2( 1, 1 ), const ImVec4& tint_col = ImVec4( 1, 1, 1, 1 ), const ImVec4& border_col = ImVec4( 0, 0, 0, 0 ) );
     bool ImageButton( const ci::gl::TextureRef &texture, const ImVec2& size, const ImVec2& uv0 = ImVec2( 0, 0 ), const ImVec2& uv1 = ImVec2( 1, 1 ), int frame_padding = -1, const ImVec4& bg_col = ImVec4( 0, 0, 0, 1 ), const ImVec4& tint_col = ImVec4( 1, 1, 1, 1 ) );
@@ -185,5 +183,12 @@ namespace ImGui {
         ScopedId( const int intId );
         ~ScopedId();
     };
+	// imgui helpers copy
+	size_t						ImFormatString(char* buf, size_t buf_size, const char* fmt, ...);
+	size_t						ImFormatStringV(char* buf, size_t buf_size, const char* fmt, va_list args);
+	char*						ImStrdup(const char *str);
+	int							ImStricmp(const char* str1, const char* str2);
+	int							ImStrnicmp(const char* str1, const char* str2, int count);
+	inline bool					ImCharIsSpace(int c) { return c == ' ' || c == '\t' || c == 0x3000; };
 }
 
