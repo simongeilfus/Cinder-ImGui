@@ -1136,14 +1136,12 @@ namespace {
 	static bool sNewFrame = false;
 	void render()
 	{
-		static float elapsedTime    = 0.0f;
-		float currentElapsedTime    = getElapsedSeconds();
+		static auto timer = ci::Timer(true);
 		ImGuiIO& io                 = ImGui::GetIO();
-		io.DeltaTime                = ( currentElapsedTime - elapsedTime );
-		elapsedTime                 = currentElapsedTime;
+		io.DeltaTime                = timer.getSeconds();
+		timer.start();
 		
 		ImGui::Render();
-		//sLastFrame                  = getElapsedFrames();
 		sNewFrame                   = false;
 		App::get()->dispatchAsync( [](){ ImGui::NewFrame(); sNewFrame = true; } );
 	}
