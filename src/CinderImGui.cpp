@@ -554,7 +554,7 @@ public:
     void initGlslProg();
     
     ImFont* getFont( const std::string &name );
-    
+
 protected:
     ci::gl::Texture2dRef    mFontTexture;
 	ci::gl::VaoRef          mVao;
@@ -565,14 +565,13 @@ protected:
     map<string,ImFont*>     mFonts;
 };
 
-
-
 Renderer::Renderer()
 {
     initGlslProg();
     initBuffers();
 }
 
+ 
 //! renders imgui drawlist
 void Renderer::render( ImDrawData* draw_data )
 {
@@ -592,7 +591,7 @@ void Renderer::render( ImDrawData* draw_data )
 	
 	shader->uniform( "uModelViewProjection", mat );
 	shader->uniform( "uTex", 0 );
-	
+
 	for (int n = 0; n < draw_data->CmdListsCount; n++) {
 		const ImDrawList* cmd_list = draw_data->CmdLists[n];
 		const ImDrawIdx* idx_buffer = &cmd_list->IdxBuffer.front();
@@ -1143,7 +1142,10 @@ namespace {
 		
 		ImGui::Render();
 		sNewFrame                   = false;
-		App::get()->dispatchAsync( [](){ ImGui::NewFrame(); sNewFrame = true; } );
+		App::get()->dispatchAsync( [](){ 
+			//ImGui::NewFrame(); 
+			sNewFrame = true; 
+		} );
 	}
 
 	void newFrameGuard()
@@ -1179,7 +1181,7 @@ void disconnectWindow( ci::app::WindowRef window )
         connection.disconnect();
     }
 }
-	
+
 ScopedWindow::ScopedWindow( const std::string &name, ImGuiWindowFlags flags)
 {
 	ImGui::Begin( name.c_str(), nullptr, flags );
