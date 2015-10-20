@@ -10,7 +10,7 @@
 	<supports os="msw" />
 	<supports os="macosx" />
 	
-	<includePath>lib</includePath>
+	<includePath>lib/imgui</includePath>
 	<includePath>include</includePath>
 	
 	<header>include/CinderImGui.h</header>
