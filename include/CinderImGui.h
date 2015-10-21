@@ -131,7 +131,9 @@ struct Options {
 	Options& antiAliasedLines( bool antiAliasing );
 	//! Enable anti-aliasing on filled shapes (rounded rectangles, circles, etc.)
 	Options& AntiAliasedShapes( bool antiAliasing );
-	
+	//! newFrame() call is handled in the main app (in case of accessing drawData between render() and newFrame() for instance)
+	Options& NewFrameInMainApp(bool newFrameInMainApp);
+
     //! sets imgui original theme
     Options& defaultTheme();
     //! sets the dark theme
@@ -145,9 +147,9 @@ struct Options {
     const std::vector<std::pair<ci::fs::path,float>>&   getFonts() const { return mFonts; }
     //! returns the glyph ranges if available for this font
     const ImWchar*                                      getFontGlyphRanges( const std::string &name ) const;
-    //! returns the window that will be use to connect the signals and render ImGui
-    const ImGuiStyle&                                   getStyle() const { return mStyle; }
-    
+	//! returns the window that will be use to connect the signals and render ImGui
+	const ImGuiStyle&                                   getStyle() const { return mStyle; }
+
 protected:
     ImGuiStyle                                  mStyle;
     std::vector<std::pair<ci::fs::path,float>>  mFonts;

@@ -49,6 +49,7 @@ namespace ImGui {
 
 // static variables
 static bool sInitialized = false;
+static bool mNewFrameInMainApp = false;
 
 	
 ImGui::Options::Options()
@@ -189,7 +190,12 @@ ImGui::Options& ImGui::Options::AntiAliasedShapes( bool antiAliasing )
 	mStyle.AntiAliasedShapes = antiAliasing;
 	return *this;
 }
-	
+ImGui::Options& ImGui::Options::NewFrameInMainApp( bool newFrameInMainApp )
+{
+	mNewFrameInMainApp = newFrameInMainApp;
+	return *this;
+}
+
 const ImWchar* ImGui::Options::getFontGlyphRanges( const std::string &name ) const
 {
     if( mFontsGlyphRanges.count( name ) )
@@ -946,7 +952,7 @@ void initialize( const Options &options )
 		auto renderer = getRenderer();
 		renderer->render( data );
 	};
-	
+
 	// connect window's signals
 	connectWindow( window );
 	ImGui::NewFrame();
@@ -1142,8 +1148,11 @@ namespace {
 		
 		ImGui::Render();
 		sNewFrame                   = false;
-		App::get()->dispatchAsync( [](){ 
-			//ImGui::NewFrame(); 
+		App::get()->dispatchAsync([](){
+
+			if (!mNewFrameInMainApp) {
+				ImGui::NewFrame();
+			}
 			sNewFrame = true; 
 		} );
 	}
