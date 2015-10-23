@@ -130,7 +130,7 @@ struct Options {
 	//! Enable anti-aliasing on lines/borders. Disable if you are really tight on CPU/GPU.
 	Options& antiAliasedLines( bool antiAliasing );
 	//! Enable anti-aliasing on filled shapes (rounded rectangles, circles, etc.)
-	Options& AntiAliasedShapes( bool antiAliasing );
+	Options& antiAliasedShapes( bool antiAliasing );
 	
     //! sets imgui original theme
     Options& defaultTheme();
