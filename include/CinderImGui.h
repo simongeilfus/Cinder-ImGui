@@ -115,8 +115,8 @@ struct Options {
     Options& indentSpacing( float spacing );
     //! Minimum horizontal spacing between two columns
     Options& columnsMinSpacing( float minSpacing );
-    //! Width of the vertical scroll bar
-    Options& scrollBarWidth( float width );
+    //! Width of the vertical scroll bar, Height of the horizontal scrollbar
+    Options& scrollBarSize( float size );
 	//! Radius of grab corners for scrollbar
 	Options& scrollbarRounding( float rounding );
 	//! Minimum width/height of a grab box for slider/scrollbar
@@ -131,6 +131,8 @@ struct Options {
 	Options& antiAliasedLines( bool antiAliasing );
 	//! Enable anti-aliasing on filled shapes (rounded rectangles, circles, etc.)
 	Options& antiAliasedShapes( bool antiAliasing );
+	//! Tessellation tolerance. Decrease for highly tessellated curves (higher quality, more polygons), increase to reduce quality.
+	Options& curveTessellationTol( float tessTolerance );
 	
     //! sets imgui original theme
     Options& defaultTheme();

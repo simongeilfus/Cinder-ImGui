@@ -149,9 +149,9 @@ ImGui::Options& ImGui::Options::columnsMinSpacing( float minSpacing )
     mStyle.ColumnsMinSpacing = minSpacing;
     return *this;
 }
-ImGui::Options& ImGui::Options::scrollBarWidth( float width )
+ImGui::Options& ImGui::Options::scrollBarSize( float size )
 {
-    mStyle.ScrollbarSize = width;
+    mStyle.ScrollbarSize = size;
     return *this;
 }
 ImGui::Options& ImGui::Options::scrollbarRounding( float rounding )
@@ -187,6 +187,11 @@ ImGui::Options& ImGui::Options::antiAliasedLines( bool antiAliasing )
 ImGui::Options& ImGui::Options::antiAliasedShapes( bool antiAliasing )
 {
 	mStyle.AntiAliasedShapes = antiAliasing;
+	return *this;
+}
+ImGui::Options& ImGui::Options::curveTessellationTol( float tessTolerance )
+{
+	mStyle.CurveTessellationTol = tessTolerance;
 	return *this;
 }
 	
