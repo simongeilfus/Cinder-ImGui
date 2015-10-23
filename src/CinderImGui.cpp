@@ -52,7 +52,8 @@ static bool sInitialized = false;
 
 	
 ImGui::Options::Options()
-: mWindow( ci::app::getWindow() )
+: mWindow( ci::app::getWindow() ),
+mAutoRender( true )
 {
     darkTheme();
 }
@@ -61,6 +62,11 @@ ImGui::Options& ImGui::Options::window( const ci::app::WindowRef &window )
 {
     mWindow = window;
     return *this;
+}
+ImGui::Options& ImGui::Options::autoRender( bool autoRender )
+{
+	mAutoRender = autoRender;
+	return *this;
 }
 
 ImGui::Options& ImGui::Options::font( const ci::fs::path &fontPath, float size )
@@ -609,106 +615,6 @@ RendererRef getRenderer()
 	static RendererRef renderer = RendererRef( new Renderer() );
 	return renderer;
 }
-
-void initialize( const Options &options )
-{
-	auto renderer                       = getRenderer();
-	auto window                         = options.getWindow();
-	
-	// set style
-	const ImGuiStyle& style             = options.getStyle();
-	ImGuiStyle& imGuiStyle              = ImGui::GetStyle();
-	imGuiStyle.Alpha                    = style.Alpha;
-	imGuiStyle.WindowPadding            = style.WindowPadding;
-	imGuiStyle.WindowMinSize            = style.WindowMinSize;
-	imGuiStyle.WindowRounding           = style.WindowRounding;
-	imGuiStyle.WindowTitleAlign			= style.WindowTitleAlign;
-	imGuiStyle.ChildWindowRounding		= style.ChildWindowRounding;
-	imGuiStyle.FramePadding             = style.FramePadding;
-	imGuiStyle.FrameRounding            = style.FrameRounding;
-	imGuiStyle.ItemSpacing              = style.ItemSpacing;
-	imGuiStyle.ItemInnerSpacing         = style.ItemInnerSpacing;
-	imGuiStyle.TouchExtraPadding        = style.TouchExtraPadding;
-	imGuiStyle.WindowFillAlphaDefault   = style.WindowFillAlphaDefault;
-	imGuiStyle.IndentSpacing            = style.IndentSpacing;
-	imGuiStyle.ColumnsMinSpacing		= style.ColumnsMinSpacing;
-	imGuiStyle.ScrollbarSize			= style.ScrollbarSize;
-	imGuiStyle.ScrollbarRounding		= style.ScrollbarRounding;
-	imGuiStyle.GrabMinSize				= style.GrabMinSize;
-	imGuiStyle.GrabRounding				= style.GrabRounding;
-	imGuiStyle.DisplayWindowPadding		= style.DisplayWindowPadding;
-	imGuiStyle.DisplaySafeAreaPadding	= style.DisplaySafeAreaPadding;
-	imGuiStyle.AntiAliasedLines			= style.AntiAliasedLines;
-	imGuiStyle.AntiAliasedShapes		= style.AntiAliasedShapes;
-	
-	// set colors
-	for( int i = 0; i < ImGuiCol_COUNT; i++ )
-		imGuiStyle.Colors[i] = style.Colors[i];
-	
-	// set io and keymap
-	ImGuiIO& io                         = ImGui::GetIO();
-	io.DisplaySize                      = ImVec2( window->getSize().x, window->getSize().y );
-	io.DeltaTime                        = 1.0f / 60.0f;
-	io.KeyMap[ImGuiKey_Tab]             = KeyEvent::KEY_TAB;
-	io.KeyMap[ImGuiKey_LeftArrow]       = KeyEvent::KEY_LEFT;
-	io.KeyMap[ImGuiKey_RightArrow]      = KeyEvent::KEY_RIGHT;
-	io.KeyMap[ImGuiKey_UpArrow]         = KeyEvent::KEY_UP;
-	io.KeyMap[ImGuiKey_DownArrow]       = KeyEvent::KEY_DOWN;
-	io.KeyMap[ImGuiKey_Home]            = KeyEvent::KEY_HOME;
-	io.KeyMap[ImGuiKey_End]             = KeyEvent::KEY_END;
-	io.KeyMap[ImGuiKey_Delete]          = KeyEvent::KEY_DELETE;
-	io.KeyMap[ImGuiKey_Backspace]       = KeyEvent::KEY_BACKSPACE;
-	io.KeyMap[ImGuiKey_Enter]           = KeyEvent::KEY_RETURN;
-	io.KeyMap[ImGuiKey_Escape]          = KeyEvent::KEY_ESCAPE;
-	io.KeyMap[ImGuiKey_A]               = KeyEvent::KEY_a;
-	io.KeyMap[ImGuiKey_C]               = KeyEvent::KEY_c;
-	io.KeyMap[ImGuiKey_V]               = KeyEvent::KEY_v;
-	io.KeyMap[ImGuiKey_X]               = KeyEvent::KEY_x;
-	io.KeyMap[ImGuiKey_Y]               = KeyEvent::KEY_y;
-	io.KeyMap[ImGuiKey_Z]               = KeyEvent::KEY_z;
-	
-	// setup config file path
-	static string path = ( getAssetPath( "" ) / "imgui.ini" ).string();
-	io.IniFilename = path.c_str();
-	
-	// setup fonts
-	ImFontAtlas* fontAtlas  = ImGui::GetIO().Fonts;
-	fontAtlas->Clear();
-	for( auto font : options.getFonts() ){
-		string name = font.first.stem().string();
-		renderer->addFont( loadFile( font.first ), font.second, options.getFontGlyphRanges( name )  );
-	}
-	renderer->initFontTexture();
-	
-	// clipboard callbacks
-	io.SetClipboardTextFn = []( const char* text ){
-		const char* text_end = text + strlen(text);
-		char* buf = (char*)malloc(text_end - text + 1);
-		memcpy(buf, text, text_end-text);
-		buf[text_end-text] = '\0';
-		Clipboard::setString( buf );
-		free(buf);
-	};
-	io.GetClipboardTextFn = [](){
-		string str = Clipboard::getString();
-		static vector<char> strCopy;
-		strCopy = vector<char>(str.begin(), str.end());
-		strCopy.push_back('\0');
-		return (const char *) &strCopy[0];
-	};
-	
-	// renderer callback
-	io.RenderDrawListsFn = []( ImDrawData* data ) {
-		auto renderer = getRenderer();
-		renderer->render( data );
-	};
-	
-	// connect window's signals
-	connectWindow( window );
-	ImGui::NewFrame();
-	
-	sInitialized = true;
-}
 	
 	
 // Cinder Helpers
@@ -913,6 +819,115 @@ namespace {
 // wrong... and would not work in a multi-windows scenario
 static vector<signals::Connection> sWindowConnections;
 
+	
+
+void initialize( const Options &options )
+{
+	auto renderer                       = getRenderer();
+	auto window                         = options.getWindow();
+	
+	// set style
+	const ImGuiStyle& style             = options.getStyle();
+	ImGuiStyle& imGuiStyle              = ImGui::GetStyle();
+	imGuiStyle.Alpha                    = style.Alpha;
+	imGuiStyle.WindowPadding            = style.WindowPadding;
+	imGuiStyle.WindowMinSize            = style.WindowMinSize;
+	imGuiStyle.WindowRounding           = style.WindowRounding;
+	imGuiStyle.WindowTitleAlign			= style.WindowTitleAlign;
+	imGuiStyle.ChildWindowRounding		= style.ChildWindowRounding;
+	imGuiStyle.FramePadding             = style.FramePadding;
+	imGuiStyle.FrameRounding            = style.FrameRounding;
+	imGuiStyle.ItemSpacing              = style.ItemSpacing;
+	imGuiStyle.ItemInnerSpacing         = style.ItemInnerSpacing;
+	imGuiStyle.TouchExtraPadding        = style.TouchExtraPadding;
+	imGuiStyle.WindowFillAlphaDefault   = style.WindowFillAlphaDefault;
+	imGuiStyle.IndentSpacing            = style.IndentSpacing;
+	imGuiStyle.ColumnsMinSpacing		= style.ColumnsMinSpacing;
+	imGuiStyle.ScrollbarSize			= style.ScrollbarSize;
+	imGuiStyle.ScrollbarRounding		= style.ScrollbarRounding;
+	imGuiStyle.GrabMinSize				= style.GrabMinSize;
+	imGuiStyle.GrabRounding				= style.GrabRounding;
+	imGuiStyle.DisplayWindowPadding		= style.DisplayWindowPadding;
+	imGuiStyle.DisplaySafeAreaPadding	= style.DisplaySafeAreaPadding;
+	imGuiStyle.AntiAliasedLines			= style.AntiAliasedLines;
+	imGuiStyle.AntiAliasedShapes		= style.AntiAliasedShapes;
+	
+	// set colors
+	for( int i = 0; i < ImGuiCol_COUNT; i++ )
+		imGuiStyle.Colors[i] = style.Colors[i];
+	
+	// set io and keymap
+	ImGuiIO& io                         = ImGui::GetIO();
+	io.DisplaySize                      = ImVec2( window->getSize().x, window->getSize().y );
+	io.DeltaTime                        = 1.0f / 60.0f;
+	io.KeyMap[ImGuiKey_Tab]             = KeyEvent::KEY_TAB;
+	io.KeyMap[ImGuiKey_LeftArrow]       = KeyEvent::KEY_LEFT;
+	io.KeyMap[ImGuiKey_RightArrow]      = KeyEvent::KEY_RIGHT;
+	io.KeyMap[ImGuiKey_UpArrow]         = KeyEvent::KEY_UP;
+	io.KeyMap[ImGuiKey_DownArrow]       = KeyEvent::KEY_DOWN;
+	io.KeyMap[ImGuiKey_Home]            = KeyEvent::KEY_HOME;
+	io.KeyMap[ImGuiKey_End]             = KeyEvent::KEY_END;
+	io.KeyMap[ImGuiKey_Delete]          = KeyEvent::KEY_DELETE;
+	io.KeyMap[ImGuiKey_Backspace]       = KeyEvent::KEY_BACKSPACE;
+	io.KeyMap[ImGuiKey_Enter]           = KeyEvent::KEY_RETURN;
+	io.KeyMap[ImGuiKey_Escape]          = KeyEvent::KEY_ESCAPE;
+	io.KeyMap[ImGuiKey_A]               = KeyEvent::KEY_a;
+	io.KeyMap[ImGuiKey_C]               = KeyEvent::KEY_c;
+	io.KeyMap[ImGuiKey_V]               = KeyEvent::KEY_v;
+	io.KeyMap[ImGuiKey_X]               = KeyEvent::KEY_x;
+	io.KeyMap[ImGuiKey_Y]               = KeyEvent::KEY_y;
+	io.KeyMap[ImGuiKey_Z]               = KeyEvent::KEY_z;
+	
+	// setup config file path
+	static string path = ( getAssetPath( "" ) / "imgui.ini" ).string();
+	io.IniFilename = path.c_str();
+	
+	// setup fonts
+	ImFontAtlas* fontAtlas  = ImGui::GetIO().Fonts;
+	fontAtlas->Clear();
+	for( auto font : options.getFonts() ){
+		string name = font.first.stem().string();
+		renderer->addFont( loadFile( font.first ), font.second, options.getFontGlyphRanges( name )  );
+	}
+	renderer->initFontTexture();
+	
+	// clipboard callbacks
+	io.SetClipboardTextFn = []( const char* text ){
+		const char* text_end = text + strlen(text);
+		char* buf = (char*)malloc(text_end - text + 1);
+		memcpy(buf, text, text_end-text);
+		buf[text_end-text] = '\0';
+		Clipboard::setString( buf );
+		free(buf);
+	};
+	io.GetClipboardTextFn = [](){
+		string str = Clipboard::getString();
+		static vector<char> strCopy;
+		strCopy = vector<char>(str.begin(), str.end());
+		strCopy.push_back('\0');
+		return (const char *) &strCopy[0];
+	};
+	
+	// renderer callback
+	io.RenderDrawListsFn = []( ImDrawData* data ) {
+		auto renderer = getRenderer();
+		renderer->render( data );
+	};
+	
+	// connect window's signals
+	connectWindow( window );
+	
+	if( options.isAutoRenderEnabled() && window ) {
+		ImGui::NewFrame();
+		
+		sWindowConnections.push_back( window->getSignalDraw().connect( newFrameGuard ) );
+		sWindowConnections.push_back( window->getSignalPostDraw().connect( render ) );
+	}
+	
+	sInitialized = true;
+}
+	
+	
 void connectWindow( ci::app::WindowRef window )
 {
     sWindowConnections = {
@@ -924,8 +939,6 @@ void connectWindow( ci::app::WindowRef window )
         window->getSignalKeyDown().connect( keyDown ),
         window->getSignalKeyUp().connect( keyUp ),
         window->getSignalResize().connect( resize ),
-        window->getSignalDraw().connect( newFrameGuard ),
-        window->getSignalPostDraw().connect( render )
     };
 }
 void disconnectWindow( ci::app::WindowRef window )

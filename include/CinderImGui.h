@@ -76,10 +76,12 @@ namespace ImGui {
 struct Options {
     //! defaults to using the current window, the basic ImGui font and the dark theme
     Options();
-    
-    //! sets the window that will be used to connect the signals and render ImGui
-    Options& window( const ci::app::WindowRef &window );
-    
+	
+	//! sets the window that will be used to connect the signals and render ImGui
+	Options& window( const ci::app::WindowRef &window );
+	//! species whether the block should call ImGui::NewFrame and ImGui::Render automatically. Default to true.
+	Options& autoRender( bool autoRender );
+	
     //! sets the font to use in ImGui
     Options& font( const ci::fs::path &fontPath, float size );
     //! sets the list of available fonts to use in ImGui
@@ -140,7 +142,9 @@ struct Options {
     Options& darkTheme();
     //! sets theme colors
     Options& color( ImGuiCol option, const ci::ColorA &color );
-    
+	
+	//! returns whether the block should call ImGui::NewFrame and ImGui::Render automatically
+	bool isAutoRenderEnabled() const { return mAutoRender; }
     //! returns the window that will be use to connect the signals and render ImGui
     ci::app::WindowRef                                  getWindow() const { return mWindow; }
     //! returns the list of available fonts to use in ImGui
@@ -151,6 +155,7 @@ struct Options {
     const ImGuiStyle&                                   getStyle() const { return mStyle; }
     
 protected:
+	bool										mAutoRender;
     ImGuiStyle                                  mStyle;
     std::vector<std::pair<ci::fs::path,float>>  mFonts;
     std::map<std::string,std::vector<ImWchar>>  mFontsGlyphRanges;
