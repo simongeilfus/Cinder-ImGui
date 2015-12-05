@@ -21,7 +21,9 @@ void BasicApp::setup()
 	// this will create the renderer and initialize the ui
 	// resources. Pass a ui::Options() argument if you want
 	// to change the default settings
-	ui::initialize();
+   ui::Options options;
+   options.font("C:\\Windows\\Fonts\\Arial.ttf", 23.0f);
+   ui::initialize(options);
 }
 
 void BasicApp::mouseDown( MouseEvent event )
