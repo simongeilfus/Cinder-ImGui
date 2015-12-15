@@ -53,7 +53,8 @@ static bool sInitialized = false;
 	
 ImGui::Options::Options()
 : mWindow( ci::app::getWindow() ),
-mAutoRender( true )
+mAutoRender( true ),
+mIniPathAndFilename( nullptr )
 {
     darkTheme();
 }
@@ -67,6 +68,12 @@ ImGui::Options& ImGui::Options::autoRender( bool autoRender )
 {
 	mAutoRender = autoRender;
 	return *this;
+}
+
+ImGui::Options& ImGui::Options::iniPathAndFilename(const char* path)
+{
+   mIniPathAndFilename = path;
+   return *this;
 }
 
 ImGui::Options& ImGui::Options::font( const ci::fs::path &fontPath, float size )
@@ -473,7 +480,7 @@ ImFont* Renderer::addFont( ci::DataSourceRef font, float size, const ImWchar* gl
     memcpy( bufferCopy, buffer->getData(), buffer->getSize() );
 	
 	ImFontConfig config;
-    ImFont* newFont         = fontAtlas->AddFontFromMemoryTTF( bufferCopy, buffer->getSize(), size, &config, glyph_ranges );
+    ImFont* newFont         = fontAtlas->AddFontFromMemoryTTF( bufferCopy, (int)buffer->getSize(), size, &config, glyph_ranges );
     
     mFonts.insert( make_pair( font->getFilePath().stem().string(), newFont ) );
     return newFont;
@@ -799,7 +806,7 @@ namespace {
 	{
 		static auto timer = ci::Timer(true);
 		ImGuiIO& io                 = ImGui::GetIO();
-		io.DeltaTime                = timer.getSeconds();
+		io.DeltaTime                = (float)timer.getSeconds();
 		timer.start();
 		
 		ImGui::Render();
@@ -858,7 +865,7 @@ void initialize( const Options &options )
 	
 	// set io and keymap
 	ImGuiIO& io                         = ImGui::GetIO();
-	io.DisplaySize                      = ImVec2( window->getSize().x, window->getSize().y );
+   io.DisplaySize                      = ImVec2((float)window->getSize().x, (float)window->getSize().y);
 	io.DeltaTime                        = 1.0f / 60.0f;
 	io.KeyMap[ImGuiKey_Tab]             = KeyEvent::KEY_TAB;
 	io.KeyMap[ImGuiKey_LeftArrow]       = KeyEvent::KEY_LEFT;
@@ -879,7 +886,17 @@ void initialize( const Options &options )
 	io.KeyMap[ImGuiKey_Z]               = KeyEvent::KEY_z;
 	
 	// setup config file path
-	static string path = ( getAssetPath( "" ) / "imgui.ini" ).string();
+   static string path;
+   if(options.getIniPathAndFilename() != nullptr)
+   {
+      // use the caller-defined path and filename
+      path = options.getIniPathAndFilename();
+   }
+   else
+   {
+      // derive a path and filename from the Cinder asset path
+      path = (getAssetPath("") / "imgui.ini").string();
+   }
 	io.IniFilename = path.c_str();
 	
 	// setup fonts
