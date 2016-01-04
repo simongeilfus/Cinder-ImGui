@@ -156,11 +156,12 @@ void BasicApp::draw()
 	ui::DragFloat( "Gray", &gray, 0.01f, 0.0f, 1.0f );
 	
 	// render our "objects"
+	gl::ScopedBlendAlpha alphaBlending;
 	for( auto object : mObjects ) {
 		gl::color( object.mColor );
 		gl::drawSolidCircle( object.getPosition(), object.mSize );
-		gl::drawStringCentered( object.mName, object.getPosition() );
+		gl::drawStringCentered( object.mName, vec2( ivec2( object.getPosition() ) ) - vec2( 0, 5 ), ColorA::black() );
 	}
 }
 
-CINDER_APP( BasicApp, RendererGl )
+CINDER_APP(BasicApp, RendererGl( RendererGl::Options().msaa( 8 ) ) )

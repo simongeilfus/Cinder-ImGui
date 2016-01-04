@@ -907,7 +907,7 @@ void initialize( const Options &options )
 	// setup config file path
 	static string path = ( getAssetPath( "" ) / "imgui.ini" ).string();
 	if( ! options.getIniPath().empty() )
-		path = options.getIniPath().c_str();
+		path = options.getIniPath().string().c_str();
 	io.IniFilename = path.c_str();
 	
 	// setup fonts
