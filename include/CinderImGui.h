@@ -183,6 +183,7 @@ namespace ImGui {
 	bool Combo( const char* label, int* current_item, const std::vector<std::string>& items, int height_in_items = -1);
 	
 	// Scoped objects goodness (push the state when created and pop it when destroyed)
+
 	struct ScopedWindow : public ci::Noncopyable {
 		ScopedWindow( const std::string &name = "Debug", ImGuiWindowFlags flags = 0 );
 		ScopedWindow( const std::string &name, glm::vec2 size, float fillAlpha = -1.0f, ImGuiWindowFlags flags = 0 );
