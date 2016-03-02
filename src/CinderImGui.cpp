@@ -919,6 +919,7 @@ void initialize( const Options &options )
 	}
 	renderer->initFontTexture();
 	
+#ifndef CINDER_LINUX
 	// clipboard callbacks
 	io.SetClipboardTextFn = []( const char* text ){
 		const char* text_end = text + strlen(text);
@@ -935,6 +936,7 @@ void initialize( const Options &options )
 		strCopy.push_back('\0');
 		return (const char *) &strCopy[0];
 	};
+#endif
 	
 	// renderer callback
 	io.RenderDrawListsFn = []( ImDrawData* data ) {
