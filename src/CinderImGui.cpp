@@ -26,6 +26,9 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
+// Linux fixes thanks to the help of @petros, see this thread:
+// https://forum.libcinder.org/#Topic/23286000002634083
+
 #include "CinderImGui.h"
 #include "imgui_internal.h"
 
@@ -368,7 +371,11 @@ void Renderer::render( ImDrawData* draw_data )
 		int needed_vtx_size = cmd_list->VtxBuffer.size() * sizeof(ImDrawVert);
 		if ( vbo->getSize() < needed_vtx_size) {
 			GLsizeiptr size = needed_vtx_size + 2000 * sizeof(ImDrawVert);
+			#ifndef CINDER_LINUX_EGL_RPI2
 			mVbo->bufferData( size, nullptr, GL_STREAM_DRAW );
+			#else
+			mVbo->bufferData( size, nullptr, GL_DYNAMIC_DRAW );
+			#endif
 		}
 		
 		
@@ -397,7 +404,11 @@ void Renderer::render( ImDrawData* draw_data )
 				gl::ScopedBlendAlpha scopedBlend;
 				gl::ScopedFaceCulling scopedFaceCulling( false );
 				
+				#if ! defined( CINDER_LINUX_EGL_RPI2 )
 				mIbo->bufferData( pcmd->ElemCount * sizeof(ImDrawIdx), idx_buffer, GL_STREAM_DRAW );
+				#else
+				mIbo->bufferData( pcmd->ElemCount * sizeof(ImDrawIdx), idx_buffer, GL_DYNAMIC_DRAW );
+				#endif
 				gl::drawElements( GL_TRIANGLES, (GLsizei) pcmd->ElemCount, GL_UNSIGNED_SHORT, nullptr );
 			}
 			idx_buffer += pcmd->ElemCount;
@@ -434,8 +445,13 @@ gl::VboRef Renderer::getVbo()
 //! initializes the vbo mesh
 void Renderer::initBuffers( size_t size )
 {
+	#if ! defined( CINDER_LINUX_EGL_RPI2 )
 	mVbo    = gl::Vbo::create( GL_ARRAY_BUFFER, size, nullptr, GL_STREAM_DRAW );
 	mIbo    = gl::Vbo::create( GL_ELEMENT_ARRAY_BUFFER, 10, nullptr, GL_STREAM_DRAW );
+	#else
+	mVbo    = gl::Vbo::create( GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW );
+	mIbo    = gl::Vbo::create( GL_ELEMENT_ARRAY_BUFFER, 10, nullptr, GL_DYNAMIC_DRAW );
+	#endif
 	mVao    = gl::Vao::create();
 	
 	gl::ScopedVao mVaoScope( mVao );
