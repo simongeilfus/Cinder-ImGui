@@ -30,7 +30,7 @@
 #include "imgui_internal.h"
 
 #include "cinder/app/App.h"
-#include "cinder/gl/Scoped.h"
+#include "cinder/gl/scoped.h"
 #include "cinder/gl/draw.h"
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Vao.h"
@@ -918,7 +918,7 @@ void initialize( const Options &options )
 		renderer->addFont( loadFile( font.first ), font.second, options.getFontGlyphRanges( name )  );
 	}
 	renderer->initFontTexture();
-	
+#if !defined( CINDER_LINUX )
 	// clipboard callbacks
 	io.SetClipboardTextFn = []( const char* text ){
 		const char* text_end = text + strlen(text);
@@ -935,7 +935,8 @@ void initialize( const Options &options )
 		strCopy.push_back('\0');
 		return (const char *) &strCopy[0];
 	};
-	
+#endif
+
 	// renderer callback
 	io.RenderDrawListsFn = []( ImDrawData* data ) {
 		auto renderer = getRenderer();
