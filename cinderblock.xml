@@ -6,10 +6,8 @@
 	author="Simon Geilfus"
 	summary="Omar Cornut's ImGui for Cinder"
 	license="MIT License"
-	>
-	<supports os="msw" />
-	<supports os="macosx" />
-	
+	git="https://github.com/simongeilfus/Cinder-ImGui.git"
+	>	
 	<includePath>lib/imgui</includePath>
 	<includePath>include</includePath>
 	
