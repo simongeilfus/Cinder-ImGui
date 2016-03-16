@@ -961,6 +961,7 @@ void initialize( const Options &options )
 	};
 	
 	// connect window's signals
+	disconnectWindow( window );
 	connectWindow( window );
 	
 	if( options.isAutoRenderEnabled() && window ) {
@@ -996,6 +997,7 @@ void disconnectWindow( ci::app::WindowRef window )
 	for( auto connection : sWindowConnections ){
 		connection.disconnect();
 	}
+	sWindowConnections.clear();
 }
 
 ScopedWindow::ScopedWindow( const std::string &name, ImGuiWindowFlags flags)
