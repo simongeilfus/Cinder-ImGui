@@ -865,8 +865,11 @@ static vector<signals::Connection> sWindowConnections;
 
 void initialize( const Options &options )
 {
+	// get the window and switch to its context before initializing the renderer
+	auto window					= options.getWindow();
+	auto currentContext			= gl::context();
+	window->getRenderer()->makeCurrentContext();
 	auto renderer				= getRenderer();
-	auto window				= options.getWindow();
 	
 	// set style
 	const ImGuiStyle& style			= options.getStyle();
@@ -976,6 +979,9 @@ void initialize( const Options &options )
 	app::App::get()->getSignalWillResignActive().connect( resetKeys );
 	
 	sInitialized = true;
+	
+	// switch back to the original gl context
+	currentContext->makeCurrent();
 }
 
 
