@@ -324,6 +324,7 @@ public:
 	void initGlslProg();
 	
 	ImFont* getFont( const std::string &name );
+	void clearFonts();
 	
 protected:
 	ci::gl::Texture2dRef	mFontTexture;
@@ -499,6 +500,10 @@ ImFont* Renderer::addFont( ci::DataSourceRef font, float size, const ImWchar* gl
 	
 	mFonts.insert( make_pair( font->getFilePath().stem().string(), newFont ) );
 	return newFont;
+}
+void Renderer::clearFonts()
+{
+	mFonts.clear();
 }
 
 //! initalizes and returns the shader
@@ -932,6 +937,7 @@ void initialize( const Options &options )
 	// setup fonts
 	ImFontAtlas* fontAtlas  = ImGui::GetIO().Fonts;
 	fontAtlas->Clear();
+	renderer->clearFonts();
 	for( auto font : options.getFonts() ){
 		string name = font.first.stem().string();
 		renderer->addFont( loadFile( font.first ), font.second, options.getFontGlyphRanges( name )  );
