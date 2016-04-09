@@ -182,6 +182,22 @@ namespace ImGui {
 	bool InputTextMultiline( const char* label, std::string* buf, const ImVec2& size = ImVec2(0,0), ImGuiInputTextFlags flags = 0, ImGuiTextEditCallback callback = NULL, void* user_data = NULL);
 	bool Combo( const char* label, int* current_item, const std::vector<std::string>& items, int height_in_items = -1);
 	
+	// Getters/Setters Helpers
+	template<typename T>
+	bool InputText( const char* label, T *object, std::string( T::*get )() const, void( T::*set )( const std::string& ), ImGuiInputTextFlags flags = 0, ImGuiTextEditCallback callback = NULL, void* user_data = NULL );
+	template<typename T>
+	bool Checkbox(const char* label, T *object, bool( T::*get )() const, void( T::*set )( bool ) );
+	template<typename T>
+	bool Combo( const char* label, T *object, int( T::*get )() const, void( T::*set )( int ), const std::vector<std::string>& items, int height_in_items = -1);
+	template<typename T>
+	bool DragFloat(const char* label, T *object, float( T::*get )() const, void( T::*set )( float ), float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* display_format = "%.3f", float power = 1.0f);     // If v_min >= v_max we have no bound
+	template<typename T>
+	bool DragFloat2(const char* label, T *object, ci::vec2( T::*get )() const, void( T::*set )( const ci::vec2& ), float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* display_format = "%.3f", float power = 1.0f);
+	template<typename T>
+	bool DragFloat3(const char* label, T *object, ci::vec3( T::*get )() const, void( T::*set )( const ci::vec3& ), float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* display_format = "%.3f", float power = 1.0f);
+	template<typename T>
+	bool DragFloat4(const char* label, T *object, ci::vec4( T::*get )() const, void( T::*set )( const ci::vec4& ), float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* display_format = "%.3f", float power = 1.0f);
+	
 	// Scoped objects goodness (push the state when created and pop it when destroyed)
 
 	struct ScopedWindow : public ci::Noncopyable {
@@ -237,5 +253,78 @@ namespace ImGui {
 	protected:
 		bool mOpened;
 	};
+	
+	// Getters/Setters Helpers Implementation
+	template<typename T>
+	bool InputText( const char* label, T *object, std::string( T::*get )() const, void( T::*set )( const std::string& ), ImGuiInputTextFlags flags, ImGuiTextEditCallback callback, void* user_data )
+	{
+		std::string text = (object->*get)();
+		if( InputText( label, &text, flags, callback, user_data ) ){
+			(object->*set)( text );
+			return true;
+		}
+		return false;
+	}
+	template<typename T>
+	bool Checkbox(const char* label, T *object, bool( T::*get )() const, void( T::*set )( bool ) )
+	{
+		bool value = (object->*get)();
+		if( Checkbox( label, &value ) ){
+			(object->*set)( value );
+			return true;
+		}
+		return false;
+	}
+	template<typename T>
+	bool Combo( const char* label, T *object, int( T::*get )() const, void( T::*set )( int ), const std::vector<std::string>& items, int height_in_items )
+	{
+		int value = (object->*get)();
+		if( Combo( label, &value, items, height_in_items ) ){
+			(object->*set)( value );
+			return true;
+		}
+		return false;
+	}
+	
+	template<typename T>
+	bool DragFloat(const char* label, T *object, float( T::*get )() const, void( T::*set )( float ), float v_speed, float v_min, float v_max, const char* display_format, float power )
+	{
+		float value = (object->*get)();
+		if( DragFloat( label, &value, v_speed, v_min, v_max, display_format, power ) ){
+			(object->*set)( value );
+			return true;
+		}
+		return false;
+	}
+	template<typename T>
+	bool DragFloat2(const char* label, T *object, ci::vec2( T::*get )() const, void( T::*set )( const ci::vec2& ), float v_speed, float v_min, float v_max, const char* display_format, float power )
+	{
+		ci::vec2 value = (object->*get)();
+		if( DragFloat2( label, &value[0], v_speed, v_min, v_max, display_format, power ) ){
+			(object->*set)( value );
+			return true;
+		}
+		return false;
+	}
+	template<typename T>
+	bool DragFloat3(const char* label, T *object, ci::vec3( T::*get )() const, void( T::*set )( const ci::vec3& ), float v_speed, float v_min, float v_max, const char* display_format, float power )
+	{
+		ci::vec3 value = (object->*get)();
+		if( DragFloat3( label, &value[0], v_speed, v_min, v_max, display_format, power ) ){
+			(object->*set)( value );
+			return true;
+		}
+		return false;
+	}
+	template<typename T>
+	bool DragFloat4(const char* label, T *object, ci::vec4( T::*get )() const, void( T::*set )( const ci::vec4& ), float v_speed, float v_min, float v_max, const char* display_format, float power )
+	{
+		ci::vec4 value = (object->*get)();
+		if( DragFloat4( label, &value[0], v_speed, v_min, v_max, display_format, power ) ){
+			(object->*set)( value );
+			return true;
+		}
+		return false;
+	}
 	
 }
