@@ -197,6 +197,14 @@ namespace ImGui {
 	bool DragFloat3(const char* label, T *object, ci::vec3( T::*get )() const, void( T::*set )( const ci::vec3& ), float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* display_format = "%.3f", float power = 1.0f);
 	template<typename T>
 	bool DragFloat4(const char* label, T *object, ci::vec4( T::*get )() const, void( T::*set )( const ci::vec4& ), float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* display_format = "%.3f", float power = 1.0f);
+	template<typename T>
+	bool DragInt(const char* label, T *object, int( T::*get )() const, void( T::*set )( int ), float v_speed = 1.0f, int v_min = 0, int v_max = 0, const char* display_format = "%.0f");     // If v_min >= v_max we have no bound
+	template<typename T>
+	bool DragInt2(const char* label, T *object, ci::ivec2( T::*get )() const, void( T::*set )( const ci::ivec2& ), float v_speed = 1.0f, int v_min = 0, int v_max = 0, const char* display_format = "%.0f" );
+	template<typename T>
+	bool DragInt3(const char* label, T *object, ci::ivec3( T::*get )() const, void( T::*set )( const ci::ivec3& ), float v_speed = 1.0f, int v_min = 0, int v_max = 0, const char* display_format = "%.0f" );
+	template<typename T>
+	bool DragInt4(const char* label, T *object, ci::ivec4( T::*get )() const, void( T::*set )( const ci::ivec4& ), float v_speed = 1.0f, int v_min = 0, int v_max = 0, const char* display_format = "%.0f" );
 	
 	// Scoped objects goodness (push the state when created and pop it when destroyed)
 
@@ -327,4 +335,44 @@ namespace ImGui {
 		return false;
 	}
 	
+	template<typename T>
+	bool DragInt(const char* label, T *object, int( T::*get )() const, void( T::*set )( int ), float v_speed, int v_min, int v_max, const char* display_format )
+	{
+		int value = (object->*get)();
+		if( DragInt( label, &value, v_speed, v_min, v_max, display_format ) ){
+			(object->*set)( value );
+			return true;
+		}
+		return false;
+	}
+	template<typename T>
+	bool DragInt2(const char* label, T *object, ci::ivec2( T::*get )() const, void( T::*set )( const ci::ivec2& ), float v_speed, int v_min, int v_max, const char* display_format )
+	{
+		ci::ivec2 value = (object->*get)();
+		if( DragInt2( label, &value[0], v_speed, v_min, v_max, display_format ) ){
+			(object->*set)( value );
+			return true;
+		}
+		return false;
+	}
+	template<typename T>
+	bool DragInt3(const char* label, T *object, ci::ivec3( T::*get )() const, void( T::*set )( const ci::ivec3& ), float v_speed, int v_min, int v_max, const char* display_format )
+	{
+		ci::ivec3 value = (object->*get)();
+		if( DragInt3( label, &value[0], v_speed, v_min, v_max, display_format ) ){
+			(object->*set)( value );
+			return true;
+		}
+		return false;
+	}
+	template<typename T>
+	bool DragInt4(const char* label, T *object, ci::ivec4( T::*get )() const, void( T::*set )( const ci::ivec4& ), float v_speed, int v_min, int v_max, const char* display_format )
+	{
+		ci::ivec4 value = (object->*get)();
+		if( DragInt4( label, &value[0], v_speed, v_min, v_max, display_format ) ){
+			(object->*set)( value );
+			return true;
+		}
+		return false;
+	}
 }
