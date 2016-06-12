@@ -144,11 +144,6 @@ ImGui::Options& ImGui::Options::touchExtraPadding( const glm::vec2 &padding )
 	mStyle.TouchExtraPadding = padding;
 	return *this;
 }
-ImGui::Options& ImGui::Options::windowFillAlphaDefault( float defaultAlpha )
-{
-	mStyle.WindowFillAlphaDefault = defaultAlpha;
-	return *this;
-}
 ImGui::Options& ImGui::Options::indentSpacing( float spacing )
 {
 	mStyle.IndentSpacing = spacing;
@@ -231,7 +226,6 @@ ImGui::Options& ImGui::Options::darkTheme()
 	mStyle.ItemSpacing              = ImVec2( 6, 2 );
 	mStyle.ItemInnerSpacing         = ImVec2( 6, 4 );
 	mStyle.Alpha			= 0.95f;
-	mStyle.WindowFillAlphaDefault   = 1.0f;
 	mStyle.WindowRounding           = 4.0f;
 	mStyle.FrameRounding            = 2.0f;
 	mStyle.IndentSpacing            = 6.0f;
@@ -284,7 +278,7 @@ ImGui::Options& ImGui::Options::darkTheme()
 	style.Colors[ImGuiCol_PlotHistogram]         = ImVec4(0.86f, 0.93f, 0.89f, 0.63f);
 	style.Colors[ImGuiCol_PlotHistogramHovered]  = ImVec4(0.92f, 0.18f, 0.29f, 1.00f);
 	style.Colors[ImGuiCol_TextSelectedBg]        = ImVec4(0.92f, 0.18f, 0.29f, 0.43f);
-	style.Colors[ImGuiCol_TooltipBg]             = ImVec4(0.47f, 0.77f, 0.83f, 0.72f);
+	style.Colors[ImGuiCol_PopupBg]             = ImVec4(0.47f, 0.77f, 0.83f, 0.72f);
 	style.Colors[ImGuiCol_ModalWindowDarkening]  = ImVec4(0.20f, 0.22f, 0.27f, 0.73f);
 	
 	return *this;
@@ -890,7 +884,6 @@ void initialize( const Options &options )
 	imGuiStyle.ItemSpacing			= style.ItemSpacing;
 	imGuiStyle.ItemInnerSpacing		= style.ItemInnerSpacing;
 	imGuiStyle.TouchExtraPadding		= style.TouchExtraPadding;
-	imGuiStyle.WindowFillAlphaDefault	= style.WindowFillAlphaDefault;
 	imGuiStyle.IndentSpacing		= style.IndentSpacing;
 	imGuiStyle.ColumnsMinSpacing		= style.ColumnsMinSpacing;
 	imGuiStyle.ScrollbarSize		= style.ScrollbarSize;
