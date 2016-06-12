@@ -88,6 +88,11 @@ ImGui::Options& ImGui::Options::fontGlyphRanges( const std::string &name, const 
 	mFontsGlyphRanges[name] = glyphRanges;
 	return *this;
 }
+ImGui::Options& ImGui::Options::fontGlobalScale(float scale)
+{
+    ImGui::GetIO().FontGlobalScale = scale;
+    return *this;
+}
 ImGui::Options& ImGui::Options::alpha( float a )
 {
 	mStyle.Alpha = a;

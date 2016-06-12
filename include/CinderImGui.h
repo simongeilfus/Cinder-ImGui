@@ -84,6 +84,8 @@ namespace ImGui {
 		Options& fonts( const std::vector<std::pair<ci::fs::path,float>> &fontPaths );
 		//! sets the font to use in ImGui
 		Options& fontGlyphRanges( const std::string &name, const std::vector<ImWchar> &glyphRanges );
+        //! sets global font scale
+        Options& fontGlobalScale( float scale );
 		
 		//! Global alpha applies to everything in ImGui
 		Options& alpha( float a );
