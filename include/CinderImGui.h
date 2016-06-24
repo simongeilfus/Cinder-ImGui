@@ -84,6 +84,8 @@ namespace ImGui {
 		Options& fonts( const std::vector<std::pair<ci::fs::path,float>> &fontPaths );
 		//! sets the font to use in ImGui
 		Options& fontGlyphRanges( const std::string &name, const std::vector<ImWchar> &glyphRanges );
+        //! sets global font scale
+        Options& fontGlobalScale( float scale );
 		
 		//! Global alpha applies to everything in ImGui
 		Options& alpha( float a );
@@ -107,8 +109,6 @@ namespace ImGui {
 		Options& itemInnerSpacing( const glm::vec2 &spacing );
 		//! Expand bounding box for touch-based system where touch position is not accurate enough (unnecessary for mouse inputs). Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget running. So dont grow this too much!
 		Options& touchExtraPadding( const glm::vec2 &padding );
-		//! Default alpha of window background, if not specified in ImGui::Begin()
-		Options& windowFillAlphaDefault( float defaultAlpha );
 		//! Horizontal spacing when entering a tree node
 		Options& indentSpacing( float spacing );
 		//! Minimum horizontal spacing between two columns
