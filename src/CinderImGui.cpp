@@ -113,7 +113,7 @@ ImGui::Options& ImGui::Options::windowRounding( float rounding )
 	mStyle.WindowRounding = rounding;
 	return *this;
 }
-ImGui::Options& ImGui::Options::windowTitleAlign( ImGuiAlign align )
+ImGui::Options& ImGui::Options::windowTitleAlign( const glm::vec2 &align )
 {
 	mStyle.WindowTitleAlign = align;
 	return *this;

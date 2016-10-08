@@ -96,7 +96,7 @@ namespace ImGui {
 		//! Radius of window corners rounding. Set to 0.0f to have rectangular windows
 		Options& windowRounding( float rounding );
 		//! Alignment for title bar text
-		Options& windowTitleAlign( ImGuiAlign align );
+		Options& windowTitleAlign( const glm::vec2 &align );
 		//! Radius of child window corners rounding. Set to 0.0f to have rectangular windows
 		Options& childWindowRounding( float rounding );
 		//! Padding within a framed rectangle (used by most widgets)
