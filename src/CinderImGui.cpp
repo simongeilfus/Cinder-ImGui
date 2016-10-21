@@ -757,7 +757,7 @@ namespace {
 	void mouseUp( ci::app::MouseEvent& event )
 	{
 		ImGuiIO& io   = ImGui::GetIO();
-        mouseState[0] = false;
+		mouseState[0] = false;
 		mouseState[1] = false;
 		
 		event.setHandled( io.WantCaptureMouse );
