@@ -1237,7 +1237,7 @@ bool FilePicker( const char* label, fs::path* path, bool open, const fs::path &i
 	}
 	PopID();
 
-	if( hovered ) {
+	if( hovered && ! path->empty() ) {
 		BeginTooltip();
 		TextUnformatted( path->string().c_str() );
 		EndTooltip();
