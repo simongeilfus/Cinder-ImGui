@@ -488,7 +488,7 @@ void Renderer::initFontTexture()
  return newFont;
  }
  */
-std::vector<std::vector<ImWchar>> test;
+
 ImFont* Renderer::addFont( const ci::fs::path &font, float size, const ImWchar* glyph_ranges, bool merge )
 {
 	ImFontAtlas* fontAtlas  = ImGui::GetIO().Fonts;
@@ -1186,6 +1186,69 @@ ScopedMenuBar::ScopedMenuBar()
 ScopedMenuBar::~ScopedMenuBar()
 {
 	if( mOpened ) ImGui::EndMenuBar();
+}
+
+bool FilePicker( const char* label, fs::path* path, bool open, const fs::path &initialPath, std::vector<std::string> extensions )
+{
+
+    ImGuiWindow* window = GetCurrentWindow();
+    if (window->SkipItems)
+        return false;
+
+    ImGuiContext& g = *GImGui;
+    const ImGuiStyle& style = g.Style;
+    const ImGuiID id = window->GetID(label);
+    const float w = CalcItemWidth();
+
+    const ImVec2 label_size = CalcTextSize(label, NULL, true);
+    const ImRect frame_bb(window->DC.CursorPos, window->DC.CursorPos + ImVec2(w, label_size.y + style.FramePadding.y*2.0f));
+    const ImRect total_bb(frame_bb.Min, frame_bb.Max + ImVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0.0f));
+
+    ItemSize(total_bb, style.FramePadding.y);
+	if (!ItemAdd(total_bb, &id))
+    {
+        return false;
+    }
+	
+    bool hovered, held;
+    ButtonBehavior(frame_bb, id, &hovered, &held);
+    const ImU32 col = GetColorU32((hovered && held) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : path->empty() ? ImGuiCol_Column : ImGuiCol_Button);	
+    RenderFrame( frame_bb.Min, frame_bb.Max, col, true, style.FrameRounding );
+	
+	fs::path filename = path->has_filename() ? path->filename() : path->has_stem() ? path->stem() : *path;
+	fs::path dir = path->has_parent_path() && path->parent_path().has_stem() ? path->parent_path().stem() : fs::path();
+    RenderTextClipped( frame_bb.Min + style.FramePadding, frame_bb.Max - style.FramePadding, ( dir / filename ).string().c_str(), NULL, NULL, ImVec2(0.5f,0.5f) );
+	
+	bool changed = false;
+	PushID( label );
+	if( BeginPopupContextItem( "##FilePickerContextPopup", 0 ) ) {
+		if( MenuItem( string( "Load " + string( label ) ).c_str(), "", nullptr ) ) {
+			auto newPath = open ? getOpenFilePath( initialPath, extensions ) : getSaveFilePath( initialPath, extensions );
+			if( ! newPath.empty() ) {
+				*path = newPath;
+				changed = true;
+			}
+		}
+		if( MenuItem( "Clear", "", nullptr ) ) {
+			path->clear();
+			changed = true;
+		}
+		EndPopup();
+	}
+	PopID();
+
+	if( hovered ) {
+		BeginTooltip();
+		TextUnformatted( path->string().c_str() );
+		EndTooltip();
+	}
+	
+
+    if (label_size.x > 0.0f)
+        RenderText(ImVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, frame_bb.Min.y + style.FramePadding.y), label);
+
+	return changed;
+
 }
 
 bool IconButton( const char* icon, const ImVec2& size_arg, bool frame )
