@@ -81,7 +81,7 @@ namespace ImGui {
 		//! sets the font to use in ImGui
 		Options& font( const ci::fs::path &fontPath, float size );
 		//! sets the list of available fonts to use in ImGui
-		Options& fonts( const std::vector<std::pair<ci::fs::path,float>> &fontPaths );
+		Options& fonts( const std::vector<std::pair<ci::fs::path,float>> &fontPaths, bool merge = true );
 		//! sets the font to use in ImGui
 		Options& fontGlyphRanges( const std::string &name, const std::vector<ImWchar> &glyphRanges );
         //! sets global font scale
@@ -150,14 +150,17 @@ namespace ImGui {
 		const std::vector<std::pair<ci::fs::path,float>>& getFonts() const { return mFonts; }
 		//! returns the glyph ranges if available for this font
 		const ImWchar* getFontGlyphRanges( const std::string &name ) const;
+		//! returns whether the fonts need to be merged
+		bool getFontMergeMode() const { return mMergeFonts; }
 		//! returns the window that will be use to connect the signals and render ImGui
 		const ImGuiStyle& getStyle() const { return mStyle; }
 		//! returns imgui ini file path
 		const ci::fs::path& getIniPath() const { return mIniPath; }
 		
 	protected:
-		bool						mAutoRender;
-		ImGuiStyle					mStyle;
+		bool							mAutoRender;
+		ImGuiStyle						mStyle;
+		bool							mMergeFonts;
 		std::vector<std::pair<ci::fs::path,float>>	mFonts;
 		std::map<std::string,std::vector<ImWchar>>	mFontsGlyphRanges;
 		ci::app::WindowRef				mWindow;
@@ -261,7 +264,26 @@ namespace ImGui {
 	protected:
 		bool mOpened;
 	};
+
+
+	// Custom widgets
+	IMGUI_API bool IconButton( const char* icon, const ImVec2& size = ImVec2(0,0), bool frame = false );
+	IMGUI_API bool IconToggle( const char* iconEnabled, const char* iconDisabled, bool *enabled, const ImVec2& size = ImVec2(0,0), bool frame = false );
+	IMGUI_API bool ColorPicker3( const char* label, float col[3] );
+	IMGUI_API bool ColorPicker4( const char* label, float col[4] );
 	
+	// Dock From LumixEngine
+	// https://github.com/nem0/LumixEngine/blob/master/external/imgui/imgui_dock.h
+	// https://github.com/ocornut/imgui/issues/351
+	// #define IMGUI_DOCK
+#if defined( IMGUI_DOCK )
+	IMGUI_API void ShutdownDock();
+	IMGUI_API void RootDock(const ImVec2& pos, const ImVec2& size);
+	IMGUI_API bool BeginDock(const char* label, bool* opened = nullptr, ImGuiWindowFlags extra_flags = 0);
+	IMGUI_API void EndDock();
+	IMGUI_API void SetDockActive();
+#endif
+
 	// Getters/Setters Helpers Implementation
 	template<typename T>
 	bool InputText( const char* label, T *object, std::string( T::*get )() const, void( T::*set )( const std::string& ), ImGuiInputTextFlags flags, ImGuiTextEditCallback callback, void* user_data )
