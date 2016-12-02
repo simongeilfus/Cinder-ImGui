@@ -2,7 +2,7 @@
 cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
 set( CMAKE_VERBOSE_MAKEFILE on )
 
-get_filename_component( CINDER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../.." ABSOLUTE )
+get_filename_component( CINDER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../Cinder" ABSOLUTE )
 include( ${CINDER_DIR}/linux/cmake/Cinder.cmake )
 
 project( Basic )
