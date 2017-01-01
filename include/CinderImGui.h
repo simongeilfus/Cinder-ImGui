@@ -31,6 +31,8 @@
 #include <vector>
 #include <map>
 
+#include "cinder/app/App.h"
+#include "cinder/CinderAssert.h"
 #include "cinder/Color.h"
 #include "cinder/Noncopyable.h"
 #include "cinder/Vector.h"
@@ -277,6 +279,34 @@ namespace ImGui {
 	IMGUI_API bool ColorPicker3( const char* label, float col[3] );
 	IMGUI_API bool ColorPicker4( const char* label, float col[4] );
 	
+	// Context sharing utilities. Can be used to help sharing the context between host app and dlls.
+	class ContextOwner {
+	public:
+		ImGuiContext* getImGuiContext() const { return mImguiContext; }
+		void setImGuiContext( ImGuiContext* context = nullptr ) { mImguiContext = context == nullptr ? ui::GetCurrentContext() : context; }
+
+	protected:
+		ImGuiContext* mImguiContext = nullptr;
+	};
+
+	inline void initializeShared( const Options &options = Options() )
+	{
+		ui::initialize( options );
+		auto contextOwner = dynamic_cast<ContextOwner*>( ci::app::App::get() );
+		CI_ASSERT_MSG( contextOwner, "App has to inherit from ui::ContextOwner to use ui::initializeShared" );
+		contextOwner->setImGuiContext();
+	}
+
+	inline void shareContext()
+	{
+		auto contextOwner = dynamic_cast<ContextOwner*>( ci::app::App::get() );
+		CI_ASSERT_MSG( contextOwner, "App has to inherit from ui::ContextOwner to use ui::shareContext" );
+		ImGuiContext* ctx = contextOwner->getImGuiContext();
+		if( ctx != ui::GetCurrentContext() ) {
+			ui::SetCurrentContext( ctx );
+		}
+	}
+
 	// Dock From LumixEngine
 	// https://github.com/nem0/LumixEngine/blob/master/external/imgui/imgui_dock.h
 	// https://github.com/ocornut/imgui/issues/351
