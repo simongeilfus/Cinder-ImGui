@@ -922,7 +922,7 @@ namespace {
 } // Anonymous namespace
 
 // wrong... and would not work in a multi-windows scenario
-static vector<signals::Connection> sWindowConnections;
+static signals::ConnectionList sWindowConnections;
 
 
 
@@ -1033,8 +1033,8 @@ void initialize( const Options &options )
 	if( options.isAutoRenderEnabled() && window ) {
 		ImGui::NewFrame();
 		
-		sWindowConnections.push_back( window->getSignalDraw().connect( newFrameGuard ) );
-		sWindowConnections.push_back( window->getSignalPostDraw().connect( render ) );
+		sWindowConnections += window->getSignalDraw().connect( newFrameGuard );
+		sWindowConnections += window->getSignalPostDraw().connect( render );
 	}
 	
 	// connect app's signals
@@ -1055,22 +1055,17 @@ void initialize( const Options &options )
 
 void connectWindow( ci::app::WindowRef window )
 {
-	sWindowConnections = {
-		window->getSignalMouseDown().connect( mouseDown ),
-		window->getSignalMouseUp().connect( mouseUp ),
-		window->getSignalMouseDrag().connect( mouseDrag ),
-		window->getSignalMouseMove().connect( mouseMove ),
-		window->getSignalMouseWheel().connect( mouseWheel ),
-		window->getSignalKeyDown().connect( keyDown ),
-		window->getSignalKeyUp().connect( keyUp ),
-		window->getSignalResize().connect( resize ),
-	};
+	sWindowConnections += window->getSignalMouseDown().connect( mouseDown );
+	sWindowConnections += window->getSignalMouseUp().connect( mouseUp );
+	sWindowConnections += window->getSignalMouseDrag().connect( mouseDrag );
+	sWindowConnections += window->getSignalMouseMove().connect( mouseMove );
+	sWindowConnections += window->getSignalMouseWheel().connect( mouseWheel );
+	sWindowConnections += window->getSignalKeyDown().connect( keyDown );
+	sWindowConnections += window->getSignalKeyUp().connect( keyUp );
+	sWindowConnections += window->getSignalResize().connect( resize );
 }
 void disconnectWindow( ci::app::WindowRef window )
 {
-	for( auto connection : sWindowConnections ){
-		connection.disconnect();
-	}
 	sWindowConnections.clear();
 }
 
