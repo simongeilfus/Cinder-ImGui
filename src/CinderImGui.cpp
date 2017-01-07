@@ -528,7 +528,7 @@ ImFont* Renderer::addFont( const ci::fs::path &font, float size, const ImWchar* 
 				start = glyphs[i];
 			}
 		}
-		if( ranges.back() != glyphs[numGlyphs-1] ) {
+		if( ranges.empty() || ranges.back() != glyphs[numGlyphs-1] ) {
 			ranges.push_back( start );
 			ranges.push_back( glyphs[numGlyphs-1] );
 		}
