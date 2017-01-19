@@ -281,11 +281,10 @@ namespace ImGui {
 	
 	// Context sharing utilities. Can be used to help sharing the context between host app and dlls.
 	class ContextOwner {
-	public:
 		ImGuiContext* getImGuiContext() const { return mImguiContext; }
 		void setImGuiContext( ImGuiContext* context = nullptr ) { mImguiContext = context == nullptr ? ui::GetCurrentContext() : context; }
-
-	protected:
+		friend void initializeShared( const Options &options );
+		friend void shareContext();
 		ImGuiContext* mImguiContext = nullptr;
 	};
 
