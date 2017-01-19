@@ -1416,9 +1416,11 @@ namespace {
 
 bool ColorPicker3( const char* label, float col[3] )
 {
+	ui::PushID( label );
     bool changed = ColorPickerImpl( &col[0], false );
 	SameLine();
 	TextUnformatted( label );
+	ui::PopID();
 	return changed;
 }
 		
