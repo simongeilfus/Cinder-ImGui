@@ -402,7 +402,7 @@ void Renderer::render( ImDrawData* draw_data )
 			else {
 				gl::ScopedVao scopedVao( getVao().get() );
 				gl::ScopedBuffer scopedIndexBuffer( mIbo );
-				gl::ScopedGlslProg scopedShader( getGlslProg() );
+				gl::ScopedGlslProg scopedShader( shader );
 				gl::ScopedTextureBind scopedTexture( GL_TEXTURE_2D, (GLuint)(intptr_t) pcmd->TextureId );
 				gl::ScopedScissor scopedScissors( (int)pcmd->ClipRect.x, (int)(height - pcmd->ClipRect.w), (int)(pcmd->ClipRect.z - pcmd->ClipRect.x), (int)(pcmd->ClipRect.w - pcmd->ClipRect.y) );
 				gl::ScopedDepth scopedDepth( false );
