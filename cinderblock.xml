@@ -12,8 +12,6 @@
 	<includePath>include</includePath>
 	
 	<header>include/CinderImGui.h</header>
-	<header>include/imgui_user.h</header>
-	<header>include/imgui_user.inl</header>
 	
 	<header>lib/imgui/imconfig.h</header>
 	<header>lib/imgui/imgui.h</header>
