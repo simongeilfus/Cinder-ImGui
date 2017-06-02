@@ -1,7 +1,6 @@
 Cinder-ImGui
 ===================
-####[Immediate mode GUI Library](https://github.com/ocornut/imgui/) from [Omar Cornut](https://github.com/ocornut) wrapped for use with Cinder 0.9.
-
+### [Immediate mode GUI Library](https://github.com/ocornut/imgui/) from [Omar Cornut](https://github.com/ocornut) wrapped for use with Cinder 0.9.
 
 <sub>(ImGui is free but Omar needs your support to sustain development and maintenance. If you work for a company, please consider financial support)</sub>
 
@@ -14,18 +13,36 @@ ImGui is designed to enable fast iteration and empower programmers to create con
 
 ImGui is particularly suited to integration in realtime 3D applications, fullscreen applications, embedded applications, games, or any applications on consoles platforms where operating system features are non-standard.
 
-#####Namespace
-For ease of use I added a namespace alias for ImGui, feel free to disable it by defining CINDER_IMGUI_NO_NAMESPACE_ALIAS
+### Getting Started
+Download or check out this repository into your `Cinder/blocks` directory, then use Tinderbox to create a new project using ImGui.
 
-#####Initialization
-This is the most basic initialization:
+Once the project is created you'll need to include the header in your `.cpp` file:
+```c++
+#include "CinderImGui.h"
+```
+
+Initialize ImGui at setup:
 ```c++
 void CinderApp::setup()
 {
-    ui::initialize();
+    ImGui::initialize();
 }
 ```
-You can provide an ui::Options object to the initialize method to setup the ui the way you want:
+
+Then you're ready to start drawing components:
+```c++
+void CinderApp::draw()
+{
+    gl::clear( Color( 0, 0, 0 ) );
+    ImGui::Text("Hello, world!");
+}
+```
+
+### Namespace
+For ease of use I added a namespace alias for ImGui, feel free to disable it by defining `CINDER_IMGUI_NO_NAMESPACE_ALIAS`.
+
+### Advanced Initialization
+You can provide an `ui::Options` object to the initialize method to setup the UI the way you want:
 ```c++
 void CinderApp::setup()
 {
@@ -47,8 +64,8 @@ void CinderApp::setup()
 }
 ```
 
-#####UI Creation
-By default or if you don't specify an empty windowRef, the wrapper will take care of calling ImGui::NewFrame and ImGui::Render, meaning that you don't have to worry about anything else than the actual UI. You can add UI code in any place you want, that's it. The Renderer takes care of setting the matrices and the proper shader to draw the ui through a postDraw signal. (You can disable this behavior through the initialization options).
+### UI Creation
+By default or if you don't specify an empty windowRef, the wrapper will take care of calling `ImGui::NewFrame` and `ImGui::Render`, meaning that you don't have to worry about anything else than the actual UI. You can add UI code in any place you want, that's it. The Renderer takes care of setting the matrices and the proper shader to draw the UI through a `postDraw` signal. (You can disable this behavior through the initialization options).
 
 ```c++
 void CinderApp::draw()
@@ -64,20 +81,20 @@ void SomeFunctionCalledSomewhereElse()
 }
 ```
 
-#####Scoped Objects
-For the sake of simplifying a bit more the use of this lib, there's Scoped* objects for most push/pop functions. The state will be pushed when creating the object and poped at the end of its lifespan.
+### Scoped Objects
+For the sake of simplifying a bit more the use of this lib, there's `Scoped*` objects for most push/pop functions. The state will be pushed when creating the object and popped at the end of its lifespan.
 ```c++
 void SomeWindow()
 {
     ui::ScopedWindow window( "Title" );
     ui::ScopedFont font( "Font-Bold" );
-    
+
     ui::Text( "Some Bold Title" );
     ui::Image( mFbo->getColorTexture(), mFbo->getSize() );
 }
 ```
 
-#####Todo
+### Todo
 * fix keyboard events handling (modifiers not working for the moment)
 * multi-window option
 
@@ -85,9 +102,9 @@ void SomeWindow()
 ImGui Credits (from [ImGui](https://github.com/ocornut/imgui/) README)
 -------
 
-Developed by [Omar Cornut](http://www.miracleworld.net) and every direct or indirect contributors to the GitHub. The early version of this library was developed with the support of [Media Molecule](http://www.mediamolecule.com) and first used internally on the game [Tearaway](http://tearaway.mediamolecule.com). 
+Developed by [Omar Cornut](http://www.miracleworld.net) and every direct or indirect contributors to the GitHub. The early version of this library was developed with the support of [Media Molecule](http://www.mediamolecule.com) and first used internally on the game [Tearaway](http://tearaway.mediamolecule.com).
 
-I first discovered imgui principles at [Q-Games](http://www.q-games.com) where Atman had dropped his own simple imgui implementation in the codebase, which I spent quite some time improving and thinking about. It turned out that Atman was exposed to the concept directly by working with Casey. When I moved to Media Molecule I rewrote a new library trying to overcome the flaws and limitations of the first one I've worked with. It became this library and since then I have spent an unreasonable amount of time iterating on it. 
+I first discovered imgui principles at [Q-Games](http://www.q-games.com) where Atman had dropped his own simple imgui implementation in the codebase, which I spent quite some time improving and thinking about. It turned out that Atman was exposed to the concept directly by working with Casey. When I moved to Media Molecule I rewrote a new library trying to overcome the flaws and limitations of the first one I've worked with. It became this library and since then I have spent an unreasonable amount of time iterating on it.
 
 Embeds [ProggyClean.ttf](http://upperbounds.net) font by Tristan Grimmer (MIT license).
 

@@ -504,6 +504,7 @@ ImFont* Renderer::addFont( const ci::fs::path &font, float size, const ImWchar* 
 		for( const ImWchar* range = glyph_ranges; range[0] && range[1]; range += 2 ) {
 			ranges.push_back( range[0] );
 			ranges.push_back( range[1] );
+			ranges.push_back( 0 );
 		}
 		glyphRanges = ranges.data();
 	}
@@ -885,6 +886,13 @@ namespace {
 		static auto timer = ci::Timer(true);
 		ImGuiIO& io = ImGui::GetIO();
 		io.DeltaTime = timer.getSeconds();
+
+		if (io.DeltaTime < 0.0f)
+		{
+			CI_LOG_W("WARNING: overriding imgui deltatime because it is " << io.DeltaTime);
+			io.DeltaTime = 1.0f/60.0f;
+		}
+
 		timer.start();
 		
 		ImGui::Render();
@@ -1003,7 +1011,7 @@ void initialize( const Options &options )
 	
 #ifndef CINDER_LINUX
 	// clipboard callbacks
-	io.SetClipboardTextFn = []( const char* text ){
+	io.SetClipboardTextFn = []( void* user_data, const char* text ) {
 		const char* text_end = text + strlen(text);
 		char* buf = (char*)malloc(text_end - text + 1);
 		memcpy(buf, text, text_end-text);
@@ -1011,7 +1019,7 @@ void initialize( const Options &options )
 		Clipboard::setString( buf );
 		free(buf);
 	};
-	io.GetClipboardTextFn = [](){
+	io.GetClipboardTextFn = []( void* user_data ) {
 		string str = Clipboard::getString();
 		static vector<char> strCopy;
 		strCopy = vector<char>(str.begin(), str.end());
