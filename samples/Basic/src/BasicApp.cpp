@@ -110,6 +110,7 @@ void BasicApp::update()
 		if( ui::Button( "Add" ) ) {
 			static int objCount = mObjects.size();
 			mObjects.push_back( { "Object" + to_string( objCount++ ), Color::white(), vec2( 0.0f ) } );
+			selection = &mObjects.back();
 		}
 		if( selection ) {
 			ui::SameLine();
@@ -124,8 +125,9 @@ void BasicApp::update()
 		
 		// selectable list
 		ui::ListBoxHeader( "" );
+		int id = 0;
 		for( const auto& object : mObjects ) {
-			if( ui::Selectable( object.mName.c_str(), selection == &object ) ) {
+			if( ui::Selectable( ( object.mName + "###obj_" + to_string( ++id ) ).c_str(), selection == &object ) ) {
 				selection = &object;
 			}
 		}
@@ -133,7 +135,7 @@ void BasicApp::update()
 	}
 	
 	// The Object Inspector
-	if( selection ) {
+	if( selection != nullptr ) {
 		ui::ScopedWindow window( "Inspector" );
 		
 		Object* object = (Object*) selection;
