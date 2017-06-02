@@ -358,6 +358,7 @@ void Renderer::render( ImDrawData* draw_data )
 	const auto &vao		= getVao();
 	const auto &vbo		= getVbo();
 	const auto &shader	= getGlslProg();
+	auto ctx			= gl::context();
 	
 	const mat4 mat =
 	{
@@ -376,7 +377,11 @@ void Renderer::render( ImDrawData* draw_data )
 	gl::ScopedFaceCulling scopedFaceCulling( false );
 	shader->uniform( "uModelViewProjection", mat );
 	shader->uniform( "uTex", 0 );
-	
+
+	GLuint currentTextureId = 0;
+	ctx->pushTextureBinding( GL_TEXTURE_2D, currentTextureId, 0 );
+	ctx->pushBoolState( GL_SCISSOR_TEST, GL_TRUE );
+	ctx->pushScissor();
 	for (int n = 0; n < draw_data->CmdListsCount; n++) {
 		const ImDrawList* cmd_list = draw_data->CmdLists[n];
         const ImDrawIdx* idx_buffer_offset = 0;
@@ -439,14 +444,21 @@ void Renderer::render( ImDrawData* draw_data )
 				pcmd->UserCallback(cmd_list, pcmd);
 			}
 			else {
-				gl::ScopedTextureBind scopedTexture( GL_TEXTURE_2D, (GLuint)(intptr_t) pcmd->TextureId );
-				gl::ScopedScissor scopedScissors( (int)pcmd->ClipRect.x, (int)(height - pcmd->ClipRect.w), (int)(pcmd->ClipRect.z - pcmd->ClipRect.x), (int)(pcmd->ClipRect.w - pcmd->ClipRect.y) );
-				
+				bool pushTexture = currentTextureId != (GLuint)(intptr_t) pcmd->TextureId;
+				if( pushTexture ) {
+					currentTextureId = (GLuint)(intptr_t) pcmd->TextureId;
+					ctx->bindTexture( GL_TEXTURE_2D, currentTextureId, 0 );
+				}
+				ctx->setScissor( { ivec2( (int)pcmd->ClipRect.x, (int)(height - pcmd->ClipRect.w) ), ivec2( (int)(pcmd->ClipRect.z - pcmd->ClipRect.x), (int)(pcmd->ClipRect.w - pcmd->ClipRect.y) ) } );
 				gl::drawElements( GL_TRIANGLES, (GLsizei)pcmd->ElemCount, sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, idx_buffer_offset );
 			}
 			idx_buffer_offset += pcmd->ElemCount;
 		}
 	}
+
+	ctx->popScissor();
+	ctx->popBoolState( GL_SCISSOR_TEST );
+	ctx->popTextureBinding( GL_TEXTURE_2D, 0 );
 }
 
 //! initializes and returns the font texture
