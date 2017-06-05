@@ -876,7 +876,7 @@ namespace {
 		ImGuiIO& io = ImGui::GetIO();
 
 #if defined CINDER_LINUX
-      auto character = event.getChar();
+    uint32_t  character = event.getChar();
 #else
 		uint32_t character = event.getCharUtf32();
 #endif
