@@ -2493,6 +2493,128 @@ struct DockContext
 		return -1;
 	}
 
+	static bool getValue(Json::Value &value, float &output, size_t N) { if (value.isNull()) return false;  output = value.asFloat(); return true;  }
+	static bool getValue(Json::Value &value, int32_t &output, size_t N) { if (value.isNull()) return false; output = value.asInt(); return true; }
+	static bool getValue(Json::Value &value, int64_t &output, size_t N) { if (value.isNull()) return false; output = value.asInt64(); return true; }
+	static bool getValue(Json::Value &value, uint32_t &output, size_t N) { if (value.isNull()) return false; output = value.asUInt(); return true;}
+	static bool getValue(Json::Value &value, uint64_t &output, size_t N) { if (value.isNull()) return false; output = value.asUInt64(); return true;}
+	static bool getValue(Json::Value &value, bool &output, size_t N) { if (value.isNull()) return false; output = value.asBool(); return true;}
+	static bool getValue(Json::Value &value, char *& output, size_t N) {
+		if (value.isNull()) return false;
+		auto s = value.asString();
+		output = new char[s.size() + 1];
+		memcpy(output, s.data(), s.size());
+		output[s.size()] = '\0';
+		return true;
+	}
+
+	template <typename U>
+	struct writeCast {
+		template <typename F, typename T>
+		void operator()(F f, const std::string &name, T& value)
+		{
+			U v = static_cast<U>(value);
+			f(name, v);
+			value = static_cast<T>(v);
+		}
+	};
+
+	template <typename VarIOFunc, typename DockIOFunc>
+	void serialize(Dock &dock, VarIOFunc f, DockIOFunc g)
+	{
+		//Variable read / write (f)
+		f("id", dock.id);
+		f("label", dock.label);
+		f("x", dock.pos.x);
+		f("y", dock.pos.y);
+		f("size_x", dock.size.x);
+		f("size_y", dock.size.y);
+		f("active", dock.active);
+		f("opened", dock.opened);
+		f("first", dock.first);
+		writeCast<int>{}(f, "status", dock.status);
+
+		//Dock ptr read / write (g)
+		g("next", &dock.next_tab);
+		g("prev", &dock.prev_tab);
+		g("child0", &dock.children[0]);
+		g("child1", &dock.children[1]);
+		g("parent", &dock.parent);
+	}
+
+	Json::Value saveDocks() {
+		Json::Value tree(Json::arrayValue);
+		const int N = m_docks.size();
+		std::function<void(Dock*, Dock*)> setParent = [&setParent](Dock * parent, Dock * child)
+		{
+			if (child) {
+				child->parent = parent;
+				setParent(child, nullptr);
+			}
+			else {
+				for (int i = 0; i < 2; ++i) {
+					if (parent->children[i]) setParent(parent, parent->children[i]);
+				}
+			}
+		};
+
+		for (int i = 0; i < N; ++i) {
+			setParent(m_docks[i], nullptr);
+		}
+		for (int i = 0; i < N; ++i) {
+			Json::Value thisNode;
+			auto f = [&thisNode](const std::string &s, auto &value) {
+				thisNode[s] = Json::Value(value);
+				return true; // write always works
+			};
+			auto g = [&f](const std::string &name, Dock ** d) -> bool {
+				if (!*d) return false;
+				auto label = (*d)->label;
+				return f(name, label);
+			};
+			serialize(*m_docks[i], f, g);
+			tree.append(thisNode);
+		}
+		return tree;
+	}
+
+	void loadDocks(const Json::Value &tree) {
+		for (int i = 0; i < m_docks.size(); ++i)
+		{
+			m_docks[i]->~Dock();
+			MemFree(m_docks[i]);
+		}
+		m_docks.clear();
+
+		const int N = tree.size();
+		m_docks.resize(N);
+		for (size_t i = 0; i < N; ++i) {
+			Dock* new_dock = (Dock*)MemAlloc(sizeof(Dock));
+			m_docks[i] = IM_PLACEMENT_NEW(new_dock) Dock();
+			getValue(tree.get(i, {}).get("label", {}), new_dock->label, 0);
+			new_dock->last_frame = 0;
+			new_dock->invalid_frames = 0;
+		}
+		for (size_t i = 0; i < N; ++i) {
+			auto thisNode = tree.get(i, {});
+			auto f = [&thisNode](const std::string &s, auto &value) -> bool {
+				Json::Value val = thisNode[s];
+				return getValue(val, value, sizeof(value));
+			};
+			auto g = [this, &f](const std::string &name, Dock ** d) {
+				decltype((**d).label) label;
+				if (!f(name, label)) return;
+				*d = nullptr;
+				for (size_t i = 0; i < m_docks.size() && !*d; ++i) {
+					if (strcmp(label, m_docks[i]->label) == 0) {
+						*d = m_docks[i];
+					}
+				}
+			};
+			serialize(*m_docks[i], f, g);
+		}
+	}
+	
 	/*
 	void save(Lumix::FS::OsFile& file)
 	{

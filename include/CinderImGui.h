@@ -37,6 +37,7 @@
 #include "cinder/Noncopyable.h"
 #include "cinder/Vector.h"
 #include "cinder/Filesystem.h"
+#include "jsoncpp/json.h"
 
 // forward declarations
 namespace cinder {
@@ -316,6 +317,8 @@ namespace ImGui {
 	IMGUI_API bool BeginDock(const char* label, bool* opened = nullptr, ImGuiWindowFlags extra_flags = 0);
 	IMGUI_API void EndDock();
 	IMGUI_API void SetDockActive();
+	IMGUI_API Json::Value saveDocks();
+	IMGUI_API void loadDocks(const Json::Value &tree);
 #endif
 
 	// Getters/Setters Helpers Implementation
