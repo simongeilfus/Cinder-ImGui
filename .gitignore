@@ -29,3 +29,5 @@ ipch/
 .vs
 **/vc2013/enc_temp_folder/**
 **/vc2015/enc_temp_folder/**
+
+samples/Basic/xcode/build

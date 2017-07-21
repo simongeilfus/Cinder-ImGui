@@ -814,7 +814,10 @@ bool Combo( const char* label, int* current_item, const std::vector<std::string>
 	bool result = Combo( label, current_item, (const char*) &charArray[0], height_in_items );
 	return result;
 }
-
+    
+    
+vector<int> sAccelKeys;
+    
 namespace {
 	
 	//! sets the right mouseDown IO values in imgui
@@ -866,10 +869,6 @@ namespace {
 		
 		event.setHandled( io.WantCaptureMouse );
 	}
-	
-	
-	vector<int> sAccelKeys;
-	
 	//! sets the right keyDown IO values in imgui
 	void keyDown( ci::app::KeyEvent& event )
 	{
@@ -887,7 +886,7 @@ namespace {
 			&& event.isAccelDown()
 			&& find( sAccelKeys.begin(), sAccelKeys.end(), event.getCode() ) == sAccelKeys.end() ){
 			sAccelKeys.push_back( event.getCode() );
-		}
+        }
 		
 		io.KeyCtrl = io.KeysDown[KeyEvent::KEY_LCTRL] || io.KeysDown[KeyEvent::KEY_RCTRL] || io.KeysDown[KeyEvent::KEY_LMETA] || io.KeysDown[KeyEvent::KEY_RMETA];
 		io.KeyShift = io.KeysDown[KeyEvent::KEY_LSHIFT] || io.KeysDown[KeyEvent::KEY_RSHIFT];
@@ -901,7 +900,7 @@ namespace {
 		ImGuiIO& io = ImGui::GetIO();
 		
 		io.KeysDown[event.getCode()] = false;
-		
+        
 		for( auto key : sAccelKeys ){
 			io.KeysDown[key] = false;
 		}
@@ -913,6 +912,7 @@ namespace {
 		
 		event.setHandled( io.WantCaptureKeyboard );
 	}
+    
 	void resize()
 	{
 		ImGuiIO& io	= ImGui::GetIO();
@@ -971,7 +971,19 @@ namespace {
 // wrong... and would not work in a multi-windows scenario
 static signals::ConnectionList sWindowConnections;
 
-
+void clearKeyEvents()
+{
+    // bool KeysDown[512]; imgui.h #787
+    ImGuiIO& io = ImGui::GetIO();
+    for( size_t k=0; k < 512; k++ ){
+        io.KeysDown[k] = false;
+    }
+    sAccelKeys.clear();
+    
+    io.KeyCtrl = false;
+    io.KeyShift = false;
+    io.KeyAlt = false;
+}
 
 void initialize( const Options &options )
 {
@@ -1047,8 +1059,10 @@ void initialize( const Options &options )
 		renderer->addFont( font.first, font.second, options.getFontGlyphRanges( name ), options.getFontMergeMode() );
 	}
 	renderer->initFontTexture();
-	
-#ifndef CINDER_LINUX
+
+
+// #ifndef CINDER_LINUX
+#if defined(CINDER_LINUX) && !defined(CINDER_ANDROID)
 	// clipboard callbacks
 	io.SetClipboardTextFn = []( void* user_data, const char* text ) {
 		const char* text_end = text + strlen(text);
@@ -1098,7 +1112,6 @@ void initialize( const Options &options )
 	// switch back to the original gl context
 	currentContext->makeCurrent();
 }
-
 
 void connectWindow( ci::app::WindowRef window )
 {
