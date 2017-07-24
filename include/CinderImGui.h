@@ -210,10 +210,6 @@ namespace ImGui {
 	bool DragInt3(const char* label, T *object, ci::ivec3( T::*get )() const, void( T::*set )( const ci::ivec3& ), float v_speed = 1.0f, int v_min = 0, int v_max = 0, const char* display_format = "%.0f" );
 	template<typename T>
 	bool DragInt4(const char* label, T *object, ci::ivec4( T::*get )() const, void( T::*set )( const ci::ivec4& ), float v_speed = 1.0f, int v_min = 0, int v_max = 0, const char* display_format = "%.0f" );
-	template<typename T>
-	bool ColorPicker3( const char* label, T *object, ci::Color( T::*get )() const, void( T::*set )( const ci::Color& ) );
-	template<typename T>
-	bool ColorPicker4( const char* label, T *object, ci::ColorA( T::*get )() const, void( T::*set )( const ci::ColorA& ) );
 
 	// Scoped objects goodness (push the state when created and pop it when destroyed)
 
@@ -276,8 +272,6 @@ namespace ImGui {
 	IMGUI_API bool FilePicker( const char* label, ci::fs::path* path, bool open = true, const ci::fs::path &initialPath = ci::fs::path(), std::vector<std::string> extensions = std::vector<std::string>() );
 	IMGUI_API bool IconButton( const char* icon, const ImVec2& size = ImVec2(0,0), bool frame = false );
 	IMGUI_API bool IconToggle( const char* iconEnabled, const char* iconDisabled, bool *enabled, const ImVec2& size = ImVec2(0,0), bool frame = false );
-	IMGUI_API bool ColorPicker3( const char* label, float col[3] );
-	IMGUI_API bool ColorPicker4( const char* label, float col[4] );
 	
 	// Context sharing utilities. Can be used to help sharing the context between host app and dlls.
 	class ContextOwner {
@@ -426,26 +420,6 @@ namespace ImGui {
 	{
 		ci::ivec4 value = (object->*get)();
 		if( DragInt4( label, &value[0], v_speed, v_min, v_max, display_format ) ){
-			(object->*set)( value );
-			return true;
-		}
-		return false;
-	}
-	template<typename T>
-	bool ColorPicker3( const char* label, T *object, ci::Color( T::*get )() const, void( T::*set )( const ci::Color& ) )
-	{
-		ci::Color value = (object->*get)();
-		if( ColorPicker3( label, &value[0] ) ){
-			(object->*set)( value );
-			return true;
-		}
-		return false;
-	}
-	template<typename T>
-	bool ColorPicker4( const char* label, T *object, ci::ColorA( T::*get )() const, void( T::*set )( const ci::ColorA& ) )
-	{
-		ci::ColorA value = (object->*get)();
-		if( ColorPicker4( label, &value[0] ) ){
 			(object->*set)( value );
 			return true;
 		}
