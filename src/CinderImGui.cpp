@@ -545,7 +545,8 @@ ImFont* Renderer::addFont( const ci::fs::path &font, float size, const ImWchar* 
 	if( merge && ! mFonts.empty() ) {
 		config.MergeMode = true;
 		config.PixelSnapH = true;
-		config.MergeGlyphCenterV = true;
+        config.MergeMode = true;
+		// config.MergeGlyphCenterV = true;
 		//config.OversampleV = 4;
 	}
 	/*else if( merge ) {
