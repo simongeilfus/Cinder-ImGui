@@ -1465,20 +1465,20 @@ namespace {
 
 } // anonymous namespace
 
-bool ColorPicker3( const char* label, float col[3] )
-{
-	ui::PushID( label );
-    bool changed = ColorPickerImpl( &col[0], false );
-	SameLine();
-	TextUnformatted( label );
-	ui::PopID();
-	return changed;
-}
+// bool ColorPicker3( const char* label, float col[3] )
+// {
+// 	ui::PushID( label );
+//     bool changed = ColorPickerImpl( &col[0], false );
+// 	SameLine();
+// 	TextUnformatted( label );
+// 	ui::PopID();
+// 	return changed;
+// }
 		
-bool ColorPicker4( const char* label, float col[4] )
-{
-    return ColorPickerImpl( &col[0], true );
-}
+// bool ColorPicker4( const char* label, float col[4] )
+// {
+//     return ColorPickerImpl( &col[0], true );
+// }
 
 #if defined( IMGUI_DOCK )
 
