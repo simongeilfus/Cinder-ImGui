@@ -1464,9 +1464,15 @@ namespace {
 bool ColorPicker3( const char* label, float col[3] )
 {
 	ui::PushID( label );
-    bool changed = ColorPickerImpl( &col[0], false );
-	SameLine();
-	TextUnformatted( label );
+	bool changed = ColorPickerImpl( &col[0], false );
+	
+	// Hide anything after '##' in label
+	const char* text_display_end = FindRenderedTextEnd(label);
+	if (text_display_end - label > 0)
+	{
+		SameLine();
+		TextUnformatted( label, text_display_end );
+	}
 	ui::PopID();
 	return changed;
 }
