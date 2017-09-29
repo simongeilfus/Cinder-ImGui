@@ -1315,6 +1315,8 @@ bool IconButton( const char* icon, const ImVec2& size_arg, bool frame )
     if (!ItemAdd(bb, &id))
         return false;
 
+    if (window->DC.ItemFlags & ImGuiItemFlags_ButtonRepeat) flags |= ImGuiButtonFlags_Repeat;
+
     bool hovered, held;
     bool pressed = ButtonBehavior(bb, id, &hovered, &held, flags);
 
