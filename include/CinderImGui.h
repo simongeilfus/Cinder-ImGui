@@ -276,8 +276,6 @@ namespace ImGui {
 	IMGUI_API bool FilePicker( const char* label, ci::fs::path* path, bool open = true, const ci::fs::path &initialPath = ci::fs::path(), std::vector<std::string> extensions = std::vector<std::string>() );
 	IMGUI_API bool IconButton( const char* icon, const ImVec2& size = ImVec2(0,0), bool frame = false );
 	IMGUI_API bool IconToggle( const char* iconEnabled, const char* iconDisabled, bool *enabled, const ImVec2& size = ImVec2(0,0), bool frame = false );
-	IMGUI_API bool ColorPicker3( const char* label, float col[3] );
-	IMGUI_API bool ColorPicker4( const char* label, float col[4] );
 	
 	// Context sharing utilities. Can be used to help sharing the context between host app and dlls.
 	class ContextOwner {
