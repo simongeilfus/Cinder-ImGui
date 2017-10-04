@@ -30,6 +30,9 @@
     <ClInclude Include="..\..\lib\imgui\imgui.h">
       <Filter>Source Files\ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\CinderImGuiExports.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\CinderImGui.cpp">
