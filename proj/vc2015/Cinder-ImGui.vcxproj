@@ -90,8 +90,9 @@
       </SDLCheck>
       <AdditionalIncludeDirectories>..\..\lib\imgui;..\..\include;..\..\..\..\include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);FT2_BUILD_LIBRARY=1;FT_DEBUG_LEVEL_TRACE=1</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;IMGUI_API_EXPORT;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);FT2_BUILD_LIBRARY=1;FT_DEBUG_LEVEL_TRACE=1</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
+      <ForcedIncludeFiles>CinderImGuiExports.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\..\..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</AdditionalLibraryDirectories>
@@ -106,8 +107,9 @@
       </SDLCheck>
       <AdditionalIncludeDirectories>..\..\lib\imgui;..\..\include;..\..\..\..\include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);FT2_BUILD_LIBRARY=1;FT_DEBUG_LEVEL_TRACE=1</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;IMGUI_API_EXPORT;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);FT2_BUILD_LIBRARY=1;FT_DEBUG_LEVEL_TRACE=1</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
+      <ForcedIncludeFiles>CinderImGuiExports.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\..\..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</AdditionalLibraryDirectories>
@@ -126,7 +128,8 @@
       <AdditionalIncludeDirectories>..\..\lib\imgui;..\..\include;..\..\..\..\include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);FT2_BUILD_LIBRARY=1;FT_DEBUG_LEVEL_TRACE=1</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;IMGUI_API_EXPORT;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);FT2_BUILD_LIBRARY=1;FT_DEBUG_LEVEL_TRACE=1</PreprocessorDefinitions>
+      <ForcedIncludeFiles>CinderImGuiExports.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -147,7 +150,8 @@
       <AdditionalIncludeDirectories>..\..\lib\imgui;..\..\include;..\..\..\..\include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);FT2_BUILD_LIBRARY=1;FT_DEBUG_LEVEL_TRACE=1</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;IMGUI_API_EXPORT;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);FT2_BUILD_LIBRARY=1;FT_DEBUG_LEVEL_TRACE=1</PreprocessorDefinitions>
+      <ForcedIncludeFiles>CinderImGuiExports.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -158,6 +162,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\CinderImGui.h" />
+    <ClInclude Include="..\..\include\CinderImGuiExports.h" />
     <ClInclude Include="..\..\lib\imgui\imconfig.h" />
     <ClInclude Include="..\..\lib\imgui\imgui.h" />
     <ClInclude Include="..\..\lib\imgui\imgui_internal.h" />
