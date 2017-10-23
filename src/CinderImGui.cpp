@@ -1251,7 +1251,7 @@ bool FilePicker( const char* label, fs::path* path, bool open, const fs::path &i
     const ImRect total_bb(frame_bb.Min, frame_bb.Max + ImVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0.0f));
 
     ItemSize(total_bb, style.FramePadding.y);
-	if (!ItemAdd(total_bb, &id))
+	if (!ItemAdd(total_bb, id))
     {
         return false;
     }
@@ -1316,7 +1316,7 @@ bool IconButton( const char* icon, const ImVec2& size_arg, bool frame )
 
     const ImRect bb(pos, pos + size);
     ItemSize(bb, style.FramePadding.y);
-    if (!ItemAdd(bb, &id))
+    if (!ItemAdd(bb, id))
         return false;
 
     if (window->DC.ItemFlags & ImGuiItemFlags_ButtonRepeat) flags |= ImGuiButtonFlags_Repeat;
