@@ -89,7 +89,7 @@ namespace ImGui {
 		Options& fontGlyphRanges( const std::string &name, const std::vector<ImWchar> &glyphRanges );
         //! sets global font scale
         Options& fontGlobalScale( float scale );
-		
+
 		//! Global alpha applies to everything in ImGui
 		Options& alpha( float a );
 		//! Padding within a window
@@ -101,7 +101,7 @@ namespace ImGui {
 		//! Alignment for title bar text
 		Options& windowTitleAlign( const glm::vec2 &align );
 		//! Radius of child window corners rounding. Set to 0.0f to have rectangular windows
-		Options& childWindowRounding( float rounding );
+		Options& childRounding( float rounding );
 		//! Padding within a framed rectangle (used by most widgets)
 		Options& framePadding( const glm::vec2 &padding );
 		//! Radius of frame corners rounding. Set to 0.0f to have rectangular frame (used by most widgets).
@@ -124,6 +124,8 @@ namespace ImGui {
 		Options& grabMinSize( float minSize );
 		//! Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs.
 		Options& grabRounding( float rounding );
+		//! Alignment of button text when button is larger than text. Defaults to (0.5f,0.5f) for horizontally+vertically centered.
+		Options& buttonTextAlign( const ci::vec2 &textAlign );            
 		//! Window positions are clamped to be visible within the display area by at least this amount. Only covers regular windows.
 		Options& displayWindowPadding( const glm::vec2 &padding );
 		//! If you cannot see the edge of your screen (e.g. on a TV) increase the safe area padding. Covers popups/tooltips as well regular windows.
