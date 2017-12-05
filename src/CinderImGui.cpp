@@ -121,9 +121,9 @@ ImGui::Options& ImGui::Options::windowTitleAlign( const glm::vec2 &align )
 	mStyle.WindowTitleAlign = align;
 	return *this;
 }
-ImGui::Options& ImGui::Options::childWindowRounding( float rounding )
+ImGui::Options& ImGui::Options::childRounding( float rounding )
 {
-	mStyle.ChildWindowRounding = rounding;
+	mStyle.ChildRounding = rounding;
 	return *this;
 }
 
@@ -180,6 +180,11 @@ ImGui::Options& ImGui::Options::grabMinSize( float minSize )
 ImGui::Options& ImGui::Options::grabRounding( float rounding )
 {
 	mStyle.GrabRounding = rounding;
+	return *this;
+}
+ImGui::Options& ImGui::Options::buttonTextAlign( const ci::vec2 &textAlign )
+{
+	mStyle.ButtonTextAlign = textAlign;
 	return *this;
 }
 ImGui::Options& ImGui::Options::displayWindowPadding( const glm::vec2 &padding )
@@ -263,7 +268,6 @@ ImGui::Options& ImGui::Options::darkTheme()
 	style.Colors[ImGuiCol_ScrollbarGrab]         = ImVec4(0.09f, 0.15f, 0.16f, 1.00f);
 	style.Colors[ImGuiCol_ScrollbarGrabHovered]  = ImVec4(0.92f, 0.18f, 0.29f, 0.78f);
 	style.Colors[ImGuiCol_ScrollbarGrabActive]   = ImVec4(0.92f, 0.18f, 0.29f, 1.00f);
-	style.Colors[ImGuiCol_ComboBg]               = ImVec4(0.20f, 0.22f, 0.27f, 1.00f);
 	style.Colors[ImGuiCol_CheckMark]             = ImVec4(0.71f, 0.22f, 0.27f, 1.00f);
 	style.Colors[ImGuiCol_SliderGrab]            = ImVec4(0.47f, 0.77f, 0.83f, 0.14f);
 	style.Colors[ImGuiCol_SliderGrabActive]      = ImVec4(0.92f, 0.18f, 0.29f, 1.00f);
@@ -917,41 +921,41 @@ namespace {
 		
 		event.setHandled( io.WantCaptureKeyboard );
 	}
-	void resize()
-	{
-		ImGuiIO& io	= ImGui::GetIO();
-		io.DisplaySize	= toPixels( getWindowSize() );
-	}
 	
 	static bool sNewFrame = false;
+	void newFrameGuard();
 	void render()
 	{
 		static auto timer = ci::Timer(true);
 		ImGuiIO& io = ImGui::GetIO();
 		io.DeltaTime = timer.getSeconds();
 
-		if (io.DeltaTime < 0.0f)
-		{
+		if( io.DeltaTime < 0.0f ) {
 			CI_LOG_W("WARNING: overriding imgui deltatime because it is " << io.DeltaTime);
 			io.DeltaTime = 1.0f/60.0f;
 		}
 
 		timer.start();
-		
 		ImGui::Render();
 		sNewFrame = false;
-		App::get()->dispatchAsync( []()
-		{
-			ImGui::NewFrame();
-			sNewFrame = true;
+		App::get()->dispatchAsync( []() {
+			newFrameGuard();
 		} );
 	}
 	
 	void newFrameGuard()
 	{
-		if( !sNewFrame ){
+		if( ! sNewFrame ){
 			ImGui::NewFrame();
+			sNewFrame = true;
 		}
+	}
+
+	void resize()
+	{
+		ImGuiIO& io	= ImGui::GetIO();
+		io.DisplaySize	= toPixels( getWindowSize() );
+		newFrameGuard();
 	}
 	
 	void resetKeys()
@@ -975,8 +979,6 @@ namespace {
 // wrong... and would not work in a multi-windows scenario
 static signals::ConnectionList sWindowConnections;
 
-
-
 void initialize( const Options &options )
 {
 	// get the window and switch to its context before initializing the renderer
@@ -986,28 +988,29 @@ void initialize( const Options &options )
 	auto renderer				= getRenderer();
 	
 	// set style
-	const ImGuiStyle& style			= options.getStyle();
-	ImGuiStyle& imGuiStyle			= ImGui::GetStyle();
-	imGuiStyle.Alpha			= style.Alpha;
-	imGuiStyle.WindowPadding		= style.WindowPadding;
-	imGuiStyle.WindowMinSize		= style.WindowMinSize;
-	imGuiStyle.WindowRounding		= style.WindowRounding;
-	imGuiStyle.WindowTitleAlign		= style.WindowTitleAlign;
-	imGuiStyle.ChildWindowRounding		= style.ChildWindowRounding;
-	imGuiStyle.FramePadding			= style.FramePadding;
-	imGuiStyle.FrameRounding		= style.FrameRounding;
-	imGuiStyle.ItemSpacing			= style.ItemSpacing;
-	imGuiStyle.ItemInnerSpacing		= style.ItemInnerSpacing;
+	const ImGuiStyle& style				= options.getStyle();
+	ImGuiStyle& imGuiStyle				= ImGui::GetStyle();
+	imGuiStyle.Alpha					= style.Alpha;
+	imGuiStyle.WindowPadding			= style.WindowPadding;
+	imGuiStyle.WindowMinSize			= style.WindowMinSize;
+	imGuiStyle.WindowRounding			= style.WindowRounding;
+	imGuiStyle.WindowTitleAlign			= style.WindowTitleAlign;
+	imGuiStyle.ChildRounding			= style.ChildRounding;
+	imGuiStyle.FramePadding				= style.FramePadding;
+	imGuiStyle.FrameRounding			= style.FrameRounding;
+	imGuiStyle.ItemSpacing				= style.ItemSpacing;
+	imGuiStyle.ItemInnerSpacing			= style.ItemInnerSpacing;
 	imGuiStyle.TouchExtraPadding		= style.TouchExtraPadding;
-	imGuiStyle.IndentSpacing		= style.IndentSpacing;
+	imGuiStyle.IndentSpacing			= style.IndentSpacing;
 	imGuiStyle.ColumnsMinSpacing		= style.ColumnsMinSpacing;
-	imGuiStyle.ScrollbarSize		= style.ScrollbarSize;
+	imGuiStyle.ScrollbarSize			= style.ScrollbarSize;
 	imGuiStyle.ScrollbarRounding		= style.ScrollbarRounding;
-	imGuiStyle.GrabMinSize			= style.GrabMinSize;
-	imGuiStyle.GrabRounding			= style.GrabRounding;
+	imGuiStyle.GrabMinSize				= style.GrabMinSize;
+	imGuiStyle.GrabRounding				= style.GrabRounding;
+	imGuiStyle.ButtonTextAlign			= style.ButtonTextAlign;
 	imGuiStyle.DisplayWindowPadding		= style.DisplayWindowPadding;
 	imGuiStyle.DisplaySafeAreaPadding	= style.DisplaySafeAreaPadding;
-	imGuiStyle.AntiAliasedLines		= style.AntiAliasedLines;
+	imGuiStyle.AntiAliasedLines			= style.AntiAliasedLines;
 	imGuiStyle.AntiAliasedShapes		= style.AntiAliasedShapes;
 	
 	// set colors
@@ -1082,9 +1085,10 @@ void initialize( const Options &options )
 	connectWindow( window );
 	
 	if( options.isAutoRenderEnabled() && window ) {
-		ImGui::NewFrame();
-		
-		sWindowConnections += ( window->getSignalDraw().connect( newFrameGuard ) );
+		//console() << "NewFrame**" << endl;
+		//ImGui::NewFrame();
+		App::get()->getSignalUpdate().connect( newFrameGuard );
+		//sWindowConnections += ( window->getSignalDraw().connect( newFrameGuard ) );
 		sWindowConnections += ( window->getSignalPostDraw().connect( render ) );
 	}
 	
@@ -1233,117 +1237,117 @@ ScopedMenuBar::~ScopedMenuBar()
 {
 	if( mOpened ) ImGui::EndMenuBar();
 }
-
-bool FilePicker( const char* label, fs::path* path, bool open, const fs::path &initialPath, std::vector<std::string> extensions )
-{
-
-    ImGuiWindow* window = GetCurrentWindow();
-    if (window->SkipItems)
-        return false;
-
-    ImGuiContext& g = *GImGui;
-    const ImGuiStyle& style = g.Style;
-    const ImGuiID id = window->GetID(label);
-    const float w = CalcItemWidth();
-
-    const ImVec2 label_size = CalcTextSize(label, NULL, true);
-    const ImRect frame_bb(window->DC.CursorPos, window->DC.CursorPos + ImVec2(w, label_size.y + style.FramePadding.y*2.0f));
-    const ImRect total_bb(frame_bb.Min, frame_bb.Max + ImVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0.0f));
-
-    ItemSize(total_bb, style.FramePadding.y);
-	if (!ItemAdd(total_bb, id))
-    {
-        return false;
-    }
-	
-    bool hovered, held;
-    ButtonBehavior(frame_bb, id, &hovered, &held);
-    const ImU32 col = GetColorU32((hovered && held) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : path->empty() ? ImGuiCol_Column : ImGuiCol_Button);	
-    RenderFrame( frame_bb.Min, frame_bb.Max, col, true, style.FrameRounding );
-	
-	fs::path filename = path->has_filename() ? path->filename() : path->has_stem() ? path->stem() : *path;
-	fs::path dir = path->has_parent_path() && path->parent_path().has_stem() ? path->parent_path().stem() : fs::path();
-    RenderTextClipped( frame_bb.Min + style.FramePadding, frame_bb.Max - style.FramePadding, ( dir / filename ).string().c_str(), NULL, NULL, ImVec2(0.5f,0.5f) );
-	
-	bool changed = false;
-	PushID( label );
-	if( BeginPopupContextItem( "##FilePickerContextPopup", 0 ) ) {
-		if( MenuItem( string( "Load " + string( label ) ).c_str(), "", nullptr ) ) {
-			auto newPath = open ? getOpenFilePath( initialPath, extensions ) : getSaveFilePath( initialPath, extensions );
-			if( ! newPath.empty() ) {
-				*path = newPath;
-				changed = true;
-			}
-		}
-		if( MenuItem( "Clear", "", nullptr ) ) {
-			path->clear();
-			changed = true;
-		}
-		EndPopup();
-	}
-	PopID();
-
-	if( hovered && ! path->empty() ) {
-		BeginTooltip();
-		TextUnformatted( path->string().c_str() );
-		EndTooltip();
-	}
-	
-
-    if (label_size.x > 0.0f)
-        RenderText(ImVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, frame_bb.Min.y + style.FramePadding.y), label);
-
-	return changed;
-
-}
-
-bool IconButton( const char* icon, const ImVec2& size_arg, bool frame )
-{
-    ImGuiWindow* window = GetCurrentWindow();
-    if (window->SkipItems)
-        return false;
-
-    ImGuiContext& g = *GImGui;
-    const ImGuiStyle& style = g.Style;
-    const ImGuiID id = window->GetID(icon);
-    const ImVec2 label_size = CalcTextSize(icon, NULL, true);
-	
-	ImGuiButtonFlags flags = 0;
-    ImVec2 pos = window->DC.CursorPos;
-    if ((flags & ImGuiButtonFlags_AlignTextBaseLine) && style.FramePadding.y < window->DC.CurrentLineTextBaseOffset) // Try to vertically align buttons that are smaller/have no padding so that text baseline matches (bit hacky, since it shouldn't be a flag)
-        pos.y += window->DC.CurrentLineTextBaseOffset - style.FramePadding.y;
-    ImVec2 size = CalcItemSize(size_arg, label_size.x + style.FramePadding.x * 2.0f, label_size.y + style.FramePadding.y * 2.0f);
-
-    const ImRect bb(pos, pos + size);
-    ItemSize(bb, style.FramePadding.y);
-    if (!ItemAdd(bb, id))
-        return false;
-
-    if (window->DC.ItemFlags & ImGuiItemFlags_ButtonRepeat) flags |= ImGuiButtonFlags_Repeat;
-
-    bool hovered, held;
-    bool pressed = ButtonBehavior(bb, id, &hovered, &held, flags);
-
-    // Render
-	const ImU32 col = GetColorU32((hovered && held) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Text);
-	ScopedStyleColor color( ImGuiCol_Text, ImVec4( (float)((col >> 0) & 0xFF) / 255.0f, (float)((col >> 8) & 0xFF) / 255.0f, (float)((col >> 16) & 0xFF) / 255.0f, (float)((col >> 24) & 0xFF) / 255.0f ) );
-    RenderTextClipped(bb.Min + style.FramePadding, bb.Max - style.FramePadding, icon, NULL, &label_size, style.ButtonTextAlign, &bb);
-
-	return pressed;
-}
-
-bool IconToggle( const char* iconEnabled, const char* iconDisabled, bool *enabled, const ImVec2& size, bool frame )
-{
-    ImGuiWindow* window = GetCurrentWindow();
-    if (window->SkipItems)
-        return false;
-
-	bool changed = IconButton( *enabled ? iconEnabled : iconDisabled, size, frame );
-	if( changed ) {
-		*enabled = ! *enabled;
-	}
-	return changed;
-}
+//
+//bool FilePicker( const char* label, fs::path* path, bool open, const fs::path &initialPath, std::vector<std::string> extensions )
+//{
+//
+//    ImGuiWindow* window = GetCurrentWindow();
+//    if (window->SkipItems)
+//        return false;
+//
+//    ImGuiContext& g = *GImGui;
+//    const ImGuiStyle& style = g.Style;
+//    const ImGuiID id = window->GetID(label);
+//    const float w = CalcItemWidth();
+//
+//    const ImVec2 label_size = CalcTextSize(label, NULL, true);
+//    const ImRect frame_bb(window->DC.CursorPos, window->DC.CursorPos + ImVec2(w, label_size.y + style.FramePadding.y*2.0f));
+//    const ImRect total_bb(frame_bb.Min, frame_bb.Max + ImVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0.0f));
+//
+//    ItemSize(total_bb, style.FramePadding.y);
+//	if (!ItemAdd(total_bb, &id))
+//    {
+//        return false;
+//    }
+//	
+//    bool hovered, held;
+//    ButtonBehavior(frame_bb, id, &hovered, &held);
+//    const ImU32 col = GetColorU32((hovered && held) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : path->empty() ? ImGuiCol_Column : ImGuiCol_Button);	
+//    RenderFrame( frame_bb.Min, frame_bb.Max, col, true, style.FrameRounding );
+//	
+//	fs::path filename = path->has_filename() ? path->filename() : path->has_stem() ? path->stem() : *path;
+//	fs::path dir = path->has_parent_path() && path->parent_path().has_stem() ? path->parent_path().stem() : fs::path();
+//    RenderTextClipped( frame_bb.Min + style.FramePadding, frame_bb.Max - style.FramePadding, ( dir / filename ).string().c_str(), NULL, NULL, ImVec2(0.5f,0.5f) );
+//	
+//	bool changed = false;
+//	PushID( label );
+//	if( BeginPopupContextItem( "##FilePickerContextPopup", 0 ) ) {
+//		if( MenuItem( string( "Load " + string( label ) ).c_str(), "", nullptr ) ) {
+//			auto newPath = open ? getOpenFilePath( initialPath, extensions ) : getSaveFilePath( initialPath, extensions );
+//			if( ! newPath.empty() ) {
+//				*path = newPath;
+//				changed = true;
+//			}
+//		}
+//		if( MenuItem( "Clear", "", nullptr ) ) {
+//			path->clear();
+//			changed = true;
+//		}
+//		EndPopup();
+//	}
+//	PopID();
+//
+//	if( hovered && ! path->empty() ) {
+//		BeginTooltip();
+//		TextUnformatted( path->string().c_str() );
+//		EndTooltip();
+//	}
+//	
+//
+//    if (label_size.x > 0.0f)
+//        RenderText(ImVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, frame_bb.Min.y + style.FramePadding.y), label);
+//
+//	return changed;
+//
+//}
+//
+//bool IconButton( const char* icon, const ImVec2& size_arg, bool frame )
+//{
+//    ImGuiWindow* window = GetCurrentWindow();
+//    if (window->SkipItems)
+//        return false;
+//
+//    ImGuiContext& g = *GImGui;
+//    const ImGuiStyle& style = g.Style;
+//    const ImGuiID id = window->GetID(icon);
+//    const ImVec2 label_size = CalcTextSize(icon, NULL, true);
+//	
+//	ImGuiButtonFlags flags = 0;
+//    ImVec2 pos = window->DC.CursorPos;
+//    if ((flags & ImGuiButtonFlags_AlignTextBaseLine) && style.FramePadding.y < window->DC.CurrentLineTextBaseOffset) // Try to vertically align buttons that are smaller/have no padding so that text baseline matches (bit hacky, since it shouldn't be a flag)
+//        pos.y += window->DC.CurrentLineTextBaseOffset - style.FramePadding.y;
+//    ImVec2 size = CalcItemSize(size_arg, label_size.x + style.FramePadding.x * 2.0f, label_size.y + style.FramePadding.y * 2.0f);
+//
+//    const ImRect bb(pos, pos + size);
+//    ItemSize(bb, style.FramePadding.y);
+//    if (!ItemAdd(bb, &id))
+//        return false;
+//
+//    if (window->DC.ItemFlags & ImGuiItemFlags_ButtonRepeat) flags |= ImGuiButtonFlags_Repeat;
+//
+//    bool hovered, held;
+//    bool pressed = ButtonBehavior(bb, id, &hovered, &held, flags);
+//
+//    // Render
+//	const ImU32 col = GetColorU32((hovered && held) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Text);
+//	ScopedStyleColor color( ImGuiCol_Text, ImVec4( (float)((col >> 0) & 0xFF) / 255.0f, (float)((col >> 8) & 0xFF) / 255.0f, (float)((col >> 16) & 0xFF) / 255.0f, (float)((col >> 24) & 0xFF) / 255.0f ) );
+//    RenderTextClipped(bb.Min + style.FramePadding, bb.Max - style.FramePadding, icon, NULL, &label_size, style.ButtonTextAlign, &bb);
+//
+//	return pressed;
+//}
+//
+//bool IconToggle( const char* iconEnabled, const char* iconDisabled, bool *enabled, const ImVec2& size, bool frame )
+//{
+//    ImGuiWindow* window = GetCurrentWindow();
+//    if (window->SkipItems)
+//        return false;
+//
+//	bool changed = IconButton( *enabled ? iconEnabled : iconDisabled, size, frame );
+//	if( changed ) {
+//		*enabled = ! *enabled;
+//	}
+//	return changed;
+//}
 
 #if defined( IMGUI_DOCK )
 
