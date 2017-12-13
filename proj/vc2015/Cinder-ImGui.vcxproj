@@ -125,32 +125,40 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Shared|Win32'">
     <OutDir>$(SolutionDir)..\..\lib\msw\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>cinder_imgui</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)..\..\lib\msw\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>cinder_imgui</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|Win32'">
     <OutDir>$(SolutionDir)..\..\lib\msw\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>cinder_imgui</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)..\..\lib\msw\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>cinder_imgui</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Shared|x64'">
     <OutDir>$(SolutionDir)..\..\lib\msw\$(Platform)\$(Configuration)\</OutDir>
+    <TargetName>cinder_imgui</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)..\..\lib\msw\$(Platform)\$(Configuration)\</OutDir>
     <TargetExt>.lib</TargetExt>
+    <TargetName>cinder_imgui</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|x64'">
     <OutDir>$(SolutionDir)..\..\lib\msw\$(Platform)\$(Configuration)\</OutDir>
+    <TargetName>cinder_imgui</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)..\..\lib\msw\$(Platform)\$(Configuration)\</OutDir>
     <TargetExt>.lib</TargetExt>
+    <TargetName>cinder_imgui</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|Win32'">
     <ClCompile>
