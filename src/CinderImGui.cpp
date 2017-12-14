@@ -638,7 +638,7 @@ void Renderer::initGlslProg()
 						       } )"
 					#elif defined(CINDER_GL_ES_3)
 					       R"(
-						#version 300 es
+						//#version 300 es  // CoC: causes crash on Odroid (14/12/17)
 					       precision highp float;
 					       uniform mat4 uModelViewProjection;
 					       
@@ -686,7 +686,7 @@ void Renderer::initGlslProg()
 			  }  )"
 	#elif defined(CINDER_GL_ES_3)
 		R"(
-		#version 300 es
+		//#version 300 es  // CoC: causes crash on Odroid (14/12/17)
 		precision highp float;
 		
 		in highp vec2		vUv;
