@@ -548,8 +548,8 @@ ImFont* Renderer::addFont( const ci::fs::path &font, float size, const ImWchar* 
 		for( const ImWchar* range = glyph_ranges; range[0] && range[1]; range += 2 ) {
 			ranges.push_back( range[0] );
 			ranges.push_back( range[1] );
-			ranges.push_back( 0 );
 		}
+    ranges.push_back( 0 );
 		glyphRanges = ranges.data();
 	}
 	// otherwise get them from the font
