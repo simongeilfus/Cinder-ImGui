@@ -52,7 +52,7 @@ void BasicApp::mouseDown( MouseEvent event )
 
 void BasicApp::update()
 {
-	static bool showTestWindow = false;
+	static bool showDemoWindow = false;
 	static bool showWindowWithMenu = false;
 	
 	// a few scoped object like ScopedWindow allow to quickly
@@ -89,15 +89,15 @@ void BasicApp::update()
 		
 		// and a view menu
 		if( ui::BeginMenu( "View" ) ){
-			ui::MenuItem( "TestWindow", nullptr, &showTestWindow );
+			ui::MenuItem( "TestWindow", nullptr, &showDemoWindow );
 			ui::MenuItem( "Window with Menu", nullptr, &showWindowWithMenu );
 			ui::EndMenu();
 		}
 	}
 	
-	if( showTestWindow ){
+	if( showDemoWindow ){
 		// have a look at this function for more examples
-		ui::ShowTestWindow();
+		ui::ShowDemoWindow();
 	}
 	
 	
