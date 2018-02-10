@@ -123,40 +123,40 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Shared|Win32'">
-    <OutDir>$(SolutionDir)..\..\lib\msw\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)..\..\lib\msw\$(Platform)\$(Configuration)\$(PlatformToolset)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <TargetName>cinder_imgui</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)..\..\lib\msw\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)..\..\lib\msw\$(Platform)\$(Configuration)\$(PlatformToolset)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <TargetName>cinder_imgui</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|Win32'">
-    <OutDir>$(SolutionDir)..\..\lib\msw\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)..\..\lib\msw\$(Platform)\$(Configuration)\$(PlatformToolset)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <TargetName>cinder_imgui</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)..\..\lib\msw\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)..\..\lib\msw\$(Platform)\$(Configuration)\$(PlatformToolset)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <TargetName>cinder_imgui</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Shared|x64'">
-    <OutDir>$(SolutionDir)..\..\lib\msw\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)..\..\lib\msw\$(Platform)\$(Configuration)\$(PlatformToolset)\</OutDir>
     <TargetName>cinder_imgui</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)..\..\lib\msw\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)..\..\lib\msw\$(Platform)\$(Configuration)\$(PlatformToolset)\</OutDir>
     <TargetExt>.lib</TargetExt>
     <TargetName>cinder_imgui</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|x64'">
-    <OutDir>$(SolutionDir)..\..\lib\msw\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)..\..\lib\msw\$(Platform)\$(Configuration)\$(PlatformToolset)\</OutDir>
     <TargetName>cinder_imgui</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)..\..\lib\msw\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)..\..\lib\msw\$(Platform)\$(Configuration)\$(PlatformToolset)\</OutDir>
     <TargetExt>.lib</TargetExt>
     <TargetName>cinder_imgui</TargetName>
   </PropertyGroup>
@@ -188,6 +188,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;IMGUI_API_EXPORT;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);FT2_BUILD_LIBRARY=1;FT_DEBUG_LEVEL_TRACE=1</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <ForcedIncludeFiles>CinderImGuiExports.h</ForcedIncludeFiles>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\..\..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</AdditionalLibraryDirectories>
@@ -265,6 +266,7 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <PreprocessorDefinitions>WIN32;NDEBUG;IMGUI_API_EXPORT;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);FT2_BUILD_LIBRARY=1;FT_DEBUG_LEVEL_TRACE=1</PreprocessorDefinitions>
       <ForcedIncludeFiles>CinderImGuiExports.h</ForcedIncludeFiles>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
