@@ -62,6 +62,7 @@ ImVec4(const ci::Color& f) { x = f.r; y = f.g; z = f.b; w = 1.0f; }     \
 operator ci::Color() const { return ci::Color(x,y,z); }
 #endif
 
+#include "CinderImGuiExports.h"
 #include "imgui.h"
 
 #ifndef CINDER_IMGUI_NO_NAMESPACE_ALIAS
@@ -71,7 +72,7 @@ namespace ui = ImGui;
 //! cinder imgui namespace
 namespace ImGui {
 	
-	struct Options {
+	struct IMGUI_API Options {
 		//! defaults to using the current window, the basic ImGui font and the dark theme
 		Options();
 		
@@ -88,7 +89,7 @@ namespace ImGui {
 		Options& fontGlyphRanges( const std::string &name, const std::vector<ImWchar> &glyphRanges );
         //! sets global font scale
         Options& fontGlobalScale( float scale );
-		
+
 		//! Global alpha applies to everything in ImGui
 		Options& alpha( float a );
 		//! Padding within a window
@@ -100,7 +101,7 @@ namespace ImGui {
 		//! Alignment for title bar text
 		Options& windowTitleAlign( const glm::vec2 &align );
 		//! Radius of child window corners rounding. Set to 0.0f to have rectangular windows
-		Options& childWindowRounding( float rounding );
+		Options& childRounding( float rounding );
 		//! Padding within a framed rectangle (used by most widgets)
 		Options& framePadding( const glm::vec2 &padding );
 		//! Radius of frame corners rounding. Set to 0.0f to have rectangular frame (used by most widgets).
@@ -123,6 +124,8 @@ namespace ImGui {
 		Options& grabMinSize( float minSize );
 		//! Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs.
 		Options& grabRounding( float rounding );
+		//! Alignment of button text when button is larger than text. Defaults to (0.5f,0.5f) for horizontally+vertically centered.
+		Options& buttonTextAlign( const ci::vec2 &textAlign );            
 		//! Window positions are clamped to be visible within the display area by at least this amount. Only covers regular windows.
 		Options& displayWindowPadding( const glm::vec2 &padding );
 		//! If you cannot see the edge of your screen (e.g. on a TV) increase the safe area padding. Covers popups/tooltips as well regular windows.
@@ -170,22 +173,22 @@ namespace ImGui {
 	};
 	
 	//! initializes ImGui and the Renderer
-	void    initialize( const Options &options = Options() );
+	IMGUI_API void    initialize( const Options &options = Options() );
 	//! connects window signals to imgui events
-	void    connectWindow( ci::app::WindowRef window );
+	IMGUI_API void    connectWindow( ci::app::WindowRef window );
 	//! disconnects window signals from imgui
-	void    disconnectWindow( ci::app::WindowRef window );
+	IMGUI_API void    disconnectWindow( ci::app::WindowRef window );
 	
 	// Cinder Helpers
-	void Image( const ci::gl::Texture2dRef &texture, const ImVec2& size, const ImVec2& uv0 = ImVec2(0,1), const ImVec2& uv1 = ImVec2(1,0), const ImVec4& tint_col = ImVec4(1,1,1,1), const ImVec4& border_col = ImVec4(0,0,0,0) );
-	bool ImageButton( const ci::gl::Texture2dRef &texture, const ImVec2& size, const ImVec2& uv0 = ImVec2(0,1),  const ImVec2& uv1 = ImVec2(1,0), int frame_padding = -1, const ImVec4& bg_col = ImVec4(0,0,0,1), const ImVec4& tint_col = ImVec4(1,1,1,1) );
-	void PushFont( const std::string& name = "" );
+	IMGUI_API void Image( const ci::gl::Texture2dRef &texture, const ImVec2& size, const ImVec2& uv0 = ImVec2(0,1), const ImVec2& uv1 = ImVec2(1,0), const ImVec4& tint_col = ImVec4(1,1,1,1), const ImVec4& border_col = ImVec4(0,0,0,0) );
+	IMGUI_API bool ImageButton( const ci::gl::Texture2dRef &texture, const ImVec2& size, const ImVec2& uv0 = ImVec2(0,1),  const ImVec2& uv1 = ImVec2(1,0), int frame_padding = -1, const ImVec4& bg_col = ImVec4(0,0,0,1), const ImVec4& tint_col = ImVec4(1,1,1,1) );
+	IMGUI_API void PushFont( const std::string& name = "" );
 	
 	// Std Helpers
-	bool ListBox( const char* label, int* current_item, const std::vector<std::string>& items, int height_in_items = -1);
-	bool InputText( const char* label, std::string* buf, ImGuiInputTextFlags flags = 0, ImGuiTextEditCallback callback = NULL, void* user_data = NULL);
-	bool InputTextMultiline( const char* label, std::string* buf, const ImVec2& size = ImVec2(0,0), ImGuiInputTextFlags flags = 0, ImGuiTextEditCallback callback = NULL, void* user_data = NULL);
-	bool Combo( const char* label, int* current_item, const std::vector<std::string>& items, int height_in_items = -1);
+	IMGUI_API bool ListBox( const char* label, int* current_item, const std::vector<std::string>& items, int height_in_items = -1);
+	IMGUI_API bool InputText( const char* label, std::string* buf, ImGuiInputTextFlags flags = 0, ImGuiTextEditCallback callback = NULL, void* user_data = NULL);
+	IMGUI_API bool InputTextMultiline( const char* label, std::string* buf, const ImVec2& size = ImVec2(0,0), ImGuiInputTextFlags flags = 0, ImGuiTextEditCallback callback = NULL, void* user_data = NULL);
+	IMGUI_API bool Combo( const char* label, int* current_item, const std::vector<std::string>& items, int height_in_items = -1);
 	
 	// Getters/Setters Helpers
 	template<typename T>
@@ -217,54 +220,53 @@ namespace ImGui {
 
 	// Scoped objects goodness (push the state when created and pop it when destroyed)
 
-	struct ScopedWindow : public ci::Noncopyable {
+	struct IMGUI_API ScopedWindow : public ci::Noncopyable {
 		ScopedWindow( const std::string &name = "Debug", ImGuiWindowFlags flags = 0 );
-		ScopedWindow( const std::string &name, glm::vec2 size, float fillAlpha = -1.0f, ImGuiWindowFlags flags = 0 );
 		~ScopedWindow();
 	};
-	struct ScopedChild : public ci::Noncopyable {
+	struct IMGUI_API ScopedChild : public ci::Noncopyable {
 		ScopedChild( const std::string &name, glm::vec2 size = glm::vec2(0), bool border = false, ImGuiWindowFlags extraFlags = 0 );
 		~ScopedChild();
 	};
-	struct ScopedGroup : public ci::Noncopyable {
+	struct IMGUI_API ScopedGroup : public ci::Noncopyable {
 		ScopedGroup();
 		~ScopedGroup();
 	};
-	struct ScopedFont : public ci::Noncopyable {
+	struct IMGUI_API ScopedFont : public ci::Noncopyable {
 		ScopedFont( ImFont* font );
 		ScopedFont( const std::string &name );
 		~ScopedFont();
 	};
-	struct ScopedStyleColor : public ci::Noncopyable {
+	struct IMGUI_API ScopedStyleColor : public ci::Noncopyable {
 		ScopedStyleColor( ImGuiCol idx, const ImVec4& col );
 		~ScopedStyleColor();
 	};
-	struct ScopedStyleVar : public ci::Noncopyable {
+	struct IMGUI_API ScopedStyleVar : public ci::Noncopyable {
 		ScopedStyleVar( ImGuiStyleVar idx, float val );
 		ScopedStyleVar( ImGuiStyleVar idx, const ImVec2 &val );
 		~ScopedStyleVar();
 	};
-	struct ScopedItemWidth : public ci::Noncopyable {
+	struct IMGUI_API ScopedItemWidth : public ci::Noncopyable {
 		ScopedItemWidth( float itemWidth );
 		~ScopedItemWidth();
 	};
-	struct ScopedTextWrapPos : public ci::Noncopyable {
+	struct IMGUI_API ScopedTextWrapPos : public ci::Noncopyable {
 		ScopedTextWrapPos( float wrapPosX = 0.0f );
 		~ScopedTextWrapPos();
 	};
-	struct ScopedId : public ci::Noncopyable {
+	struct IMGUI_API ScopedId : public ci::Noncopyable {
 		ScopedId( const std::string &name );
 		ScopedId( const void *ptrId );
 		ScopedId( const int intId );
 		~ScopedId();
 	};
-	struct ScopedMainMenuBar : public ci::Noncopyable {
+	struct IMGUI_API ScopedMainMenuBar : public ci::Noncopyable {
 		ScopedMainMenuBar();
 		~ScopedMainMenuBar();
 	protected:
 		bool mOpened;
 	};
-	struct ScopedMenuBar : public ci::Noncopyable {
+	struct IMGUI_API ScopedMenuBar : public ci::Noncopyable {
 		ScopedMenuBar();
 		~ScopedMenuBar();
 	protected:
@@ -276,8 +278,6 @@ namespace ImGui {
 	IMGUI_API bool FilePicker( const char* label, ci::fs::path* path, bool open = true, const ci::fs::path &initialPath = ci::fs::path(), std::vector<std::string> extensions = std::vector<std::string>() );
 	IMGUI_API bool IconButton( const char* icon, const ImVec2& size = ImVec2(0,0), bool frame = false );
 	IMGUI_API bool IconToggle( const char* iconEnabled, const char* iconDisabled, bool *enabled, const ImVec2& size = ImVec2(0,0), bool frame = false );
-	IMGUI_API bool ColorPicker3( const char* label, float col[3] );
-	IMGUI_API bool ColorPicker4( const char* label, float col[4] );
 	
 	// Context sharing utilities. Can be used to help sharing the context between host app and dlls.
 	class ContextOwner {

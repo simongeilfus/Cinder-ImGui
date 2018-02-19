@@ -14,10 +14,22 @@ build//
 *.suo
 *.ncb
 *.sdf
+*.VC.opendb
+*.VC.db
 *.opensdf
 Debug/
 Release/
 ipch/
+Debug_Shared/
+Release_Shared/
+Debug_ANGLE/
+Release_ANGLE/
+Debug_Shared/
+Release_Shared/
+ipch/
+.vs
+**/vc2013/enc_temp_folder/**
+**/vc2015/enc_temp_folder/**
 
 # Android cruft
 *.swp
