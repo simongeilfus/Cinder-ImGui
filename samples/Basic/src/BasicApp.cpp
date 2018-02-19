@@ -97,7 +97,7 @@ void BasicApp::update()
 	
 	if( showDemoWindow ){
 		// have a look at this function for more examples
-		ui::ShowDemoWindow();
+		ui::ShowTestWindow();
 	}
 	
 	
