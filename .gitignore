@@ -18,3 +18,13 @@ build//
 Debug/
 Release/
 ipch/
+
+# Android cruft
+*.swp
+.idea
+*.iml
+local.properties
+proguard-rules.pro
+.gradle/
+jniLibs/
+build/
