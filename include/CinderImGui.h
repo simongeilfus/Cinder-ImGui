@@ -282,7 +282,7 @@ namespace ImGui {
 	// Context sharing utilities. Can be used to help sharing the context between host app and dlls.
 	class ContextOwner {
 		ImGuiContext* getImGuiContext() const { return mImguiContext; }
-		void setImGuiContext( ImGuiContext* context = nullptr ) { mImguiContext = context == nullptr ? ui::GetCurrentContext() : context; }
+		void setImGuiContext( ImGuiContext* context = nullptr ) { mImguiContext = context == nullptr ? ImGui::GetCurrentContext() : context; }
 		friend void initializeShared( const Options &options );
 		friend void shareContext();
 		ImGuiContext* mImguiContext = nullptr;
@@ -290,19 +290,19 @@ namespace ImGui {
 
 	inline void initializeShared( const Options &options = Options() )
 	{
-		ui::initialize( options );
+		ImGui::initialize( options );
 		auto contextOwner = dynamic_cast<ContextOwner*>( ci::app::App::get() );
-		CI_ASSERT_MSG( contextOwner, "App has to inherit from ui::ContextOwner to use ui::initializeShared" );
+		CI_ASSERT_MSG( contextOwner, "App has to inherit from ImGui::ContextOwner to use ImGui::initializeShared" );
 		contextOwner->setImGuiContext();
 	}
 
 	inline void shareContext()
 	{
 		auto contextOwner = dynamic_cast<ContextOwner*>( ci::app::App::get() );
-		CI_ASSERT_MSG( contextOwner, "App has to inherit from ui::ContextOwner to use ui::shareContext" );
+		CI_ASSERT_MSG( contextOwner, "App has to inherit from ImGui::ContextOwner to use ImGui::shareContext" );
 		ImGuiContext* ctx = contextOwner->getImGuiContext();
-		if( ctx != ui::GetCurrentContext() ) {
-			ui::SetCurrentContext( ctx );
+		if( ctx != ImGui::GetCurrentContext() ) {
+			ImGui::SetCurrentContext( ctx );
 		}
 	}
 
