@@ -1038,6 +1038,8 @@ void initialize( const Options &options )
 	io.KeyMap[ImGuiKey_X]               = KeyEvent::KEY_x;
 	io.KeyMap[ImGuiKey_Y]               = KeyEvent::KEY_y;
 	io.KeyMap[ImGuiKey_Z]               = KeyEvent::KEY_z;
+	io.KeyMap[ImGuiKey_Insert]			= KeyEvent::KEY_INSERT;
+	io.KeyMap[ImGuiKey_Space]			= KeyEvent::KEY_SPACE;
 	
 	// setup config file path
 	static string path = ( getAssetPath( "" ) / "imgui.ini" ).string();
