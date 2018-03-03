@@ -133,7 +133,7 @@ namespace ImGui {
 		//! Enable anti-aliasing on lines/borders. Disable if you are really tight on CPU/GPU.
 		Options& antiAliasedLines( bool antiAliasing );
 		//! Enable anti-aliasing on filled shapes (rounded rectangles, circles, etc.)
-		Options& antiAliasedShapes( bool antiAliasing );
+		Options& antiAliasedFill( bool antiAliasing );
 		//! Tessellation tolerance. Decrease for highly tessellated curves (higher quality, more polygons), increase to reduce quality.
 		Options& curveTessellationTol( float tessTolerance );
 		

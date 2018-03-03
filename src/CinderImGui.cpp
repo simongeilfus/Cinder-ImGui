@@ -202,9 +202,9 @@ ImGui::Options& ImGui::Options::antiAliasedLines( bool antiAliasing )
 	mStyle.AntiAliasedLines = antiAliasing;
 	return *this;
 }
-ImGui::Options& ImGui::Options::antiAliasedShapes( bool antiAliasing )
+ImGui::Options& ImGui::Options::antiAliasedFill( bool antiAliasing )
 {
-	mStyle.AntiAliasedShapes = antiAliasing;
+	mStyle.AntiAliasedFill = antiAliasing;
 	return *this;
 }
 ImGui::Options& ImGui::Options::curveTessellationTol( float tessTolerance )
@@ -254,7 +254,6 @@ ImGui::Options& ImGui::Options::darkTheme()
 	style.Colors[ImGuiCol_Text]                  = ImVec4(0.86f, 0.93f, 0.89f, 0.78f);
 	style.Colors[ImGuiCol_TextDisabled]          = ImVec4(0.86f, 0.93f, 0.89f, 0.28f);
 	style.Colors[ImGuiCol_WindowBg]              = ImVec4(0.13f, 0.14f, 0.17f, 1.00f);
-	style.Colors[ImGuiCol_ChildWindowBg]		 = ImVec4(0.20f, 0.22f, 0.27f, 0.58f);
 	style.Colors[ImGuiCol_Border]                = ImVec4(0.31f, 0.31f, 1.00f, 0.00f);
 	style.Colors[ImGuiCol_BorderShadow]          = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 	style.Colors[ImGuiCol_FrameBg]               = ImVec4(0.20f, 0.22f, 0.27f, 1.00f);
@@ -933,6 +932,8 @@ namespace {
 
 		timer.start();
 		ImGui::Render();
+		auto renderer = getRenderer();
+		renderer->render( ImGui::GetDrawData() );
 		sNewFrame = false;
 		App::get()->dispatchAsync( []() {
 			newFrameGuard();
@@ -977,6 +978,9 @@ static signals::ConnectionList sWindowConnections;
 
 void initialize( const Options &options )
 {
+	// create one context for now. will update with multiple context / shared fontatlas soon!
+	ImGuiContext* context = ImGui::CreateContext();
+
 	// get the window and switch to its context before initializing the renderer
 	auto window					= options.getWindow();
 	auto currentContext			= gl::context();
@@ -1007,7 +1011,7 @@ void initialize( const Options &options )
 	imGuiStyle.DisplayWindowPadding		= style.DisplayWindowPadding;
 	imGuiStyle.DisplaySafeAreaPadding	= style.DisplaySafeAreaPadding;
 	imGuiStyle.AntiAliasedLines			= style.AntiAliasedLines;
-	imGuiStyle.AntiAliasedShapes		= style.AntiAliasedShapes;
+	imGuiStyle.AntiAliasedFill			= style.AntiAliasedFill;
 	
 	// set colors
 	for( int i = 0; i < ImGuiCol_COUNT; i++ )
@@ -1070,33 +1074,25 @@ void initialize( const Options &options )
 	};
 #endif
 	
-	// renderer callback
-	io.RenderDrawListsFn = []( ImDrawData* data ) {
-		auto renderer = getRenderer();
-		renderer->render( data );
-	};
-	
 	// connect window's signals
 	disconnectWindow( window );
 	connectWindow( window );
 	
 	if( options.isAutoRenderEnabled() && window ) {
-		//console() << "NewFrame**" << endl;
-		//ImGui::NewFrame();
 		App::get()->getSignalUpdate().connect( newFrameGuard );
-		//sWindowConnections += ( window->getSignalDraw().connect( newFrameGuard ) );
 		sWindowConnections += ( window->getSignalPostDraw().connect( render ) );
 	}
 	
 	// connect app's signals
 	app::App::get()->getSignalDidBecomeActive().connect( resetKeys );
 	app::App::get()->getSignalWillResignActive().connect( resetKeys );
+	app::App::get()->getSignalCleanup().connect( [context](){
+		ImGui::DestroyContext( context );
 #if defined( IMGUI_DOCK )
-	app::App::get()->getSignalCleanup().connect( [](){
 		ShutdownDock();
-	} );
 #endif
-	
+	} );
+
 	sInitialized = true;
 	
 	// switch back to the original gl context
