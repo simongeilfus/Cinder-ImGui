@@ -61,7 +61,6 @@ ImGui::Options::Options()
 : mWindow( ci::app::getWindow() ),
 mAutoRender( true ), mMergeFonts( true )
 {
-	darkTheme();
 }
 
 ImGui::Options& ImGui::Options::window( const ci::app::WindowRef &window )
