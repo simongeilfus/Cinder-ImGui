@@ -275,33 +275,6 @@ namespace ImGui {
 	IMGUI_API bool FilePicker( const char* label, ci::fs::path* path, bool open = true, const ci::fs::path &initialPath = ci::fs::path(), std::vector<std::string> extensions = std::vector<std::string>() );
 	IMGUI_API bool IconButton( const char* icon, const ImVec2& size = ImVec2(0,0), bool frame = false );
 	IMGUI_API bool IconToggle( const char* iconEnabled, const char* iconDisabled, bool *enabled, const ImVec2& size = ImVec2(0,0), bool frame = false );
-	
-	// Context sharing utilities. Can be used to help sharing the context between host app and dlls.
-	class ContextOwner {
-		ImGuiContext* getImGuiContext() const { return mImguiContext; }
-		void setImGuiContext( ImGuiContext* context = nullptr ) { mImguiContext = context == nullptr ? ImGui::GetCurrentContext() : context; }
-		friend void initializeShared( const Options &options );
-		friend void shareContext();
-		ImGuiContext* mImguiContext = nullptr;
-	};
-
-	inline void initializeShared( const Options &options = Options() )
-	{
-		ImGui::initialize( options );
-		auto contextOwner = dynamic_cast<ContextOwner*>( ci::app::App::get() );
-		CI_ASSERT_MSG( contextOwner, "App has to inherit from ImGui::ContextOwner to use ImGui::initializeShared" );
-		contextOwner->setImGuiContext();
-	}
-
-	inline void shareContext()
-	{
-		auto contextOwner = dynamic_cast<ContextOwner*>( ci::app::App::get() );
-		CI_ASSERT_MSG( contextOwner, "App has to inherit from ImGui::ContextOwner to use ImGui::shareContext" );
-		ImGuiContext* ctx = contextOwner->getImGuiContext();
-		if( ctx != ImGui::GetCurrentContext() ) {
-			ImGui::SetCurrentContext( ctx );
-		}
-	}
 
 	// Dock From LumixEngine
 	// https://github.com/nem0/LumixEngine/blob/master/external/imgui/imgui_dock.h
