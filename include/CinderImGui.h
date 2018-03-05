@@ -188,15 +188,12 @@ namespace ImGui {
 	IMGUI_API bool ListBox( const char* label, int* current_item, const std::vector<std::string>& items, int height_in_items = -1);
 	IMGUI_API bool InputText( const char* label, std::string* buf, ImGuiInputTextFlags flags = 0, ImGuiTextEditCallback callback = NULL, void* user_data = NULL);
 	IMGUI_API bool InputTextMultiline( const char* label, std::string* buf, const ImVec2& size = ImVec2(0,0), ImGuiInputTextFlags flags = 0, ImGuiTextEditCallback callback = NULL, void* user_data = NULL);
-	IMGUI_API bool Combo( const char* label, int* current_item, const std::vector<std::string>& items, int height_in_items = -1);
 	
 	// Getters/Setters Helpers
 	template<typename T>
 	bool InputText( const char* label, T *object, std::string( T::*get )() const, void( T::*set )( const std::string& ), ImGuiInputTextFlags flags = 0, ImGuiTextEditCallback callback = NULL, void* user_data = NULL );
 	template<typename T>
 	bool Checkbox(const char* label, T *object, bool( T::*get )() const, void( T::*set )( bool ) );
-	template<typename T>
-	bool Combo( const char* label, T *object, int( T::*get )() const, void( T::*set )( int ), const std::vector<std::string>& items, int height_in_items = -1);
 	template<typename T>
 	bool DragFloat(const char* label, T *object, float( T::*get )() const, void( T::*set )( float ), float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* display_format = "%.3f", float power = 1.0f);     // If v_min >= v_max we have no bound
 	template<typename T>
@@ -334,16 +331,6 @@ namespace ImGui {
 	{
 		bool value = (object->*get)();
 		if( Checkbox( label, &value ) ){
-			(object->*set)( value );
-			return true;
-		}
-		return false;
-	}
-	template<typename T>
-	bool Combo( const char* label, T *object, int( T::*get )() const, void( T::*set )( int ), const std::vector<std::string>& items, int height_in_items )
-	{
-		int value = (object->*get)();
-		if( Combo( label, &value, items, height_in_items ) ){
 			(object->*set)( value );
 			return true;
 		}

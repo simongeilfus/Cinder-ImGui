@@ -804,18 +804,6 @@ bool InputTextMultiline( const char* label, std::string* buf, const ImVec2& size
 	delete [] buffer;
 	return result;
 }
-bool Combo( const char* label, int* current_item, const std::vector<std::string>& items, int height_in_items )
-{
-	// conversion
-	string itemsNames;
-	for( auto item : items )
-		itemsNames += item + '\0';
-	itemsNames += '\0';
-	
-	vector<char> charArray( itemsNames.begin(), itemsNames.end() );
-	bool result = Combo( label, current_item, (const char*) &charArray[0], height_in_items );
-	return result;
-}
 
 namespace {
 	
