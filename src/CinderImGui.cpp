@@ -61,7 +61,6 @@ ImGui::Options::Options()
 : mWindow( ci::app::getWindow() ),
 mAutoRender( true ), mMergeFonts( true )
 {
-	darkTheme();
 }
 
 ImGui::Options& ImGui::Options::window( const ci::app::WindowRef &window )
@@ -254,7 +253,6 @@ ImGui::Options& ImGui::Options::darkTheme()
 	style.Colors[ImGuiCol_Text]                  = ImVec4(0.86f, 0.93f, 0.89f, 0.78f);
 	style.Colors[ImGuiCol_TextDisabled]          = ImVec4(0.86f, 0.93f, 0.89f, 0.28f);
 	style.Colors[ImGuiCol_WindowBg]              = ImVec4(0.13f, 0.14f, 0.17f, 1.00f);
-	style.Colors[ImGuiCol_ChildBg]				 = ImVec4(0.20f, 0.22f, 0.27f, 0.58f);
 	style.Colors[ImGuiCol_Border]                = ImVec4(0.31f, 0.31f, 1.00f, 0.00f);
 	style.Colors[ImGuiCol_BorderShadow]          = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 	style.Colors[ImGuiCol_FrameBg]               = ImVec4(0.20f, 0.22f, 0.27f, 1.00f);
@@ -806,18 +804,6 @@ bool InputTextMultiline( const char* label, std::string* buf, const ImVec2& size
 	delete [] buffer;
 	return result;
 }
-bool Combo( const char* label, int* current_item, const std::vector<std::string>& items, int height_in_items )
-{
-	// conversion
-	string itemsNames;
-	for( auto item : items )
-		itemsNames += item + '\0';
-	itemsNames += '\0';
-	
-	vector<char> charArray( itemsNames.begin(), itemsNames.end() );
-	bool result = Combo( label, current_item, (const char*) &charArray[0], height_in_items );
-	return result;
-}
 
 namespace {
 	
@@ -879,12 +865,12 @@ namespace {
 	{
 		ImGuiIO& io = ImGui::GetIO();
 
-#if defined CINDER_LINUX
-    uint32_t  character = event.getChar();
-#else
-		uint32_t character = event.getCharUtf32();
-#endif
-		
+		#if defined CINDER_LINUX
+			auto character = event.getChar();
+		#else
+			uint32_t character = event.getCharUtf32();
+		#endif
+
 		io.KeysDown[event.getCode()] = true;
 		
 		if ( !event.isAccelDown() && character > 0 && character <= 255 ) {
@@ -937,6 +923,8 @@ namespace {
 
 		timer.start();
 		ImGui::Render();
+		auto renderer = getRenderer();
+		renderer->render( ImGui::GetDrawData() );
 		sNewFrame = false;
 		App::get()->dispatchAsync( []() {
 			newFrameGuard();
@@ -981,6 +969,9 @@ static signals::ConnectionList sWindowConnections;
 
 void initialize( const Options &options )
 {
+	// create one context for now. will update with multiple context / shared fontatlas soon!
+	ImGuiContext* context = ImGui::CreateContext();
+
 	// get the window and switch to its context before initializing the renderer
 	auto window					= options.getWindow();
 	auto currentContext			= gl::context();
@@ -1038,6 +1029,8 @@ void initialize( const Options &options )
 	io.KeyMap[ImGuiKey_X]               = KeyEvent::KEY_x;
 	io.KeyMap[ImGuiKey_Y]               = KeyEvent::KEY_y;
 	io.KeyMap[ImGuiKey_Z]               = KeyEvent::KEY_z;
+	io.KeyMap[ImGuiKey_Insert]			= KeyEvent::KEY_INSERT;
+	io.KeyMap[ImGuiKey_Space]			= KeyEvent::KEY_SPACE;
 	
 	// setup config file path
 	static string path = ( getAssetPath( "" ) / "imgui.ini" ).string();
@@ -1074,33 +1067,25 @@ void initialize( const Options &options )
 	};
 #endif
 	
-	// renderer callback
-	io.RenderDrawListsFn = []( ImDrawData* data ) {
-		auto renderer = getRenderer();
-		renderer->render( data );
-	};
-	
 	// connect window's signals
 	disconnectWindow( window );
 	connectWindow( window );
 	
 	if( options.isAutoRenderEnabled() && window ) {
-		//console() << "NewFrame**" << endl;
-		//ImGui::NewFrame();
 		App::get()->getSignalUpdate().connect( newFrameGuard );
-		//sWindowConnections += ( window->getSignalDraw().connect( newFrameGuard ) );
 		sWindowConnections += ( window->getSignalPostDraw().connect( render ) );
 	}
 	
 	// connect app's signals
 	app::App::get()->getSignalDidBecomeActive().connect( resetKeys );
 	app::App::get()->getSignalWillResignActive().connect( resetKeys );
+	app::App::get()->getSignalCleanup().connect( [context](){
+		ImGui::DestroyContext( context );
 #if defined( IMGUI_DOCK )
-	app::App::get()->getSignalCleanup().connect( [](){
 		ShutdownDock();
-	} );
 #endif
-	
+	} );
+
 	sInitialized = true;
 	
 	// switch back to the original gl context
