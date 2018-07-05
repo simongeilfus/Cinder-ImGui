@@ -1071,7 +1071,7 @@ void initialize( const Options &options )
 	connectWindow( window );
 	
 	if( options.isAutoRenderEnabled() && window ) {
-		window->getSignalDraw().connect( newFrameGuard );
+		sWindowConnections += ( window->getSignalDraw().connect( newFrameGuard ) );
 		sWindowConnections += ( window->getSignalPostDraw().connect( render ) );
 	}
 	
