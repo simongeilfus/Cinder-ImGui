@@ -794,9 +794,10 @@ bool InputText( const char* label, std::string* buf, ImGuiInputTextFlags flags, 
 bool InputTextMultiline( const char* label, std::string* buf, const ImVec2& size, ImGuiInputTextFlags flags, ImGuiTextEditCallback callback, void* user_data )
 {
 	// conversion
-	char *buffer = new char[buf->size()+128];
+	constexpr size_t extraSpace = 16384;
+	char *buffer = new char[buf->size()+extraSpace];
 	std::strcpy( buffer, buf->c_str() );
-	bool result = InputTextMultiline( label, buffer, buf->size()+128, size, flags, callback, user_data );
+	bool result = InputTextMultiline( label, buffer, buf->size()+extraSpace, size, flags, callback, user_data );
 	if( result ){
 		*buf = string( buffer );
 	}
@@ -883,9 +884,10 @@ namespace {
 			sAccelKeys.push_back( event.getCode() );
 		}
 		
-		io.KeyCtrl = io.KeysDown[KeyEvent::KEY_LCTRL] || io.KeysDown[KeyEvent::KEY_RCTRL] || io.KeysDown[KeyEvent::KEY_LMETA] || io.KeysDown[KeyEvent::KEY_RMETA];
+		io.KeyCtrl = io.KeysDown[KeyEvent::KEY_LCTRL] || io.KeysDown[KeyEvent::KEY_RCTRL];
 		io.KeyShift = io.KeysDown[KeyEvent::KEY_LSHIFT] || io.KeysDown[KeyEvent::KEY_RSHIFT];
 		io.KeyAlt = io.KeysDown[KeyEvent::KEY_LALT] || io.KeysDown[KeyEvent::KEY_RALT];
+		io.KeySuper = io.KeysDown[KeyEvent::KEY_LMETA] || io.KeysDown[KeyEvent::KEY_RMETA] || io.KeysDown[KeyEvent::KEY_LSUPER] || io.KeysDown[KeyEvent::KEY_RSUPER];
 		
 		event.setHandled( io.WantCaptureKeyboard );
 	}
@@ -901,9 +903,10 @@ namespace {
 		}
 		sAccelKeys.clear();
 		
-		io.KeyCtrl = io.KeysDown[KeyEvent::KEY_LCTRL] || io.KeysDown[KeyEvent::KEY_RCTRL] || io.KeysDown[KeyEvent::KEY_LMETA] || io.KeysDown[KeyEvent::KEY_RMETA];
+		io.KeyCtrl = io.KeysDown[KeyEvent::KEY_LCTRL] || io.KeysDown[KeyEvent::KEY_RCTRL];
 		io.KeyShift = io.KeysDown[KeyEvent::KEY_LSHIFT] || io.KeysDown[KeyEvent::KEY_RSHIFT];
 		io.KeyAlt = io.KeysDown[KeyEvent::KEY_LALT] || io.KeysDown[KeyEvent::KEY_RALT];
+		io.KeySuper = io.KeysDown[KeyEvent::KEY_LMETA] || io.KeysDown[KeyEvent::KEY_RMETA] || io.KeysDown[KeyEvent::KEY_LSUPER] || io.KeysDown[KeyEvent::KEY_RSUPER];
 		
 		event.setHandled( io.WantCaptureKeyboard );
 	}
@@ -1051,12 +1054,8 @@ void initialize( const Options &options )
 #ifndef CINDER_LINUX
 	// clipboard callbacks
 	io.SetClipboardTextFn = []( void* user_data, const char* text ) {
-		const char* text_end = text + strlen(text);
-		char* buf = (char*)malloc(text_end - text + 1);
-		memcpy(buf, text, text_end-text);
-		buf[text_end-text] = '\0';
-		Clipboard::setString( buf );
-		free(buf);
+		// clipboard text is already zero-terminated
+		Clipboard::setString( text );
 	};
 	io.GetClipboardTextFn = []( void* user_data ) {
 		string str = Clipboard::getString();
