@@ -1072,7 +1072,7 @@ void initialize( const Options &options )
 	connectWindow( window );
 	
 	if( options.isAutoRenderEnabled() && window ) {
-		App::get()->getSignalUpdate().connect( newFrameGuard );
+		window->getSignalDraw().connect( newFrameGuard );
 		sWindowConnections += ( window->getSignalPostDraw().connect( render ) );
 	}
 	
