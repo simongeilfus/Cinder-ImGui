@@ -378,10 +378,9 @@ void Renderer::render( ImDrawData* draw_data )
 	gl::ScopedBlendAlpha scopedBlend;
 	gl::ScopedFaceCulling scopedFaceCulling( false );
 	shader->uniform( "uModelViewProjection", mat );
-	shader->uniform( "uTex", 0 );
 
 	GLuint currentTextureId = 0;
-	ctx->pushTextureBinding( GL_TEXTURE_2D, currentTextureId, 0 );
+	ctx->pushTextureBinding( GL_TEXTURE_2D, CINDER_IMGUI_TEXTURE_UNIT );
 	ctx->pushBoolState( GL_SCISSOR_TEST, GL_TRUE );
 	ctx->pushScissor();
 	for (int n = 0; n < draw_data->CmdListsCount; n++) {
@@ -449,7 +448,7 @@ void Renderer::render( ImDrawData* draw_data )
 				bool pushTexture = currentTextureId != (GLuint)(intptr_t) pcmd->TextureId;
 				if( pushTexture ) {
 					currentTextureId = (GLuint)(intptr_t) pcmd->TextureId;
-					ctx->bindTexture( GL_TEXTURE_2D, currentTextureId, 0 );
+					ctx->bindTexture( GL_TEXTURE_2D, currentTextureId, CINDER_IMGUI_TEXTURE_UNIT );
 				}
 				ctx->setScissor( { ivec2( (int)pcmd->ClipRect.x, (int)(height - pcmd->ClipRect.w) ), ivec2( (int)(pcmd->ClipRect.z - pcmd->ClipRect.x), (int)(pcmd->ClipRect.w - pcmd->ClipRect.y) ) } );
 				gl::drawElements( GL_TRIANGLES, (GLsizei)pcmd->ElemCount, sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, idx_buffer_offset );
@@ -460,7 +459,7 @@ void Renderer::render( ImDrawData* draw_data )
 
 	ctx->popScissor();
 	ctx->popBoolState( GL_SCISSOR_TEST );
-	ctx->popTextureBinding( GL_TEXTURE_2D, 0 );
+	ctx->popTextureBinding( GL_TEXTURE_2D, CINDER_IMGUI_TEXTURE_UNIT );
 }
 
 //! initializes and returns the font texture
@@ -720,6 +719,9 @@ void Renderer::initGlslProg()
 		.attribLocation( "iUv", 1 )
 		.attribLocation( "iColor", 2 )
 		);
+
+		mShader->uniform( "uTex", CINDER_IMGUI_TEXTURE_UNIT );
+
 	}
 	catch( gl::GlslProgCompileExc exc ){
 		CI_LOG_E( "Problem Compiling ImGui::Renderer shader " << exc.what() );

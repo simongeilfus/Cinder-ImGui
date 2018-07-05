@@ -69,6 +69,8 @@ operator ci::Color() const { return ci::Color(x,y,z); }
 namespace ui = ImGui;
 #endif
 
+#define CINDER_IMGUI_TEXTURE_UNIT 8
+
 //! cinder imgui namespace
 namespace ImGui {
 	
