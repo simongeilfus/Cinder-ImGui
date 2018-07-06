@@ -1,3 +1,6 @@
 [submodule "lib/imgui"]
 	path = lib/imgui
 	url = https://github.com/ocornut/imgui.git
+[submodule "lib/clipboard_lite"]
+	path = lib/clipboard_lite
+	url = https://github.com/smasherprog/clipboard_lite

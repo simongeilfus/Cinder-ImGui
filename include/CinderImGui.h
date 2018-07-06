@@ -212,10 +212,10 @@ namespace ImGui {
 	bool DragInt3(const char* label, T *object, ci::ivec3( T::*get )() const, void( T::*set )( const ci::ivec3& ), float v_speed = 1.0f, int v_min = 0, int v_max = 0, const char* display_format = "%.0f" );
 	template<typename T>
 	bool DragInt4(const char* label, T *object, ci::ivec4( T::*get )() const, void( T::*set )( const ci::ivec4& ), float v_speed = 1.0f, int v_min = 0, int v_max = 0, const char* display_format = "%.0f" );
-	template<typename T>
-	bool ColorPicker3( const char* label, T *object, ci::Color( T::*get )() const, void( T::*set )( const ci::Color& ) );
-	template<typename T>
-	bool ColorPicker4( const char* label, T *object, ci::ColorA( T::*get )() const, void( T::*set )( const ci::ColorA& ) );
+	// template<typename T>
+	// bool ColorPicker3( const char* label, T *object, ci::Color( T::*get )() const, void( T::*set )( const ci::Color& ) );
+	// template<typename T>
+	// bool ColorPicker4( const char* label, T *object, ci::ColorA( T::*get )() const, void( T::*set )( const ci::ColorA& ) );
 
 	// Scoped objects goodness (push the state when created and pop it when destroyed)
 
