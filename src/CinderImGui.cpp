@@ -972,6 +972,9 @@ namespace {
 // wrong... and would not work in a multi-windows scenario
 static signals::ConnectionList sWindowConnections;
 
+// also wrong... but fixes a crash on cleanup
+static signals::ConnectionList sAppConnections;
+
 void initialize( const Options &options )
 {
 	// create one context for now. will update with multiple context / shared fontatlas soon!
@@ -1078,9 +1081,11 @@ void initialize( const Options &options )
 	}
 	
 	// connect app's signals
-	app::App::get()->getSignalDidBecomeActive().connect( resetKeys );
-	app::App::get()->getSignalWillResignActive().connect( resetKeys );
-	app::App::get()->getSignalCleanup().connect( [context](){
+    sAppConnections += app::App::get()->getSignalDidBecomeActive().connect( resetKeys );
+    sAppConnections += app::App::get()->getSignalWillResignActive().connect( resetKeys );
+    sAppConnections += app::App::get()->getSignalCleanup().connect( [context](){
+        sAppConnections.clear();
+
 		ImGui::DestroyContext( context );
 #if defined( IMGUI_DOCK )
 		ShutdownDock();
