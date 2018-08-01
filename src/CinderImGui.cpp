@@ -765,6 +765,21 @@ void PushFont( const std::string& name )
 }
 
 // Std Helpers
+bool Combo( const char* label, int* current_item, const std::vector<std::string>& items, int size )
+{
+	// copy names to a vector
+	vector<const char*> names;
+	for( auto item : items ) {
+		char *cname = new char[ item.size() + 1 ];
+		std::strcpy( cname, item.c_str() );
+		names.push_back( cname );
+	}
+	
+	bool result = Combo( label, current_item, names.data(), names.size(), size );
+	// cleanup
+	for( auto &name : names ) delete [] name;
+	return result;
+}
 bool ListBox( const char* label, int* current_item, const std::vector<std::string>& items, int height_in_items )
 {
 	// copy names to a vector
