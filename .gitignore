@@ -32,3 +32,10 @@ ipch/
 .vs
 **/vc2013/enc_temp_folder/**
 **/vc2015/enc_temp_folder/**
+
+# Linux 
+**/cmake/CMakeCache.txt
+**/cmake/CMakeFiles
+**/cmake/Makefile
+**/cmake/cmake_install.cmake
+**/cmake/libCinder-ImGui.a
