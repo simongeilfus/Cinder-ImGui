@@ -71,6 +71,9 @@
     <ClCompile Include="..\..\..\lib\imgui\imgui_demo.cpp">
       <Filter>Blocks\ImGui\lib\imgui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\lib\imgui\imgui_widgets.cpp">
+      <Filter>Blocks\ImGui\lib\imgui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
