@@ -331,6 +331,7 @@
     <ClCompile Include="..\..\lib\imgui\imgui.cpp" />
     <ClCompile Include="..\..\lib\imgui\imgui_demo.cpp" />
     <ClCompile Include="..\..\lib\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\..\lib\imgui\imgui_widgets.cpp" />
     <ClCompile Include="..\..\src\CinderImGui.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

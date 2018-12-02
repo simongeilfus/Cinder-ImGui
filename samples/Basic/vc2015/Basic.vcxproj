@@ -191,6 +191,7 @@
   <ItemGroup />
   <ItemGroup />
   <ItemGroup>
+    <ClCompile Include="..\..\..\lib\imgui\imgui_widgets.cpp" />
     <ClCompile Include="..\src\BasicApp.cpp" />
     <ClCompile Include="..\..\..\src\CinderImGui.cpp" />
     <ClCompile Include="..\..\..\lib\imgui\imgui.cpp" />

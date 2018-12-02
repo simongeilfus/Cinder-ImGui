@@ -47,5 +47,8 @@
     <ClCompile Include="..\..\lib\imgui\imgui_demo.cpp">
       <Filter>Source Files\ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\lib\imgui\imgui_widgets.cpp">
+      <Filter>Source Files\ImGui</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
