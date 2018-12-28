@@ -977,6 +977,11 @@ static signals::ConnectionList sAppConnections;
 
 void initialize( const Options &options )
 {
+	if( sInitialized ) {
+		CI_LOG_W("CinderImGui has already been initialized.");
+		return;
+	}
+
 	// create one context for now. will update with multiple context / shared fontatlas soon!
 	ImGuiContext* context = ImGui::CreateContext();
 
