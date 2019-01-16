@@ -5,6 +5,7 @@ if( NOT TARGET Cinder-ImGui )
 	${IMGUI_ROOT_PATH}/src/CinderImGui.cpp
 	${IMGUI_ROOT_PATH}/lib/imgui/imgui.cpp
 	${IMGUI_ROOT_PATH}/lib/imgui/imgui_draw.cpp
+	${IMGUI_ROOT_PATH}/lib/imgui/imgui_widgets.cpp
 	)
 
   add_library( Cinder-ImGui ${IMGUI_SOURCES} )
