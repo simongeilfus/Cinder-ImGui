@@ -1084,8 +1084,7 @@ void initialize( const Options &options )
 	}
 	renderer->initFontTexture();
 	
-#ifndef CINDER_LINUX 
-#ifndef CINDER_ANDROID
+#if !defined(CINDER_LINUX) && !defined(CINDER_ANDROID)
 	// clipboard callbacks
 	io.SetClipboardTextFn = []( void* user_data, const char* text ) {
 		// clipboard text is already zero-terminated
@@ -1098,7 +1097,6 @@ void initialize( const Options &options )
 		strCopy.push_back('\0');
 		return (const char *) &strCopy[0];
 	};
-#endif
 #endif
 	
 	// connect window's signals
