@@ -21,6 +21,6 @@
 	<source>lib/imgui/imgui.cpp</source>
 	<source>lib/imgui/imgui_draw.cpp</source>
 	<source>lib/imgui/imgui_demo.cpp</source>
-	
+	<source>lib/imgui/imgui_widgets.cpp</source>
 </block>
 </cinder>
