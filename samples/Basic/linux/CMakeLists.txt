@@ -1,47 +1,18 @@
-# Basic
-cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
-set( CMAKE_VERBOSE_MAKEFILE on )
-
-get_filename_component( CINDER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../.." ABSOLUTE )
-include( ${CINDER_DIR}/linux/cmake/Cinder.cmake )
+cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
+set( CMAKE_VERBOSE_MAKEFILE ON )
 
 project( Basic )
+set( APP_NAME "${PROJECT_NAME}App" )
 
-get_filename_component( SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../src" ABSOLUTE )
-get_filename_component( INC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../include" ABSOLUTE )
+get_filename_component( CINDER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../../.." ABSOLUTE )
+get_filename_component( APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE )
 
-if( NOT TARGET cinder${CINDER_LIB_SUFFIX} )
-    find_package( cinder REQUIRED
-        #PATHS ${PROJECT_SOURCE_DIR}/../../../linux/${CMAKE_BUILD_TYPE}/${CINDER_OUT_DIR_PREFIX}
-	PATHS ${CINDER_DIR}/linux/${CMAKE_BUILD_TYPE}/${CINDER_OUT_DIR_PREFIX}
-        $ENV{Cinder_DIR}/linux/${CMAKE_BUILD_TYPE}/${CINDER_OUT_DIR_PREFIX}
-    )
-endif()
+include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 
-# Use PROJECT_NAME since CMAKE_PROJET_NAME returns the top-level project name.
-set( EXE_NAME ${PROJECT_NAME} )
-
-
-file(GLOB SRC_FILES_GLOB 
-	${SRC_DIR}/*
-	${CINDER_DIR}/blocks/Cinder-ImGui/src/*
-	${CINDER_DIR}/blocks/Cinder-ImGui/lib/imgui/*
+ci_make_app(
+	APP_NAME ${APP_NAME}
+	SOURCES ${APP_PATH}/src/BasicApp.cpp
+	CINDER_PATH ${CINDER_PATH}
+	BLOCKS Cinder-ImGui
 )
-
-set( SRC_FILES
-	${SRC_FILES_GLOB}
-)
-
-add_executable( "${EXE_NAME}" ${SRC_FILES} )
-
-target_include_directories(
-	"${EXE_NAME}"
-	PUBLIC ${INC_DIR}
-	${CINDER_DIR}/blocks/Cinder-ImGui/include
-	${CINDER_DIR}/blocks/Cinder-ImGui/lib/imgui
-
-)
-
-
-target_link_libraries( "${EXE_NAME}" cinder${CINDER_LIB_SUFFIX} )
 
