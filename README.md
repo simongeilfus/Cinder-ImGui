@@ -1,3 +1,8 @@
+# Dear-Imgui is now officially shipped with Cinder. Please use that implementation instead:  
+
+https://github.com/cinder/Cinder/blob/master/include/cinder/CinderImGui.h (See samples update [here](https://github.com/cinder/Cinder/pull/2146/commits/f70f28093c740c7f0247b2d1327030682b8a888a))
+
+
 Cinder-ImGui
 ===================
 ### [Immediate mode GUI Library](https://github.com/ocornut/imgui/) from [Omar Cornut](https://github.com/ocornut) wrapped for use with Cinder 0.9.
