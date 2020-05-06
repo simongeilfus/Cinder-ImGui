@@ -389,7 +389,7 @@ void Renderer::render( ImDrawData* draw_data )
 		int needed_vtx_size = cmd_list->VtxBuffer.size() * sizeof(ImDrawVert);
 		if ( vbo->getSize() < needed_vtx_size) {
 			GLsizeiptr size = needed_vtx_size + 2000 * sizeof(ImDrawVert);
-#ifndef CINDER_LINUX_EGL_RPI2
+#ifndef CINDER_GL_ES_2_RPI
 			mVbo->bufferData( size, nullptr, GL_STREAM_DRAW );
 #else
 			mVbo->bufferData( size, nullptr, GL_DYNAMIC_DRAW );
@@ -409,7 +409,7 @@ void Renderer::render( ImDrawData* draw_data )
 		int needed_idx_size = cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx);
 		if( mIbo->getSize() < needed_idx_size ) {
 			GLsizeiptr size = needed_idx_size + 2000 * sizeof(ImDrawIdx);
-#if ! defined( CINDER_LINUX_EGL_RPI2 )
+#if ! defined( CINDER_GL_ES_2_RPI )
 			mIbo->bufferData( size, nullptr, GL_STREAM_DRAW );
 #else
 			mIbo->bufferData( size, nullptr, GL_DYNAMIC_DRAW );
@@ -425,7 +425,7 @@ void Renderer::render( ImDrawData* draw_data )
 			mIbo->unmap();
 		}
 #else
-#if ! defined( CINDER_LINUX_EGL_RPI2 )
+#if ! defined( CINDER_GL_ES_2_RPI )
 		mVbo->bufferData( (GLsizeiptr)cmd_list->VtxBuffer.Size * sizeof(ImDrawVert), (const GLvoid*)cmd_list->VtxBuffer.Data, GL_STREAM_DRAW );
 		mIbo->bufferData( (GLsizeiptr)cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx), (const GLvoid*)cmd_list->IdxBuffer.Data, GL_STREAM_DRAW );
 #else
@@ -488,7 +488,7 @@ gl::VboRef Renderer::getVbo()
 //! initializes the vbo mesh
 void Renderer::initBuffers( size_t size )
 {
-	#if ! defined( CINDER_LINUX_EGL_RPI2 )
+	#if ! defined( CINDER_GL_ES_2_RPI )
 	mVbo    = gl::Vbo::create( GL_ARRAY_BUFFER, size, nullptr, GL_STREAM_DRAW );
 	mIbo    = gl::Vbo::create( GL_ELEMENT_ARRAY_BUFFER, 10, nullptr, GL_STREAM_DRAW );
 	#else
@@ -532,7 +532,7 @@ ImFont* Renderer::addFont( const ci::fs::path &font, float size, const ImWchar* 
 	ImFontAtlas* fontAtlas  = ImGui::GetIO().Fonts;
 	
 	auto fontSource = loadFile( font );
-	Font ciFont( fontSource, size );
+	ci::Font ciFont( fontSource, size );
 
 	ImWchar* glyphRanges = NULL;
 	// if we have glyph ranges copy them
@@ -559,7 +559,7 @@ ImFont* Renderer::addFont( const ci::fs::path &font, float size, const ImWchar* 
 		// find glyph ranges
 		mFontsGlyphRanges.push_back( vector<ImWchar>() );
 		auto &ranges = mFontsGlyphRanges.back();
-		Font::Glyph start = glyphs[0] == 0 ? '0' : glyphs[0];
+		ci::Font::Glyph start = glyphs[0] == 0 ? '0' : glyphs[0];
 		for( size_t i = 1; i < numGlyphs; ++i ) {
 			if( glyphs[i] != glyphs[i-1] + 1 ) {
 				ranges.push_back( start );
@@ -636,7 +636,7 @@ void Renderer::initGlslProg()
 						       } )"
 					#elif defined(CINDER_GL_ES_3)
 					       R"(
-						#version 300 es
+						//#version 300 es  // CoC: causes crash on Odroid (14/12/17)
 					       precision highp float;
 					       uniform mat4 uModelViewProjection;
 					       
@@ -684,7 +684,7 @@ void Renderer::initGlslProg()
 			  }  )"
 	#elif defined(CINDER_GL_ES_3)
 		R"(
-		#version 300 es
+		//#version 300 es  // CoC: causes crash on Odroid (14/12/17)
 		precision highp float;
 		
 		in highp vec2		vUv;

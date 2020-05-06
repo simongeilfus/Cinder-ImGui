@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <cinder>
 <block
-	name="ImGui"
+	name="Cinder-ImGui"
 	id="ocornut.imgui"
 	author="Simon Geilfus"
 	summary="Omar Cornut's ImGui for Cinder"
