@@ -559,7 +559,7 @@ ImFont* Renderer::addFont( const ci::fs::path &font, float size, const ImWchar* 
 		// find glyph ranges
 		mFontsGlyphRanges.push_back( vector<ImWchar>() );
 		auto &ranges = mFontsGlyphRanges.back();
-		Font::Glyph start = glyphs[0] == 0 ? '0' : glyphs[0];
+		Font::Glyph start = glyphs[0] == 0 ? ' ' : glyphs[0];
 		for( size_t i = 1; i < numGlyphs; ++i ) {
 			if( glyphs[i] != glyphs[i-1] + 1 ) {
 				ranges.push_back( start );
@@ -974,6 +974,11 @@ static signals::ConnectionList sAppConnections;
 
 void initialize( const Options &options )
 {
+	if( sInitialized ) {
+		CI_LOG_W("CinderImGui has already been initialized.");
+		return;
+	}
+
 	// create one context for now. will update with multiple context / shared fontatlas soon!
 	ImGuiContext* context = ImGui::CreateContext();
 
