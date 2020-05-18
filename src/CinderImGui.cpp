@@ -856,7 +856,38 @@ namespace {
 		
 		event.setHandled( io.WantCaptureMouse );
 	}
-	
+
+  void touchesBegan( ci::app::TouchEvent& event )
+  {
+    if(event.getTouches().size() > 0)
+    {
+      ImGuiIO& io = ImGui::GetIO();
+      io.MousePos = toPixels( event.getTouches()[0].getPos() );
+      io.MouseDown[0] = true;
+		
+		  event.setHandled( io.WantCaptureMouse );
+    }
+  }
+  void touchesMoved( ci::app::TouchEvent& event )
+  {
+    if(event.getTouches().size() > 0)
+    {
+      ImGuiIO& io = ImGui::GetIO();
+      io.MousePos = toPixels( event.getTouches()[0].getPos() );
+    
+		  event.setHandled( io.WantCaptureMouse );
+    }
+  }
+  void touchesEnded( ci::app::TouchEvent& event ) 
+  {
+    if(event.getTouches().size() > 0)
+    {
+      ImGuiIO& io = ImGui::GetIO();
+      io.MousePos = toPixels( event.getTouches()[0].getPos() );
+      io.MouseDown[0] = false;
+		  event.setHandled( io.WantCaptureMouse );
+    }
+  }
 	
 	vector<int> sAccelKeys;
 	
@@ -1053,7 +1084,7 @@ void initialize( const Options &options )
 	}
 	renderer->initFontTexture();
 	
-#ifndef CINDER_LINUX
+#if !defined(CINDER_LINUX) && !defined(CINDER_ANDROID)
 	// clipboard callbacks
 	io.SetClipboardTextFn = []( void* user_data, const char* text ) {
 		// clipboard text is already zero-terminated
@@ -1106,6 +1137,9 @@ void connectWindow( ci::app::WindowRef window )
 	sWindowConnections += window->getSignalKeyDown().connect( keyDown );
 	sWindowConnections += window->getSignalKeyUp().connect( keyUp );
 	sWindowConnections += window->getSignalResize().connect( resize );
+  sWindowConnections += window->getSignalTouchesBegan().connect( touchesBegan );
+  sWindowConnections += window->getSignalTouchesMoved().connect( touchesMoved );
+  sWindowConnections += window->getSignalTouchesEnded().connect( touchesEnded );
 }
 void disconnectWindow( ci::app::WindowRef window )
 {
