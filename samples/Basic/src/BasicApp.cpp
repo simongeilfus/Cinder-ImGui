@@ -97,7 +97,7 @@ void BasicApp::update()
 	
 	if( showDemoWindow ){
 		// have a look at this function for more examples
-		ui::ShowDemoWindow();
+		ui::ShowTestWindow();
 	}
 	
 	
@@ -166,4 +166,8 @@ void BasicApp::draw()
 	}
 }
 
-CINDER_APP(BasicApp, RendererGl( RendererGl::Options().msaa( 8 ) ) )
+CINDER_APP(BasicApp, RendererGl( RendererGl::Options().msaa( 8 ) ),
+		[]( App::Settings *settings )
+		{
+			settings->setMultiTouchEnabled( false );
+		} )

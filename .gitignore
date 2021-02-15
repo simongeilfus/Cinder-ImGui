@@ -22,6 +22,7 @@ DerivedData/
 *.opensdf
 Debug/
 Release/
+ipch/
 Debug_Shared/
 Release_Shared/
 Debug_ANGLE/
@@ -32,3 +33,13 @@ ipch/
 .vs
 **/vc2013/enc_temp_folder/**
 **/vc2015/enc_temp_folder/**
+
+# Android cruft
+*.swp
+.idea
+*.iml
+local.properties
+proguard-rules.pro
+.gradle/
+jniLibs/
+build/

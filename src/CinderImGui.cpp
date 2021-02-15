@@ -635,8 +635,7 @@ void Renderer::initGlslProg()
 							       gl_Position  = uModelViewProjection * vec4( iPosition, 0.0, 1.0 );
 						       } )"
 					#elif defined(CINDER_GL_ES_3)
-					       R"(
-						#version 300 es
+						CI_GLSL( 300 es,
 					       precision highp float;
 					       uniform mat4 uModelViewProjection;
 					       
@@ -651,7 +650,7 @@ void Renderer::initGlslProg()
 						       vColor       = iColor;
 						       vUv          = iUv;
 						       gl_Position  = uModelViewProjection * vec4( iPosition, 0.0, 1.0 );
-					       } )"
+					       } )
 					#else
 						R"(
 						#version 150
@@ -683,19 +682,18 @@ void Renderer::initGlslProg()
 				  gl_FragColor = color;
 			  }  )"
 	#elif defined(CINDER_GL_ES_3)
-		R"(
-		#version 300 es
+		CI_GLSL( 300 es,
 		precision highp float;
-		
+
 		in highp vec2		vUv;
 		in highp vec4		vColor;
 		out highp vec4		oColor;
 		uniform sampler2D	uTex;
-		
+
 		void main() {
 			vec4 color = texture( uTex, vUv ) * vColor;
 			oColor = color;
-		}  )"
+		}  )
 	#else
 		R"(
 		#version 150
@@ -1053,7 +1051,7 @@ void initialize( const Options &options )
 	}
 	renderer->initFontTexture();
 	
-#ifndef CINDER_LINUX
+#if ! defined( CINDER_LINUX ) && ! defined( CINDER_ANDROID )
 	// clipboard callbacks
 	io.SetClipboardTextFn = []( void* user_data, const char* text ) {
 		// clipboard text is already zero-terminated
